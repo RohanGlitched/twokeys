@@ -2,6 +2,7 @@
 // family notes. In production this is DynamoDB with TTL; in development (or when no table is
 // configured) it falls back to process memory.
 import 'server-only';
+import { awsConfig } from './aws';
 
 export interface Store {
   get<T>(key: string): Promise<T | null>;
@@ -51,7 +52,7 @@ class DynamoStore implements Store {
     if (!this.doc) {
       const { DynamoDBClient } = await import('@aws-sdk/client-dynamodb');
       const { DynamoDBDocumentClient } = await import('@aws-sdk/lib-dynamodb');
-      this.doc = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.STORE_REGION ?? process.env.AWS_REGION ?? 'ap-southeast-2' }));
+      this.doc = DynamoDBDocumentClient.from(new DynamoDBClient(awsConfig()));
     }
     return this.doc;
   }

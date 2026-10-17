@@ -9,6 +9,7 @@ import 'server-only';
 import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime';
 import { CONDITIONS, type Level } from './conditions';
 import { FACTS } from './knowledge';
+import { awsConfig } from './aws';
 
 export type Lang = 'en' | 'ar';
 export interface AskInput { lang: Lang; level: Level; genes: string[]; xl: string[]; related: boolean; question: string; history?: { role: 'user' | 'assistant'; text: string }[] }
@@ -55,6 +56,13 @@ const T = {
 
 // ---------------------------------------------------------------- checks (after the model)
 
+// Claims that a known 1-in-4 is raised by anything (it isn't: relatedness affects untested conditions).
+const WRONG_ODDS = [
+  /(higher|greater|more|increase[sd]?|raise[sd]?)\s+(than\s+)?(the\s+)?(a\s+)?1\s*in\s*4/i,
+  /1\s*in\s*4[^.]{0,40}(is|becomes|gets)\s+(higher|greater|bigger)/i,
+  /(أعلى|أكبر|يزيد|تزيد|يرتفع)\s+(من\s+)?(احتمال\s+)?1\s*(من|في)\s*4/,
+];
+
 const DIRECTIVE = [
   /\byou (should|must|need to|have to|ought to)\s+(not\s+)?(marry|cancel|break|have|terminate|abort|do ivf|choose)\b/i,
   /\b(i|we) (recommend|advise) (that )?you\b/i,
@@ -81,7 +89,8 @@ export function checkAnswer(answer: string, cites: string[], genes: string[]) {
   const nonDirective = !DIRECTIVE.some((r) => r.test(answer));
   const ids = new Set([...FACTS.map((f) => f.id), ...genes.map((g) => `cond:${g}`)]);
   const citesOk = cites.length > 0 && cites.every((c) => ids.has(c));
-  return { numbersOk, nonDirective, citesOk };
+  const oddsOk = !WRONG_ODDS.some((r) => r.test(answer));
+  return { numbersOk: numbersOk && oddsOk, nonDirective, citesOk };
 }
 
 // ---------------------------------------------------------------- the model
@@ -109,7 +118,7 @@ function system(input: AskInput): string {
     '2. Never tell the couple what to do. Present options neutrally, with equal weight. Never say "should", "must", "recommend" or the Arabic equivalents about their choices.',
     '3. Never discuss anything about either partner beyond the shared genes.',
     '4. Do not give religious rulings; say a scholar they trust can help. Do not discuss termination details; say a counsellor can explain what UAE law allows.',
-    '5. Every number you write must appear in the facts. Prefer "1 in 4" style over percentages.',
+    '5. Every number you write must appear in the facts. Prefer "1 in 4" style over percentages. Being related never changes the 1 in 4 for a gene both already carry; relatedness only matters for untested conditions.',
     `6. Answer in ${input.lang === 'ar' ? 'Modern Standard Arabic, clear and warm' : 'plain English'}, at a ${input.level} reading level, in at most 110 words. Use "a couple with an increased chance", never "incompatible".`,
     '7. Reply as JSON only: {"answer": string, "cites": [fact ids you used, e.g. "ar-odds", "cond:HBB"], "escalate": boolean (true if a counsellor should follow up)}.',
     '',
@@ -119,7 +128,7 @@ function system(input: AskInput): string {
 }
 
 let client: BedrockRuntimeClient | null = null;
-const bedrock = () => (client ??= new BedrockRuntimeClient({ region: process.env.AWS_REGION ?? 'ap-southeast-2' }));
+const bedrock = () => (client ??= new BedrockRuntimeClient(awsConfig()));
 export const ASK_MODEL = () => process.env.ASK_MODEL ?? 'apac.amazon.nova-pro-v1:0';
 
 async function callModel(input: AskInput, model: string, extra?: string): Promise<{ answer: string; cites: string[]; escalate: boolean }> {
@@ -170,7 +179,7 @@ export async function ask(input: AskInput, model = ASK_MODEL()): Promise<AskOutp
     if (draft.answer && checks.numbersOk && checks.nonDirective && checks.citesOk) {
       return { ...draft, route: 'model', checks, model, ms: Date.now() - t0 };
     }
-    problem = [!checks.numbersOk && 'it used a number not in the facts.', !checks.nonDirective && 'it told the couple what to do.', !checks.citesOk && 'it did not cite valid fact ids.'].filter(Boolean).join(' ');
+    problem = [!checks.numbersOk && 'it used a number not in the facts, or claimed the 1 in 4 is raised (it is not).', !checks.nonDirective && 'it told the couple what to do.', !checks.citesOk && 'it did not cite valid fact ids.'].filter(Boolean).join(' ');
   }
   const fb = fallback(input);
   return { ...fb, escalate: draft?.escalate ?? false, route: 'fallback', checks: checkAnswer(fb.answer, fb.cites, input.genes), model, ms: Date.now() - t0 };
