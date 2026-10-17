@@ -94,7 +94,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
               </ul>
             ))}
           </div>
-          <p className="mt-3 text-[13px] text-ink-3">{t({ en: 'Plus 9 end-to-end tests that pair two phones through the real lab and relay routes, run against the live site (tests/pairing.int.test.ts).', ar: 'إضافة إلى 9 اختبارات شاملة تقرن هاتفين عبر مسارات المختبر والوسيط الحقيقية، وتُشغَّل على الموقع المنشور (tests/pairing.int.test.ts).' })}</p>
+          <p className="mt-3 text-[13px] text-ink-3">{t({ en: 'Plus 10 end-to-end tests that pair two phones through the real lab and relay routes, run against the live site (tests/pairing.int.test.ts).', ar: 'إضافة إلى 10 اختبارات شاملة تقرن هاتفين عبر مسارات المختبر والوسيط الحقيقية، وتُشغَّل على الموقع المنشور (tests/pairing.int.test.ts).' })}</p>
         </section>
 
         {/* calibration */}
