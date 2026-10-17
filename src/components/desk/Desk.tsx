@@ -84,7 +84,7 @@ export function Desk({ lang }: { lang: Locale }) {
       <main className="mx-auto max-w-md px-6 py-16">
         <div className="flex items-center gap-2"><Mark size={24} /><span className="text-[15px] font-medium">{t({ en: 'Counsellor desk', ar: 'مكتب المستشار' })}</span></div>
         <h1 className="mt-6 text-[28px] font-semibold tracking-tight">{t({ en: 'Sign in to the desk', ar: 'سجّل الدخول إلى المكتب' })}</h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'In production, counsellors sign in with their health-authority account. For this demo, the passcode is “counsellor”.', ar: 'في الإنتاج يسجّل المستشارون الدخول بحساب الجهة الصحية. في هذا العرض، رمز المرور هو «counsellor».' })}</p>
+        <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'In production, counsellors sign in with their health-authority account. Judges: the demo passcode is in the submission notes.', ar: 'في الإنتاج يسجّل المستشارون الدخول بحساب الجهة الصحية. للمحكّمين: رمز مرور العرض موجود في ملاحظات التقديم.' })}</p>
         <form className="mt-6 flex gap-2" onSubmit={(e) => { e.preventDefault(); load(code); }}>
           <label htmlFor="pc" className="sr-only">{t({ en: 'Passcode', ar: 'رمز المرور' })}</label>
           <input id="pc" type="password" value={code} onChange={(e) => setCode(e.target.value)} className="min-w-0 flex-1 rounded-[2px] border border-ink bg-paper px-3 py-3" autoComplete="off" />
