@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from '@/i18n/locales';
 import { COUPLES, PEOPLE, publicPerson } from '@/lib/people';
 import { PhoneRoute } from '@/components/phone/PhoneRoute';
+import { titled } from '@/i18n/meta';
 
-export const metadata = { title: 'Phone' };
+export const generateMetadata = titled('Phone', 'الهاتف');
 
 export default async function PhonePage({ params }: PageProps<'/[lang]/phone'>) {
   const { lang } = await params;

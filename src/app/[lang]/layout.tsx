@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: LayoutProps<'/[lang]'>): Prom
   return {
     title: { default: ar ? 'مفتاحان' : 'Two Keys', template: ar ? '%s · مفتاحان' : '%s · Two Keys' },
     description: ar
-      ? 'يقارن الزوجان نتائج فحص الحمل الجيني داخل هاتفيهما، فيعرفان الجينات المشتركة فقط، ويبقى كل ما عداها خاصاً بكل منهما.'
+      ? 'يقارن الزوجان نتائج الفحص الجيني قبل الزواج داخل هاتفيهما، فيعرفان الجينات المشتركة فقط، ويبقى كل ما عداها خاصاً بكل منهما.'
       : "A couple compares carrier results inside their own phones: they learn only the genes they both carry, and everything else stays private.",
   };
 }

@@ -1,40 +1,40 @@
 'use client';
 // A step-through of the real protocol, run in this browser with a throwaway lab key, so every value
-// shown is the actual value: lab tokens, padded and locked lists, the double lock, and the match.
+// shown is the actual value: lab tokens, padded and locked lists, the double lock, the proofs, and
+// the match. The token labels are shown for teaching; in the service they never leave the lab.
 import { useEffect, useMemo, useState } from 'react';
 import type { Locale } from '@/i18n/locales';
-import { issue, matchedGenes, type Finding } from '@/lib/lab';
-import { Initiator, Responder, SET_SIZE, type Msg1, type Msg2, type Msg3, type Outcome, type Token } from '@/lib/psi';
+import { intersection, sessionTokens, type Finding, type LabelledToken, type SharedGene } from '@/lib/lab';
+import { Initiator, Responder, SET_SIZE, type Msg1, type Msg2, type Msg3, type Outcome } from '@/lib/psi';
 
 type L = { en: string; ar: string };
 const ar = (gene: string): Finding => ({ gene, inheritance: 'AR', severity: 'severe' });
 const HER = [ar('CYP21A2'), ar('HBB')];
 const HIM = [ar('CYP21A2'), ar('MEFV')];
 
-interface Run { ta: Token[]; tb: Token[]; m1: Msg1; m2: Msg2; m3: Msg3; a: Outcome; b: Outcome; matchAB: Set<string> }
+interface Run { ta: LabelledToken[]; tb: LabelledToken[]; m1: Msg1; m2: Msg2; m3: Msg3; a: Outcome; b: Outcome; genes: SharedGene[] }
 
 function run(): Run {
   const key = crypto.getRandomValues(new Uint8Array(32));
   const session = Array.from(crypto.getRandomValues(new Uint8Array(32)), (x) => x.toString(16).padStart(2, '0')).join('');
-  const ta = issue(key, session, 'A', 'F', HER);
-  const tb = issue(key, session, 'B', 'M', HIM);
-  const i = new Initiator(ta);
-  const r = new Responder(tb);
+  const ta = sessionTokens(key, session, 'A', HER);
+  const tb = sessionTokens(key, session, 'B', HIM);
+  const i = new Initiator(ta.map(({ i, token }) => ({ i, token })));
+  const r = new Responder(tb.map(({ i, token }) => ({ i, token })));
   const m1 = i.step1();
   const m2 = r.step2(m1);
   const { msg: m3, outcome: a } = i.step3(m2);
   const b = r.step4(m3);
-  const ba = new Set(m3.ba);
-  return { ta, tb, m1, m2, m3, a, b, matchAB: new Set(m2.ab.filter((x) => ba.has(x))) };
+  return { ta, tb, m1, m2, m3, a, b, genes: intersection(key, session, HER, HIM).genes };
 }
 
 const STEPS: { title: L; body: L }[] = [
   { title: { en: 'What each person carries', ar: 'ما يحمله كل منهما' }, body: { en: 'Imagine we could see both results. Mariam carries CYP21A2 and HBB; Saeed carries CYP21A2 and MEFV. Neither will ever see the other’s list.', ar: 'تخيّل أننا نرى النتيجتين. مريم تحمل CYP21A2 وHBB، وسعيد يحمل CYP21A2 وMEFV. ولن يرى أي منهما قائمة الآخر أبداً.' } },
-  { title: { en: 'The lab issues one-time tokens', ar: 'المختبر يصدر رموزاً لمرة واحدة' }, body: { en: 'For this pairing only, the lab turns each gene into tokens only it can make (two per gene, tagged so that mild changes never match each other). A token from another pairing is worthless.', ar: 'لهذا الاقتران فقط، يحوّل المختبر كل جين إلى رموز لا يصنعها غيره (رمزان لكل جين، موسومان بحيث لا تتطابق التغيّرات الخفيفة مع بعضها). والرمز من اقتران آخر لا قيمة له.' } },
+  { title: { en: 'The lab issues one-time tokens', ar: 'المختبر يصدر رموزاً لمرة واحدة' }, body: { en: 'For this pairing only, the lab turns each gene into tokens only it can make: two for a serious change, one for a milder one, tagged so that two milder changes never match. The phone gets only the tokens; which gene each one stands for stays in the lab (shown here only to teach). A token from another pairing is worthless.', ar: 'لهذا الاقتران فقط، يحوّل المختبر كل جين إلى رموز لا يصنعها غيره: رمزان للتغيّر الشديد، ورمز واحد للتغيّر الأخف، موسومة بحيث لا يتطابق تغيّران خفيفان. لا يصل إلى الهاتف إلا الرموز، ويبقى ما يمثله كل رمز في المختبر (يظهر هنا للشرح فقط). والرمز من اقتران آخر لا قيمة له.' } },
   { title: { en: 'Mariam’s phone locks and pads her list', ar: 'هاتف مريم يقفل قائمتها ويحشوها' }, body: { en: `Her phone multiplies each token by a secret number it never shares, adds random entries up to ${SET_SIZE}, shuffles, and sends it. This is everything that leaves her phone.`, ar: `يضرب هاتفها كل رمز في رقم سري لا يشاركه، ويضيف عناصر عشوائية حتى ${SET_SIZE}، ويخلطها، ثم يرسلها. هذا كل ما يخرج من هاتفها.` } },
-  { title: { en: 'Saeed’s phone adds its lock', ar: 'هاتف سعيد يضيف قفله' }, body: { en: 'His phone locks her list again with its own secret, in the same order, and sends back its own locked, padded list.', ar: 'يقفل هاتفه قائمتها مرة أخرى بسره الخاص وبالترتيب نفسه، ويعيد قائمته المقفلة المحشوة.' } },
+  { title: { en: 'Saeed’s phone adds its lock', ar: 'هاتف سعيد يضيف قفله' }, body: { en: 'His phone locks her list again with its own secret, in the same order, and sends back its own locked, padded list, with a short mathematical proof that it used one secret for every entry. Her phone checks the proof; a list locked any other way is rejected.', ar: 'يقفل هاتفه قائمتها مرة أخرى بسره الخاص وبالترتيب نفسه، ويعيد قائمته المقفلة المحشوة، مع إثبات رياضي قصير أنه استخدم سراً واحداً لكل العناصر. يتحقق هاتفها من الإثبات، وتُرفض أي قائمة أُقفلت بطريقة أخرى.' } },
   { title: { en: 'Two locks on both sides: only shared genes match', ar: 'قفلان على الجانبين: لا يتطابق إلا المشترك' }, body: { en: 'Mariam’s phone adds her lock to his list. Now every entry carries both locks. Entries that started as the same token are now identical; everything else is still noise.', ar: 'يضيف هاتف مريم قفلها إلى قائمته. الآن يحمل كل عنصر القفلين. والعناصر التي بدأت بالرمز نفسه أصبحت متطابقة، وكل ما عداها لا يزال ضجيجاً.' } },
-  { title: { en: 'What each one learns', ar: 'ما يعرفه كل منهما' }, body: { en: 'Each phone knows which of its own entries matched, so both learn CYP21A2. Neither learns HBB or MEFV, or how many genes the other carries. The relay saw only the locked lists.', ar: 'يعرف كل هاتف أي عناصره تطابقت، فيعرف كلاهما CYP21A2. ولا يعرف أي منهما HBB أو MEFV أو عدد جينات الآخر. ولم يرَ الوسيط إلا القوائم المقفلة.' } },
+  { title: { en: 'What each one learns', ar: 'ما يعرفه كل منهما' }, body: { en: 'Each phone knows only which of its own entries matched, by number. It sends those numbers to the lab, which recomputes the match from its own records for the two people in this pairing and names only the shared gene: CYP21A2. Neither learns HBB or MEFV, or how many genes the other carries. The relay saw only encrypted, locked lists.', ar: 'يعرف كل هاتف فقط أي عناصره تطابقت، بأرقامها. ويرسل هذه الأرقام إلى المختبر، فيعيد المختبر حساب التطابق من سجلاته للشخصين في هذا الاقتران ولا يسمّي إلا الجين المشترك: CYP21A2. ولا يعرف أي منهما HBB أو MEFV أو عدد جينات الآخر. ولم يرَ الوسيط إلا قوائم مشفّرة ومقفلة.' } },
 ];
 
 const short = (h: string) => `${h.slice(0, 10)}…${h.slice(-6)}`;
@@ -54,7 +54,7 @@ function List({ title, items, tone, lit, more }: { title: string; items: { label
             </li>
           );
         })}
-        {more ? <li className="px-3 py-1.5 font-sans text-[12px] text-ink-3">+ {more}</li> : null}
+        {more ? <li className="px-3 py-1.5 font-sans text-[12px] text-ink-2">+ {more}</li> : null}
       </ul>
     </div>
   );
@@ -64,6 +64,7 @@ export function Theatre({ lang }: { lang: Locale }) {
   const t = (l: L) => l[lang];
   const [step, setStep] = useState(0);
   const [r, setR] = useState<Run | null>(null);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- needs Web Crypto, so it runs in the browser, read once after hydration
   useEffect(() => { setR(run()); }, []);
   const shown = 8;
   const view = useMemo(() => {
@@ -74,8 +75,7 @@ export function Theatre({ lang }: { lang: Locale }) {
     return { both, abTop: sortFirst(ab).slice(0, shown), baTop: sortFirst(ba).slice(0, shown) };
   }, [r]);
   if (!r || !view) return <div className="h-[420px] animate-pulse bg-wool-2" />;
-  const genesA = r.a.mode === 'reveal' ? matchedGenes(r.a.labels).ar : [];
-  const genesB = r.b.mode === 'reveal' ? matchedGenes(r.b.labels).ar : [];
+  const named = r.genes.map((g) => g.gene);
   const her = lang === 'ar' ? 'مريم' : 'Mariam';
   const him = lang === 'ar' ? 'سعيد' : 'Saeed';
 
@@ -114,8 +114,8 @@ export function Theatre({ lang }: { lang: Locale }) {
           <List title={t({ en: 'His entries, both locks', ar: 'عناصره بالقفلين' })} tone="him" items={view.baTop.map((h) => ({ hex: h }))} lit={view.both} more={SET_SIZE - shown} />
         </>)}
         {step === 5 && (<>
-          <div className="rounded-[3px] border border-indigo bg-paper p-4"><p className="text-[13px] text-ink-3">{t({ en: `${her}’s phone learned`, ar: `عرف هاتف ${her}` })}</p><p className="mt-1 text-[22px] font-semibold text-madder">{genesA.join(', ') || '—'}</p></div>
-          <div className="rounded-[3px] border border-camel bg-paper p-4"><p className="text-[13px] text-ink-3">{t({ en: `${him}’s phone learned`, ar: `عرف هاتف ${him}` })}</p><p className="mt-1 text-[22px] font-semibold text-madder">{genesB.join(', ') || '—'}</p></div>
+          <div className="rounded-[3px] border border-indigo bg-paper p-4"><p className="text-[13px] text-ink-2">{t({ en: `${her}’s phone learned`, ar: `عرف هاتف ${her}` })}</p><p className="mt-1 text-[22px] font-semibold text-madder">{named.join(', ') || '—'}<span className="ms-2 font-mono text-[12px] font-normal text-ink-2">{t({ en: `entries ${r.a.matched.join(', ')}`, ar: `العناصر ${r.a.matched.join('، ')}` })}</span></p></div>
+          <div className="rounded-[3px] border border-camel bg-paper p-4"><p className="text-[13px] text-ink-2">{t({ en: `${him}’s phone learned`, ar: `عرف هاتف ${him}` })}</p><p className="mt-1 text-[22px] font-semibold text-madder">{named.join(', ') || '—'}<span className="ms-2 font-mono text-[12px] font-normal text-ink-2">{t({ en: `entries ${r.b.matched.join(', ')}`, ar: `العناصر ${r.b.matched.join('، ')}` })}</span></p></div>
         </>)}
       </div>
 

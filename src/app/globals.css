@@ -7,13 +7,13 @@
   --paper: #FAF8F4;     /* raised surfaces */
   --ink: #22201E;       /* carded charcoal: text and lines */
   --ink-2: #55504A;     /* secondary text */
-  --ink-3: #7B746B;     /* tertiary, still 4.5:1 on wool */
+  --ink-3: #6B655D;     /* tertiary and control borders: 5:1 on wool */
   --rule: #D3CCC0;
   --madder: #9B2335;    /* shared, and nothing else */
   --madder-2: #F3DDE0;
   --indigo: #2E3A6E;    /* hers / yours */
   --indigo-2: #DEE1EE;
-  --camel: #8C6A3F;     /* his / theirs (darkened for contrast) */
+  --camel: #7A5C35;     /* his / theirs: 5.4:1 on wool */
   --camel-2: #EFE4D4;
   --sage: #4F6F58;      /* clear */
   --sage-2: #DEE8DF;
@@ -46,13 +46,15 @@ body {
   background: var(--wool);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-weight: 300;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   font-variant-numeric: tabular-nums;
 }
 /* Arabic body text reads best in naskh; headings stay in Alexandria. */
 html[lang="ar"] body { font-family: var(--font-naskh); font-weight: 400; }
 html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3, html[lang="ar"] .display { font-family: var(--font-sans); }
+/* Arabic ascenders and dots need more room than Latin at display sizes. */
+html[lang="ar"] h1, html[lang="ar"] h2 { line-height: 1.4; }
 
 :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
 ::selection { background: var(--indigo-2); }

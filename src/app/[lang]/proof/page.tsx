@@ -4,8 +4,9 @@ import { Footer, Nav } from '@/components/site/Chrome';
 import tests from '../../../../data/tests.json';
 import calibration from '../../../../data/calibration.json';
 import evalAsk from '../../../../data/eval-ask.json';
+import { titled } from '@/i18n/meta';
 
-export const metadata = { title: 'Proof' };
+export const generateMetadata = titled('Proof', 'الإثبات');
 type L = { en: string; ar: string };
 
 const pct = (x: number, d = 1) => `${(x * 100).toFixed(d)}%`;
@@ -17,7 +18,7 @@ const REL: Record<string, L> = {
 const SOURCES: { what: L; owner: string; rights: L; personal: L; href: string }[] = [
   { what: { en: 'Variant frequencies, Middle Eastern group', ar: 'ترددات المتغيرات، المجموعة الشرق أوسطية' }, owner: 'gnomAD v4.1, Broad Institute', rights: { en: 'CC0; no re-identification', ar: 'CC0؛ دون إعادة تعريف' }, personal: { en: 'None (aggregate)', ar: 'لا (مجمّعة)' }, href: 'https://gnomad.broadinstitute.org/' },
   { what: { en: 'Pathogenic variant classifications', ar: 'تصنيف المتغيرات الممرضة' }, owner: 'ClinVar, NCBI', rights: { en: 'Public domain, attribution requested', ar: 'ملكية عامة، مع طلب الإسناد' }, personal: { en: 'None', ar: 'لا' }, href: 'https://www.ncbi.nlm.nih.gov/clinvar/' },
-  { what: { en: 'Emirati gene carrier frequencies', ar: 'ترددات الحمل الجيني لدى الإماراتيين' }, owner: 'Jain et al., Genet Med Open 2025', rights: { en: 'Published aggregate figures, cited', ar: 'أرقام مجمّعة منشورة، مع الإسناد' }, personal: { en: 'None (aggregate)', ar: 'لا (مجمّعة)' }, href: 'https://doi.org/10.1016/j.gimo.2025.103446' },
+  { what: { en: 'Emirati gene carrier frequencies', ar: 'نسب من يحملون التغيّرات الجينية بين الإماراتيين' }, owner: 'Jain et al., Genet Med Open 2025', rights: { en: 'Published aggregate figures, cited', ar: 'أرقام مجمّعة منشورة، مع الإسناد' }, personal: { en: 'None (aggregate)', ar: 'لا (مجمّعة)' }, href: 'https://doi.org/10.1016/j.gimo.2025.103446' },
   { what: { en: 'Carrier screening gene list (113 genes)', ar: 'قائمة جينات الفحص (113 جيناً)' }, owner: 'ACMG, Gregg et al. 2021', rights: { en: 'Gene names, cited', ar: 'أسماء الجينات، مع الإسناد' }, personal: { en: 'None', ar: 'لا' }, href: 'https://doi.org/10.1038/s41436-021-01203-z' },
   { what: { en: 'Condition explanations', ar: 'شرح الحالات' }, owner: 'MedlinePlus Genetics, US NLM', rights: { en: 'US government work, linked', ar: 'عمل حكومي أمريكي، مع الرابط' }, personal: { en: 'None', ar: 'لا' }, href: 'https://medlineplus.gov/genetics/' },
   { what: { en: 'Screening outcomes used for calibration', ar: 'نتائج الفحص المستخدمة للمعايرة' }, owner: 'Alblooshi et al., Nature Medicine 2026; M42 and DoH', rights: { en: 'Published figures, cited', ar: 'أرقام منشورة، مع الإسناد' }, personal: { en: 'None', ar: 'لا' }, href: 'https://www.nature.com/articles/s41591-026-04251-7' },

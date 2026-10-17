@@ -1,47 +1,59 @@
 import { describe, expect, it } from 'vitest';
-import { Initiator, Responder, runLocally, SET_SIZE, type Token } from '../src/lib/psi';
-import { issue, matchedGenes, type Finding } from '../src/lib/lab';
+import { Initiator, proveDleq, randomScalar, Responder, runLocally, SET_SIZE, verifyDleq, toHex, type Token } from '../src/lib/psi';
+import { intersection, issue, sessionTokens, type Finding } from '../src/lib/lab';
+import { ristretto255 } from '@noble/curves/ed25519.js';
 
 const labKey = new Uint8Array(32).fill(7);
 const otherLab = new Uint8Array(32).fill(9);
-const S = 'a1'.repeat(16);
+const S = 'a1'.repeat(32);
 const ar = (gene: string, severity: 'severe' | 'mild' = 'severe'): Finding => ({ gene, inheritance: 'AR', severity });
 const xl = (gene: string): Finding => ({ gene, inheritance: 'XL', severity: 'severe' });
 
-function pair(a: Finding[], b: Finding[], opts: { mode?: 'reveal' | 'count'; session?: string; keyB?: Uint8Array; aSex?: 'F' | 'M'; bSex?: 'F' | 'M' } = {}) {
-  const ta = issue(labKey, opts.session ?? S, 'A', opts.aSex ?? 'F', a);
-  const tb = issue(opts.keyB ?? labKey, S, 'B', opts.bSex ?? 'M', b);
-  return runLocally(ta, tb, opts.mode ?? 'reveal');
+/** Runs a pairing and maps each side's matched indices back to genes through the lab's labels. */
+function pair(a: Finding[], b: Finding[], opts: { session?: string; keyB?: Uint8Array } = {}) {
+  const la = sessionTokens(labKey, opts.session ?? S, 'A', a);
+  const lb = sessionTokens(opts.keyB ?? labKey, S, 'B', b);
+  const r = runLocally(issue(labKey, opts.session ?? S, 'A', a), issue(opts.keyB ?? labKey, S, 'B', b));
+  const names = (idx: number[], l: typeof la) => [...new Set(idx.map((i) => l[i].label))].sort();
+  return { ...r, aGenes: names(r.aLearns.matched, la), bGenes: names(r.bLearns.matched, lb) };
 }
-const genes = (o: { mode: string; labels?: string[] }) => matchedGenes((o as { labels: string[] }).labels);
 
-describe('session-bound authorised PSI', () => {
-  it('both partners learn exactly the genes both carry', () => {
+describe('session-bound authorised PSI with proofs', () => {
+  it('both partners find exactly the genes both carry', () => {
     const r = pair([ar('HBB'), ar('CFTR'), ar('CYP21A2')], [ar('HBB'), ar('GJB2'), ar('CYP21A2')]);
-    expect(genes(r.aLearns).ar).toEqual(['CYP21A2', 'HBB']);
-    expect(genes(r.bLearns).ar).toEqual(['CYP21A2', 'HBB']);
+    expect(r.aGenes).toEqual(['CYP21A2', 'HBB']);
+    expect(r.bGenes).toEqual(['CYP21A2', 'HBB']);
+  });
+
+  it('the lab’s own intersection agrees with the phones, and grades severity', () => {
+    const a = [ar('HBB'), ar('GJB2', 'mild')];
+    const b = [ar('HBB'), ar('GJB2')];
+    const r = runLocally(issue(labKey, S, 'A', a), issue(labKey, S, 'B', b));
+    const truth = intersection(labKey, S, a, b);
+    expect(new Set(r.aLearns.matched)).toEqual(truth.A);
+    expect(new Set(r.bLearns.matched)).toEqual(truth.B);
+    expect(truth.genes).toEqual([{ gene: 'GJB2', inheritance: 'AR', strength: 1 }, { gene: 'HBB', inheritance: 'AR', strength: 2 }]);
   });
 
   it('severe × mild matches, mild × mild does not', () => {
-    expect(genes(pair([ar('GJB2', 'severe')], [ar('GJB2', 'mild')]).aLearns).ar).toEqual(['GJB2']);
-    expect(genes(pair([ar('GJB2', 'mild')], [ar('GJB2', 'severe')]).bLearns).ar).toEqual(['GJB2']);
-    expect(genes(pair([ar('GJB2', 'mild')], [ar('GJB2', 'mild')]).aLearns).ar).toEqual([]);
+    expect(pair([ar('GJB2', 'severe')], [ar('GJB2', 'mild')]).aGenes).toEqual(['GJB2']);
+    expect(pair([ar('GJB2', 'mild')], [ar('GJB2', 'severe')]).bGenes).toEqual(['GJB2']);
+    expect(pair([ar('GJB2', 'mild')], [ar('GJB2', 'mild')]).aGenes).toEqual([]);
   });
 
   it('X-linked genes match only when she carries and he is affected', () => {
-    expect(genes(pair([xl('G6PD')], [xl('G6PD')]).aLearns).xl).toEqual(['G6PD']);
-    expect(genes(pair([xl('G6PD')], []).aLearns).xl).toEqual([]);
+    expect(pair([xl('G6PD')], [xl('G6PD')]).aGenes).toEqual(['X:G6PD']);
+    expect(pair([xl('G6PD')], []).aGenes).toEqual([]);
   });
 
   it('tokens from another session or another key never match', () => {
-    expect(genes(pair([ar('HBB')], [ar('HBB')], { session: 'b2'.repeat(16) }).aLearns).ar).toEqual([]);
-    expect(genes(pair([ar('HBB')], [ar('HBB')], { keyB: otherLab }).aLearns).ar).toEqual([]);
+    expect(pair([ar('HBB')], [ar('HBB')], { session: 'b2'.repeat(32) }).aGenes).toEqual([]);
+    expect(pair([ar('HBB')], [ar('HBB')], { keyB: otherLab }).aGenes).toEqual([]);
   });
 
-  it('count mode tells the initiator how many, not which', () => {
-    const r = pair([ar('HBB', 'mild'), ar('PAH', 'mild')], [ar('HBB'), ar('PAH')], { mode: 'count' });
-    expect(r.aLearns).toEqual({ mode: 'count', count: 2 });
-    expect(r.bLearns).toEqual({ mode: 'count', count: 2 });
+  it('phones receive no gene names', () => {
+    const t = issue(labKey, S, 'A', [ar('HBB'), xl('DMD')]);
+    expect(JSON.stringify(t)).not.toMatch(/HBB|DMD|label/);
   });
 
   it('every message has a fixed size, so the number of findings stays hidden', () => {
@@ -53,20 +65,45 @@ describe('session-bound authorised PSI', () => {
     }
   });
 
-  it('the relay never sees a lab token or a gene name', () => {
-    const ta = issue(labKey, S, 'A', 'F', [ar('HBB'), ar('CFTR')]);
-    const tb = issue(labKey, S, 'B', 'M', [ar('HBB')]);
+  it('the relay never sees a lab token', () => {
+    const ta = issue(labKey, S, 'A', [ar('HBB'), ar('CFTR')]);
+    const tb = issue(labKey, S, 'B', [ar('HBB')]);
     const wire = JSON.stringify(runLocally(ta, tb).relaySaw);
-    for (const t of [...ta, ...tb]) {
-      expect(wire).not.toContain(t.token);
-      expect(wire).not.toContain(t.label);
-    }
+    for (const t of [...ta, ...tb]) expect(wire).not.toContain(t.token);
+  });
+
+  it('a phone that echoes the other list back (to fake "everything matches") fails the proof', () => {
+    const i = new Initiator(issue(labKey, S, 'A', []));
+    const r = new Responder(issue(labKey, S, 'B', [ar('CYP21A2'), ar('MEFV'), ar('SMN1')]));
+    const m2 = r.step2(i.step1());
+    const { msg } = i.step3(m2);
+    expect(() => r.step4({ ...msg, ba: m2.ab })).toThrow(/proof/);
+  });
+
+  it('a responder that locks with a different secret than it proves fails the proof', () => {
+    const i = new Initiator(issue(labKey, S, 'A', [ar('HBB')]));
+    const r = new Responder(issue(labKey, S, 'B', [ar('HBB')]));
+    const m1 = i.step1();
+    const m2 = r.step2(m1);
+    const k = randomScalar();
+    const forged = m1.a.map((h) => toHex(ristretto255.Point.fromHex(h).multiply(k)));
+    expect(() => i.step3({ ...m2, ab: forged })).toThrow(/proof/);
+  });
+
+  it('DLEQ proofs verify and reject the wrong statement', () => {
+    const k = randomScalar();
+    const ins = Array.from({ length: 4 }, () => toHex(ristretto255.Point.BASE.multiply(randomScalar())));
+    const outs = ins.map((h) => toHex(ristretto255.Point.fromHex(h).multiply(k)));
+    const Y = toHex(ristretto255.Point.BASE.multiply(k));
+    const pr = proveDleq(k, ins, outs, 'test');
+    expect(verifyDleq(Y, ins, outs, pr, 'test')).toBe(true);
+    expect(verifyDleq(Y, ins, [...outs.slice(1), outs[0]], pr, 'test')).toBe(false);
+    expect(verifyDleq(Y, ins, outs, pr, 'other-label')).toBe(false);
   });
 
   it('rejects wrong sizes, duplicates, the identity and non-canonical points', () => {
-    const tok: Token[] = issue(labKey, S, 'A', 'F', [ar('HBB')]);
-    const i = new Initiator(tok);
-    const good = i.step1();
+    const tok: Token[] = issue(labKey, S, 'A', [ar('HBB')]);
+    const good = new Initiator(tok).step1();
     expect(() => new Responder(tok).step2({ ...good, a: good.a.slice(1) })).toThrow();
     expect(() => new Responder(tok).step2({ ...good, a: [good.a[0], ...good.a.slice(0, -1)] })).toThrow();
     for (const bad of ['00'.repeat(32), 'ff'.repeat(32), 'zz'.repeat(32)]) {

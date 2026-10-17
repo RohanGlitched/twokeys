@@ -3,8 +3,9 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from '@/i18n/locales';
 import { Footer, Nav } from '@/components/site/Chrome';
 import { Theatre } from '@/components/how/Theatre';
+import { titled } from '@/i18n/meta';
 
-export const metadata = { title: 'How it works' };
+export const generateMetadata = titled('How it works', 'كيف يعمل');
 type L = { en: string; ar: string };
 
 const PROPS: { h: L; b: L }[] = [
@@ -12,7 +13,7 @@ const PROPS: { h: L; b: L }[] = [
   { h: { en: 'No reuse', ar: 'لا إعادة استخدام' }, b: { en: 'Tokens are bound to one pairing. A friend’s card, or an old pairing, matches nothing.', ar: 'الرموز مرتبطة باقتران واحد. فبطاقة صديق أو اقتران قديم لا يطابق شيئاً.' } },
   { h: { en: 'No counting', ar: 'لا عدّ' }, b: { en: 'Every list has 64 entries, so nobody learns how many genes the other carries.', ar: 'كل قائمة فيها 64 عنصراً، فلا يعرف أحد عدد جينات الآخر.' } },
   { h: { en: 'Mild changes stay quiet', ar: 'التغيّرات الخفيفة تبقى هادئة' }, b: { en: 'Tags mean a severe change matches a mild one, but two mild changes (like two GJB2 p.Val37Ile) never raise an alarm.', ar: 'الوسوم تجعل التغيّر الشديد يطابق الخفيف، لكن تغيّرين خفيفين (مثل GJB2 p.Val37Ile مرتين) لا يثيران إنذاراً أبداً.' } },
-  { h: { en: 'X-linked handled with care', ar: 'معالجة دقيقة لكروموسوم X' }, b: { en: 'A woman’s X-linked carrier result matters for sons whatever her partner carries, so it is hers alone; it only matches if he is affected.', ar: 'نتيجة المرأة الحاملة على الكروموسوم X تهم أبناءها أياً كان شريكها، فهي لها وحدها، ولا تتطابق إلا إذا كان مصاباً.' } },
+  { h: { en: 'X-linked handled with care', ar: 'معالجة دقيقة لكروموسوم X' }, b: { en: 'A woman’s X-linked carrier result matters for sons whatever her partner carries, so it is hers alone; it only matches if he is affected.', ar: 'نتيجة المرأة التي تحمل تغيّراً على الكروموسوم X تهم أبناءها أياً كان شريكها، فهي لها وحدها، ولا تتطابق إلا إذا كان مصاباً.' } },
   { h: { en: 'A relay that can’t read', ar: 'وسيط لا يستطيع القراءة' }, b: { en: 'Messages are encrypted with a key that lives only in the shared link. Three words on both screens catch a swapped link.', ar: 'الرسائل مشفّرة بمفتاح لا يوجد إلا في الرابط المشترك. وتكشف ثلاث كلمات على الشاشتين أي رابط مُبدّل.' } },
 ];
 

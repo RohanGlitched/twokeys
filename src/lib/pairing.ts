@@ -5,7 +5,8 @@
 //   - three words both people read aloud, so a swapped link would be noticed.
 import { hkdf } from '@noble/hashes/hkdf.js';
 import { sha256 } from '@noble/hashes/sha2.js';
-import { Initiator, Responder, type Mode, type Msg1, type Msg2, type Msg3, type Outcome, type Token } from './psi';
+import { Initiator, Responder, type Msg1, type Msg2, type Msg3, type Token } from './psi';
+import type { SharedGene } from './lab';
 
 const enc = new TextEncoder();
 const dec = new TextDecoder();
@@ -40,8 +41,10 @@ const WORDS = {
 };
 /** Three words both screens show; if they differ, someone swapped the link. */
 export function checkWords(l: Link, lang: 'en' | 'ar'): string[] {
-  const d = derive(l, 'words', 3);
-  return Array.from(d, (x) => WORDS[lang][x % 32]);
+  const d = derive(l, 'words', 8);
+  const picked: number[] = [];
+  for (const x of d) { const i = x % 32; if (!picked.includes(i)) picked.push(i); if (picked.length === 3) break; }
+  return picked.map((i) => WORDS[lang][i]);
 }
 
 async function aesKey(l: Link) {
@@ -60,15 +63,20 @@ async function open<T>(l: Link, slot: string, c: string): Promise<T> {
   return JSON.parse(dec.decode(pt)) as T;
 }
 
+/** What a finished pairing tells this phone: lab-confirmed shared genes, and whether its own comparison agreed. */
+export interface PairResult { genes: SharedGene[]; agrees: boolean; personal: number; ms: number }
+
 export type Step =
   | { kind: 'tokens'; count: number }
   | { kind: 'sent'; slot: string; bytes: number; sample: string[]; cipher: string }
   | { kind: 'received'; slot: string; bytes: number }
   | { kind: 'waiting'; for: string }
-  | { kind: 'done'; outcome: Outcome; ms: number };
+  | { kind: 'proof'; ok: true }
+  | { kind: 'done'; result: PairResult };
 
 export interface RunOptions {
-  person: string;
+  /** Signed identity token from /api/demo/session (UAE PASS in production). */
+  identity: string;
   link: Link;
   base?: string; // API origin, for tests
   onStep?: (s: Step) => void;
@@ -76,17 +84,21 @@ export interface RunOptions {
   timeoutMs?: number;
 }
 
-async function api<T>(base: string, path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${base}${path}`, { ...init, headers: { 'content-type': 'application/json' } });
+async function api<T>(base: string, path: string, init?: RequestInit, identity?: string): Promise<T> {
+  const res = await fetch(`${base}${path}`, { ...init, headers: { 'content-type': 'application/json', ...(identity ? { 'x-person': identity } : {}) } });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error((json as { error?: string }).error ?? `Request failed (${res.status}).`);
   return json as T;
 }
 
-async function tokens(o: RunOptions, role: 'A' | 'B'): Promise<Token[]> {
-  const r = await api<{ tokens: Token[] }>(o.base ?? '', '/api/lab/tokens', { method: 'POST', body: JSON.stringify({ person: o.person, session: sessionId(o.link), role }) });
+async function tokens(o: RunOptions, role: 'A' | 'B'): Promise<{ tokens: Token[]; personal: number }> {
+  const r = await api<{ tokens: Token[]; personal: number }>(o.base ?? '', '/api/lab/tokens', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role }) }, o.identity);
   o.onStep?.({ kind: 'tokens', count: r.tokens.length });
-  return r.tokens;
+  return r;
+}
+
+async function reveal(o: RunOptions, role: 'A' | 'B', matched: number[]) {
+  return api<{ genes: SharedGene[]; agrees: boolean }>(o.base ?? '', '/api/lab/reveal', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, matched }) }, o.identity);
 }
 
 async function send(o: RunOptions, slot: string, msg: unknown, sample: string[]) {
@@ -111,27 +123,41 @@ async function receive<T>(o: RunOptions, slot: string): Promise<T> {
 }
 
 /** The person who created the link. */
-export async function runInitiator(o: RunOptions & { mode?: Mode }): Promise<Outcome> {
+export async function runInitiator(o: RunOptions): Promise<PairResult> {
   const t0 = performance.now();
-  const me = new Initiator(await tokens(o, 'A'), o.mode ?? 'reveal');
+  const t = await tokens(o, 'A');
+  const me = new Initiator(t.tokens);
   const m1 = me.step1();
   await send(o, 'm1', m1, m1.a);
   const m2 = await receive<Msg2>(o, 'm2');
   const { msg: m3, outcome } = me.step3(m2);
+  o.onStep?.({ kind: 'proof', ok: true });
   await send(o, 'm3', m3, m3.ba);
-  o.onStep?.({ kind: 'done', outcome, ms: performance.now() - t0 });
-  return outcome;
+  const r = await reveal(o, 'A', outcome.matched);
+  const result: PairResult = { ...r, personal: t.personal, ms: performance.now() - t0 };
+  o.onStep?.({ kind: 'done', result });
+  return result;
 }
 
 /** The person who opened the link. */
-export async function runResponder(o: RunOptions): Promise<Outcome> {
+export async function runResponder(o: RunOptions): Promise<PairResult> {
   const t0 = performance.now();
-  const me = new Responder(await tokens(o, 'B'));
+  const t = await tokens(o, 'B');
+  const me = new Responder(t.tokens);
   const m1 = await receive<Msg1>(o, 'm1');
   const m2 = me.step2(m1);
   await send(o, 'm2', m2, m2.b);
   const m3 = await receive<Msg3>(o, 'm3');
   const outcome = me.step4(m3);
-  o.onStep?.({ kind: 'done', outcome, ms: performance.now() - t0 });
-  return outcome;
+  o.onStep?.({ kind: 'proof', ok: true });
+  const r = await reveal(o, 'B', outcome.matched);
+  const result: PairResult = { ...r, personal: t.personal, ms: performance.now() - t0 };
+  o.onStep?.({ kind: 'done', result });
+  return result;
+}
+
+/** Signs in a synthetic person for the demo (UAE PASS in production). */
+export async function demoSignIn(person: string, base = ''): Promise<string> {
+  const r = await api<{ token: string }>(base, '/api/demo/session', { method: 'POST', body: JSON.stringify({ person }) });
+  return r.token;
 }

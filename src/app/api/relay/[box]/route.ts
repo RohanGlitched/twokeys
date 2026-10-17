@@ -2,6 +2,8 @@
 // ciphertext whose key lives in the URL fragment the two phones share, so the relay can't read
 // even the blinded points. Everything expires after ten minutes.
 import { store } from '@/lib/store';
+import { readJson } from '@/lib/http';
+import { limited } from '@/lib/ratelimit';
 
 const TTL = 10 * 60;
 const SLOTS = ['m1', 'm2', 'm3', 'hello'] as const;
@@ -21,8 +23,9 @@ export async function GET(req: Request, ctx: RouteContext<'/api/relay/[box]'>) {
 
 export async function PUT(req: Request, ctx: RouteContext<'/api/relay/[box]'>) {
   const { box } = await ctx.params;
-  let body: { slot?: string; c?: string };
-  try { body = await req.json(); } catch { return Response.json({ error: 'Send JSON.' }, { status: 400 }); }
+  if (await limited(req, 'relay', 300)) return Response.json({ error: 'Too many messages.' }, { status: 429 });
+  const body = await readJson<{ slot?: string; c?: string }>(req);
+  if (body instanceof Response) return body;
   if (!okBox(box) || !okSlot(body.slot ?? null)) return Response.json({ error: 'Bad mailbox.' }, { status: 400 });
   if (typeof body.c !== 'string' || body.c.length > MAX || !/^[A-Za-z0-9+/=_-]+$/.test(body.c)) {
     return Response.json({ error: 'Bad message.' }, { status: 400 });

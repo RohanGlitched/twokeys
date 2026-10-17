@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from '@/i18n/locales';
 import { COUPLES, PEOPLE } from '@/lib/people';
 import { TwoPhones } from '@/components/demo/TwoPhones';
+import { titled } from '@/i18n/meta';
 
-export const metadata = { title: 'Try it with two phones' };
+export const generateMetadata = titled('Try it with two phones', 'جرّبه بهاتفين');
 
 export default async function DemoPage({ params }: PageProps<'/[lang]/demo'>) {
   const { lang } = await params;

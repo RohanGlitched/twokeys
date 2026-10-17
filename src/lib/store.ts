@@ -12,6 +12,8 @@ export interface Store {
   del(key: string): Promise<void>;
   /** Items whose key starts with `prefix` (small collections only: queues, notes). */
   list<T>(prefix: string): Promise<{ key: string; value: T }[]>;
+  /** Atomically add 1 and return the new value (rate limits, counters). */
+  incr(key: string, ttlSeconds: number): Promise<number>;
 }
 
 class MemoryStore implements Store {
@@ -30,6 +32,12 @@ class MemoryStore implements Store {
     return true;
   }
   async del(key: string) { this.m.delete(key); }
+  async incr(key: string, ttl: number) {
+    const e = this.live(key);
+    const n = (e ? Number(JSON.parse(e.v)) : 0) + 1;
+    this.m.set(key, { v: JSON.stringify(n), exp: e ? e.exp : Date.now() + ttl * 1000 });
+    return n;
+  }
   async list<T>(prefix: string) {
     const out: { key: string; value: T }[] = [];
     for (const k of this.m.keys()) {
@@ -85,6 +93,17 @@ class DynamoStore implements Store {
   async del(key: string) {
     const { DeleteCommand } = await import('@aws-sdk/lib-dynamodb');
     await (await this.client()).send(new DeleteCommand({ TableName: this.table, Key: this.split(key) }));
+  }
+  async incr(key: string, ttl: number) {
+    const { UpdateCommand } = await import('@aws-sdk/lib-dynamodb');
+    const r = await (await this.client()).send(new UpdateCommand({
+      TableName: this.table, Key: this.split(key),
+      UpdateExpression: 'ADD #n :one SET #e = if_not_exists(#e, :exp)',
+      ExpressionAttributeNames: { '#n': 'n', '#e': 'exp' },
+      ExpressionAttributeValues: { ':one': 1, ':exp': Math.floor(Date.now() / 1000) + ttl },
+      ReturnValues: 'UPDATED_NEW',
+    }));
+    return Number(r.Attributes?.n ?? 1);
   }
   async list<T>(prefix: string) {
     const { QueryCommand } = await import('@aws-sdk/lib-dynamodb');

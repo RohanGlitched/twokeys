@@ -16,7 +16,7 @@ const FACTS: { n: L; label: L; src: string; href: string }[] = [
 
 const GAPS: { title: L; body: L }[] = [
   { title: { en: 'A result reaches the family before it reaches understanding', ar: 'تصل النتيجة إلى العائلة قبل أن يصل الفهم' },
-    body: { en: 'Today one partner’s carrier status can travel to the other, and to both families, before anyone has explained that being a carrier is not a disease. The challenge asks for the opposite: no exposure of one family member’s information without permission.', ar: 'اليوم قد تنتقل حالة أحد الشريكين إلى الآخر وإلى العائلتين قبل أن يشرح أحد أن الحمل الجيني ليس مرضاً. والتحدي يطلب العكس: ألا تُكشف معلومات أي فرد دون إذنه.' } },
+    body: { en: 'Today one partner’s carrier status can travel to the other, and to both families, before anyone has explained that being a carrier is not a disease. The challenge asks for the opposite: no exposure of one family member’s information without permission.', ar: 'اليوم قد تنتقل حالة أحد الشريكين إلى الآخر وإلى العائلتين قبل أن يشرح أحد أن من يحمل تغيّراً جينياً ليس مريضاً. والتحدي يطلب العكس: ألا تُكشف معلومات أي فرد دون إذنه.' } },
   { title: { en: 'Too few people to explain it', ar: 'قلة من يشرحون' },
     body: { en: 'Abu Dhabi has trained hundreds of physicians to counsel because specialists are scarce. Every couple still needs the same careful explanation, in their language, at their reading level.', ar: 'درّبت أبوظبي مئات الأطباء على الاستشارة لندرة المتخصصين. ولا يزال كل زوجين يحتاجان الشرح الدقيق نفسه، بلغتهما وبمستوى قراءتهما.' } },
   { title: { en: 'Relatives rarely hear about it', ar: 'نادراً ما يعلم الأقارب' },
@@ -139,7 +139,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
           <div>
             <h2 className="text-[clamp(28px,3vw,40px)] font-semibold leading-tight tracking-tight">{t({ en: 'A result people can understand on their own', ar: 'نتيجة يفهمها الناس بأنفسهم' })}</h2>
             <p className="mt-4 text-[16px] leading-relaxed text-ink-2">
-              {t({ en: 'Chances are drawn the way a counsellor sketches them: four pregnancies, one affected, two carriers, one neither. Every explanation comes in simple, standard and detailed versions, in Arabic and English, and says plainly what is risk and what is diagnosis. The words avoid “incompatible”; the couple is “a couple with an increased chance”.', ar: 'تُرسم الاحتمالات كما يرسمها المستشار: أربع حالات حمل، واحدة مصابة، واثنتان حاملتان، وواحدة بلا شيء. ويأتي كل شرح بمستوى مبسّط وعادي ومفصّل، بالعربية والإنجليزية، ويوضح ما هو احتمال وما هو تشخيص. وتتجنب الكلمات «غير متوافقين»؛ فهما «زوجان باحتمال أعلى».' })}
+              {t({ en: 'Chances are drawn the way a counsellor sketches them: four pregnancies, one affected, two carriers, one neither. Every explanation comes in simple, standard and detailed versions, in Arabic and English, and says plainly what is risk and what is diagnosis. The words avoid “incompatible”; the couple is “a couple with an increased chance”.', ar: 'تُرسم الاحتمالات كما يرسمها المستشار: أربع حالات حمل: طفل مصاب، وطفلان يحملان التغيّر دون إصابة، وطفل لا يحمل التغيّر. ويأتي كل شرح بمستوى مبسّط وعادي ومفصّل، بالعربية والإنجليزية، ويوضح ما هو احتمال وما هو تشخيص. وتتجنب الكلمات «غير متوافقين»؛ فهما «زوجان باحتمال أعلى».' })}
             </p>
             <ul className="mt-6 space-y-2 text-[15px]">
               <li>{t({ en: 'Couple-level by default, as Dubai’s own programme reports it.', ar: 'على مستوى الزوجين افتراضياً، كما يبلّغ برنامج دبي نفسه.' })}</li>
@@ -150,7 +150,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
           <div className="rounded-[3px] border border-madder bg-paper p-6">
             <p className="text-[13px] text-ink-3">{t({ en: 'Congenital adrenal hyperplasia · CYP21A2', ar: 'تضخم الغدة الكظرية الخلقي · CYP21A2' })}</p>
             <div className="mt-4 flex gap-4">{(['affected', 'carrier', 'carrier', 'clear'] as const).map((k, i) => <Diamond key={i} fill={k} size={56} />)}</div>
-            <p className="mt-4 text-[17px] leading-relaxed">{t({ en: 'In each pregnancy: 1 in 4 that the child has the condition, 2 in 4 a healthy carrier, 1 in 4 neither.', ar: 'في كل حمل: 1 من 4 أن يصاب الطفل، و2 من 4 حامل سليم، و1 من 4 بلا شيء.' })}</p>
+            <p className="mt-4 text-[17px] leading-relaxed">{t({ en: 'In each pregnancy: 1 in 4 that the child has the condition, 2 in 4 a healthy carrier, 1 in 4 neither.', ar: 'في كل حمل: 1 من 4 أن يصاب الطفل، و2 من 4 أن يحمل التغيّر وهو سليم، و1 من 4 ألا يحمل أي نسخة متغيرة.' })}</p>
             <p className="mt-2 text-[14px] text-ink-2">{t({ en: 'Treatable with daily medicine; found by newborn screening.', ar: 'قابل للعلاج بدواء يومي، ويُكشف بفحص حديثي الولادة.' })}</p>
           </div>
         </section>

@@ -13,6 +13,8 @@ export interface Condition {
   /** ACMG-style severity band and what care looks like today. */
   severity: 'profound' | 'severe' | 'moderate' | 'mild' | 'variable';
   care: L;
+  /** What being a carrier can mean for the carrier's own health, where that matters. */
+  carrierNote?: L;
   source: { label: string; url: string };
 }
 
@@ -57,6 +59,7 @@ export const CONDITIONS: Record<string, Condition> = {
     },
     severity: 'severe',
     care: { en: 'Lifelong care; some cases curable by transplant or gene therapy.', ar: 'رعاية مدى الحياة، وبعض الحالات قابلة للشفاء بالزراعة أو العلاج الجيني.' },
+    carrierNote: { en: 'Carriers can have mild anaemia with small red cells. It is usually harmless, but tell your doctor you carry this before taking iron.', ar: 'قد يكون لدى من يحمل هذا التغيّر فقر دم خفيف مع صِغر حجم خلايا الدم الحمراء. وهو غير ضار عادة، لكن أخبر طبيبك بذلك قبل تناول الحديد.' },
     source: { label: 'MedlinePlus Genetics: beta thalassemia', url: 'https://medlineplus.gov/genetics/condition/beta-thalassemia/' },
   },
   MEFV: {
@@ -103,7 +106,7 @@ export const CONDITIONS: Record<string, Condition> = {
   },
   USH2A: {
     gene: 'USH2A',
-    name: { en: 'Usher syndrome type 2 / retinitis pigmentosa', ar: 'متلازمة أشر من النوع الثاني / التهاب الشبكية الصباغي' },
+    name: { en: 'Usher syndrome type 2 / retinitis pigmentosa', ar: 'متلازمة أشر من النوع الثاني / التنكس الشبكي الصباغي' },
     what: {
       simple: {
         en: 'Hearing loss from birth and night and side vision that fade over the years.',
@@ -111,11 +114,11 @@ export const CONDITIONS: Record<string, Condition> = {
       },
       standard: {
         en: 'Moderate to severe hearing loss from birth, helped by hearing aids, with retinitis pigmentosa that narrows vision from the teens. Some USH2A changes cause the eye condition alone.',
-        ar: 'فقدان سمع متوسط إلى شديد منذ الولادة تساعده السماعات، مع التهاب الشبكية الصباغي الذي يضيّق مجال الرؤية منذ المراهقة. وبعض تغيّرات USH2A تسبب حالة العين وحدها.',
+        ar: 'فقدان سمع متوسط إلى شديد منذ الولادة تساعده السماعات، مع التنكس الشبكي الصباغي الذي يضيّق مجال الرؤية منذ المراهقة. وبعض تغيّرات USH2A تسبب حالة العين وحدها.',
       },
       detailed: {
         en: 'Usher syndrome 2A or non-syndromic autosomal recessive RP, depending on alleles. Hearing aids or cochlear implants; RNA and gene therapies are in trials.',
-        ar: 'متلازمة أشر 2A أو التهاب الشبكية الصباغي المتنحي غير المتلازمي بحسب المتغيرات. السماعات أو زراعة القوقعة، والعلاجات الجينية والـ RNA قيد التجارب.',
+        ar: 'متلازمة أشر 2A أو التنكس الشبكي الصباغي (التهاب الشبكية الصباغي) المتنحي غير المتلازمي بحسب المتغيرات. السماعات أو زراعة القوقعة، والعلاجات الجينية والـ RNA قيد التجارب.',
       },
     },
     severity: 'moderate',
@@ -141,6 +144,7 @@ export const CONDITIONS: Record<string, Condition> = {
     },
     severity: 'variable',
     care: { en: 'Often silent; severe forms need specialist care.', ar: 'غالباً بلا أعراض، والأشكال الشديدة تحتاج رعاية متخصصة.' },
+    carrierNote: { en: 'Carriers can have mild anaemia with small red cells. It is usually harmless, but tell your doctor you carry this before taking iron.', ar: 'قد يكون لدى من يحمل هذا التغيّر فقر دم خفيف مع صِغر حجم خلايا الدم الحمراء. وهو غير ضار عادة، لكن أخبر طبيبك بذلك قبل تناول الحديد.' },
     source: { label: 'MedlinePlus Genetics: alpha thalassemia', url: 'https://medlineplus.gov/genetics/condition/alpha-thalassemia/' },
   },
   GJB2: {
@@ -183,6 +187,7 @@ export const CONDITIONS: Record<string, Condition> = {
     },
     severity: 'mild',
     care: { en: 'Avoid triggers; usually no treatment needed.', ar: 'تجنّب المحفزات، ولا يلزم علاج عادة.' },
+    carrierNote: { en: 'Some women who carry it have symptoms too; avoiding the same triggers is sensible.', ar: 'قد تظهر أعراض لدى بعض النساء اللواتي يحملن هذا التغيّر، فمن المفيد تجنّب المحفزات نفسها.' },
     source: { label: 'MedlinePlus Genetics: G6PD deficiency', url: 'https://medlineplus.gov/genetics/condition/glucose-6-phosphate-dehydrogenase-deficiency/' },
   },
   CYP1B1: {
@@ -199,7 +204,7 @@ export const CONDITIONS: Record<string, Condition> = {
       },
       detailed: {
         en: 'CYP1B1 is the main gene for autosomal recessive primary congenital glaucoma, which is more common in consanguineous populations. Goniotomy or trabeculotomy are first-line.',
-        ar: 'CYP1B1 هو الجين الرئيس للزرق الخلقي الأولي المتنحي، وهو أشيع في المجتمعات ذات زواج الأقارب. وجراحة فتح الزاوية أو التربيقيات هي الخيار الأول.',
+        ar: 'CYP1B1 هو الجين الرئيس للزرق الخلقي الأولي المتنحي، وهو أشيع في المجتمعات ذات زواج الأقارب. وجراحة بضع الزاوية أو بضع التربيق هي الخيار الأول.',
       },
     },
     severity: 'severe',
@@ -220,7 +225,7 @@ export const CONDITIONS: Record<string, Condition> = {
       },
       detailed: {
         en: 'Homozygous SMN1 loss (usually exon 7 deletion); SMN2 copy number modifies severity. Treatments: nusinersen, risdiplam, onasemnogene abeparvovec. Carrier testing must count SMN1 copies (2+0 “silent” carriers are missed).',
-        ar: 'فقدان SMN1 المتماثل (غالباً حذف الإكسون 7)، ويعدّل عدد نسخ SMN2 الشدة. العلاجات: نوسينيرسن، ريسديبلام، أوناسيمنوجين. يجب أن يعدّ فحص الحمل نسخ SMN1 (حاملو 2+0 "الصامتون" قد يُغفلون).',
+        ar: 'فقدان SMN1 المتماثل (غالباً حذف الإكسون 7)، ويعدّل عدد نسخ SMN2 الشدة. العلاجات: نوسينيرسن، ريسديبلام، أوناسيمنوجين. يجب أن يعدّ فحص الكشف عن الصفة الوراثية نسخ SMN1 (فمن يحملون نمط 2+0 "الصامت" قد يُغفلون).',
       },
     },
     severity: 'profound',

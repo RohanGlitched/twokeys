@@ -17,6 +17,14 @@ export function letterFor(gene: string, relation: Relation, lang: 'en' | 'ar'): 
 
 export { oneIn };
 
+/** A chance as "N in 100", so a relative's chance and the general population's share one denominator. */
+export function per100(p: number, lang: 'en' | 'ar'): string {
+  const n = Math.round(p * 100);
+  const fmt = new Intl.NumberFormat(lang === 'ar' ? 'ar-AE' : 'en-GB');
+  if (n < 1) return lang === 'ar' ? 'أقل من 1 من كل 100' : 'fewer than 1 in 100';
+  return lang === 'ar' ? `نحو ${fmt.format(n)} من كل 100` : `about ${fmt.format(n)} in 100`;
+}
+
 const enc = new TextEncoder();
 const dec = new TextDecoder();
 const b64u = (b: Uint8Array) => btoa(String.fromCharCode(...b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
