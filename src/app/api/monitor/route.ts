@@ -13,7 +13,9 @@ export async function GET() {
   const db = store();
   const totals: Record<string, number> = Object.fromEntries(KEYS.map((k) => [k, 0]));
   const days = Array.from({ length: 30 }, (_, i) => new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10));
-  await Promise.all(days.flatMap((d) => KEYS.map(async (k) => { totals[k] += (await db.get<number>(`mon:${d}:${k}`)) ?? 0; })));
+  // Read every day first, then add: `totals[k] += await …` would race and lose counts.
+  const reads = await Promise.all(days.flatMap((d) => KEYS.map(async (k) => [k, (await db.get<number>(`mon:${d}:${k}`)) ?? 0] as const)));
+  for (const [k, n] of reads) totals[k] += n;
   return Response.json({ windowDays: 30, model: MODEL, totals }, { headers: { 'cache-control': 'no-store' } });
 }
 

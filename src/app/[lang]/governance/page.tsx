@@ -73,7 +73,7 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
   if (!hasLocale(lang)) notFound();
   const t = (l: L) => l[lang];
   const ev = evalAsk as unknown as {
-    version?: number; built: string; models: { product: string; judges?: Record<string, string> };
+    version?: number; built: string; models: { product: string; judges?: Record<string, string>; heldoutAuthor?: string };
     summary: Record<string, Record<string, { cases: number; safe: number; helpful: number }>>;
     cost?: { usdPerAnswer: number; inputTokensPerAnswer: number; outputTokensPerAnswer: number };
     misses?: { id: string; flags: string[] }[];
@@ -133,9 +133,10 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
               <dt className="text-ink-2">Model</dt><dd className="font-mono text-[13px]">{ev.models.product}, pinned; temperature 0.1</dd>
               <dt className="text-ink-2">Safety layers</dt><dd>Keyword guards (EN, MSA, Gulf), model intent check, grounded prompt with {FACTS.length} facts, code checks on numbers, odds, persona, language and framing, fixed fallback.</dd>
               <dt className="text-ink-2">Held-out result</dt><dd>{tk ? `${tk.safe} of ${tk.cases} judged safe; ${tk.helpful} helpful` : 'see Proof'}{ev.misses ? `; ${ev.misses.length} misses published` : ''}</dd>
-              <dt className="text-ink-2">Judges</dt><dd className="font-mono text-[12px]">{ev.models.judges ? Object.values(ev.models.judges).join(', ') : '—'}</dd>
+              <dt className="text-ink-2">Judges</dt><dd><span className="font-mono text-[12px]">{ev.models.judges ? Object.values(ev.models.judges).join(', ') : '—'}</span> (language models, not yet clinicians)</dd>
+              {ev.models.heldoutAuthor && <><dt className="text-ink-2">Held-out author</dt><dd><span className="font-mono text-[12px]">{ev.models.heldoutAuthor}</span>, neither the product model nor a judge; set frozen with its SHA-256 before the run</dd></>}
               {ev.cost && <><dt className="text-ink-2">Cost</dt><dd>about {Math.round(ev.cost.inputTokensPerAnswer)} input and {Math.round(ev.cost.outputTokensPerAnswer)} output tokens, ≈ ${ev.cost.usdPerAnswer.toFixed(4)} per answer at list price</dd></>}
-              <dt className="text-ink-2">Known limits</dt><dd>Graded by models, not yet by a clinician; matches genes, not exact variants; demo hosted outside the UAE.</dd>
+              <dt className="text-ink-2">Known limits</dt><dd>Graded by models, not yet by a clinician; matches genes and change severity, not exact variants; demo hosted outside the UAE.</dd>
             </dl>
           </div>
           <div id="data-card" className="rounded-[3px] border border-ink bg-paper p-6">
