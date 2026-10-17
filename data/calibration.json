@@ -1,0 +1,215 @@
+{
+ "built": "2026-10-17T11:14:07.860Z",
+ "couplesPerType": 20000,
+ "genesModelled": 89,
+ "genesFromLiterature": 89,
+ "genesFromGnomad": 0,
+ "genesWithoutData": [
+  "ABCA3",
+  "ACAT1",
+  "AGA",
+  "ASPA",
+  "BBS1",
+  "BBS2",
+  "BCKDHB",
+  "CC2D2A",
+  "CCDC88C",
+  "CLCN1",
+  "CLRN1",
+  "CPT2",
+  "CYP11A1",
+  "CYP27B1",
+  "DHCR7",
+  "DHDDS",
+  "DLD",
+  "FKRP",
+  "FKTN",
+  "FMO3",
+  "FXN",
+  "GALT",
+  "GRIP1",
+  "HPS1",
+  "LRP2",
+  "MCCC2",
+  "MCOLN1",
+  "MCPH1",
+  "MLC1",
+  "NAGA",
+  "NEB",
+  "OCA2",
+  "PRF1",
+  "SCO2",
+  "SLC26A2",
+  "TF",
+  "TMEM216",
+  "TNXB",
+  "XPC",
+  "MERTK",
+  "MAN2B1",
+  "ETFDH",
+  "SLC26A3",
+  "MYO7A",
+  "RPE65"
+ ],
+ "excluded": [
+  "HBA1",
+  "HBA2"
+ ],
+ "mix": {
+  "unrelated": 0.72,
+  "first-cousins": 0.14526732673267329,
+  "double-first-cousins": 0.01940594059405941,
+  "second-cousins": 0.11532673267326735
+ },
+ "byType": {
+  "unrelated": {
+   "couples": 20000,
+   "atRisk": 635,
+   "rate": 0.03175,
+   "ci": [
+    0.029408491745997963,
+    0.03427135662872621
+   ]
+  },
+  "first-cousins": {
+   "couples": 20000,
+   "atRisk": 2341,
+   "rate": 0.11705,
+   "ci": [
+    0.11266788029791912,
+    0.12157920552183667
+   ]
+  },
+  "double-first-cousins": {
+   "couples": 20000,
+   "atRisk": 4015,
+   "rate": 0.20075,
+   "ci": [
+    0.19525620670000227,
+    0.2063587311027446
+   ]
+  },
+  "second-cousins": {
+   "couples": 20000,
+   "atRisk": 1107,
+   "rate": 0.05535,
+   "ci": [
+    0.052265450257890846,
+    0.05860533368193
+   ]
+  }
+ },
+ "mixedPopulationAtRisk": 0.05014261782178218,
+ "targets": [
+  {
+   "label": "Dubai, 1,000 couples, 782 genes: at-risk couples excluding alpha-thalassaemia (58 of 1,000)",
+   "value": 0.058,
+   "ci": [
+    0.045,
+    0.074
+   ],
+   "source": "Alblooshi et al., Nature Medicine 2026"
+  },
+  {
+   "label": "Dubai, all at-risk couples including alpha-thalassaemia (79 of 1,000)",
+   "value": 0.079,
+   "ci": [
+    0.064,
+    0.097
+   ],
+   "source": "Alblooshi et al., Nature Medicine 2026"
+  },
+  {
+   "label": "Abu Dhabi, 1,118 couples, 570 genes, WGS: positive couples",
+   "value": 0.11,
+   "source": "M42 and DoH poster"
+  },
+  {
+   "label": "Abu Dhabi, expected under random mating (their simulation)",
+   "value": 0.085,
+   "source": "M42 and DoH poster"
+  }
+ ],
+ "geneShare": [
+  {
+   "gene": "CYP21A2",
+   "shareOfMatches": 0.2651623493727962,
+   "observedM42": 0.14
+  },
+  {
+   "gene": "HBB",
+   "shareOfMatches": 0.21832281974385692,
+   "observedM42": null
+  },
+  {
+   "gene": "MEFV",
+   "shareOfMatches": 0.09536216604324996,
+   "observedM42": 0.12
+  },
+  {
+   "gene": "ABCA4",
+   "shareOfMatches": 0.05879661189633423,
+   "observedM42": 0.09
+  },
+  {
+   "gene": "PAH",
+   "shareOfMatches": 0.03629758391897365,
+   "observedM42": null
+  },
+  {
+   "gene": "SGCG",
+   "shareOfMatches": 0.0243562466221879,
+   "observedM42": null
+  },
+  {
+   "gene": "GJB2",
+   "shareOfMatches": 0.01994536189471003,
+   "observedM42": null
+  },
+  {
+   "gene": "CYP1B1",
+   "shareOfMatches": 0.019197705086458624,
+   "observedM42": 0.04
+  },
+  {
+   "gene": "DONSON",
+   "shareOfMatches": 0.019086802405128344,
+   "observedM42": null
+  },
+  {
+   "gene": "F7",
+   "shareOfMatches": 0.015191756544844167,
+   "observedM42": null
+  },
+  {
+   "gene": "SLC26A4",
+   "shareOfMatches": 0.014355133009460824,
+   "observedM42": null
+  },
+  {
+   "gene": "ITGB3",
+   "shareOfMatches": 0.012149232054344919,
+   "observedM42": null
+  },
+  {
+   "gene": "PKLR",
+   "shareOfMatches": 0.01107482889000327,
+   "observedM42": null
+  },
+  {
+   "gene": "TPO",
+   "shareOfMatches": 0.009782289094016816,
+   "observedM42": null
+  },
+  {
+   "gene": "ABCA12",
+   "shareOfMatches": 0.009573859313184514,
+   "observedM42": null
+  }
+ ],
+ "notes": [
+  "Carrier frequencies: Emirati exomes (Jain et al. 2025) where published, otherwise gnomAD v4.1 Middle Eastern.",
+  "CYP21A2 frequency includes non-classic and duplicated-haplotype alleles, so it is an overestimate for classic CAH.",
+  "Genes are treated as independent and every pathogenic allele as reportable; real reporting rules (mild alleles, variant classification) lower the rate."
+ ]
+}

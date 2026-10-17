@@ -12,6 +12,7 @@ import { F, type Relationship } from '@/lib/risk';
 import { Diamond, Mark, Person } from '@/components/glyphs';
 import { Sadu } from '@/components/Sadu';
 import { Ask, Counsellor, Family, Options } from './Views';
+import { TeachBack } from './TeachBack';
 import { sessionId } from '@/lib/pairing';
 
 type L = { en: string; ar: string };
@@ -305,6 +306,8 @@ function Result({ lang, genes, relationship, level, setLevel, me, steps, onGo }:
         <button className="rounded-[2px] border border-ink px-3 py-3" onClick={() => onGo('ask')}>{t({ en: 'Ask a question', ar: 'اطرح سؤالاً' })}</button>
         <button className="rounded-[2px] border border-ink px-3 py-3" onClick={() => onGo('family')}>{t({ en: 'Tell relatives', ar: 'أخبر أقاربك' })}</button>
       </div>
+
+      <TeachBack lang={lang} level={level} kind={none ? 'none' : 'shared'} />
 
       {sent?.kind === 'sent' && (
         <details className="mt-6 text-[13px] text-ink-2">
