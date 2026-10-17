@@ -1,40 +1,52 @@
 'use client';
 // Teach-back: three questions after the result, the way counsellors check understanding. A wrong
 // answer is explained again and can be tried again; only the first-try score, the language and the
-// reading level leave the phone.
+// reading level leave the phone. Options are similar in length so the right one doesn't stand out.
 import { useState } from 'react';
 import type { Locale } from '@/i18n/locales';
 import type { Level } from '@/lib/conditions';
 import type { L, T } from './PhoneApp';
+
 interface Q { q: L; options: L[]; right: number; why: L }
 
 const SHARED: Q[] = [
-  { q: { en: 'If you have a child, will the child definitely have the condition?', ar: 'إذا رُزقتما بطفل، هل سيصاب بالحالة حتماً؟' },
-    options: [{ en: 'Yes', ar: 'نعم' }, { en: 'No: 1 in 4 in each pregnancy', ar: 'لا: 1 من 4 في كل حمل' }], right: 1,
+  { q: { en: 'If you have a child, what is the chance the child has the condition?', ar: 'إذا رُزقتما بطفل، ما احتمال أن يصاب بالحالة؟' },
+    options: [{ en: 'Certain', ar: 'مؤكد' }, { en: '1 in 4 each time', ar: '1 من 4 في كل مرة' }, { en: '1 in 2 each time', ar: '1 من 2 في كل مرة' }], right: 1,
     why: { en: 'Each pregnancy has a 1 in 4 chance; 3 in 4 children won’t have it.', ar: 'لكل حمل احتمال 1 من 4، و3 من كل 4 أطفال لن يصابوا.' } },
-  { q: { en: 'Does being a carrier make you ill?', ar: 'هل تكون مريضاً لأنك تحمل تغيّراً جينياً؟' },
-    options: [{ en: 'Yes', ar: 'نعم' }, { en: 'No', ar: 'لا' }], right: 1,
-    why: { en: 'Carriers are healthy. It matters only for children with a partner who carries the same gene.', ar: 'من يحملون التغيّر أصحاء، ولا يهم ذلك إلا للأطفال مع شريك يحمل الجين نفسه.' } },
-  { q: { en: 'If a first child is affected, is the next pregnancy safer?', ar: 'إذا أصيب الطفل الأول، هل يكون الحمل التالي أكثر أماناً؟' },
-    options: [{ en: 'Yes', ar: 'نعم' }, { en: 'No: it is 1 in 4 again', ar: 'لا: إنه 1 من 4 من جديد' }], right: 1,
-    why: { en: 'Chance has no memory: every pregnancy is a new 1 in 4.', ar: 'الاحتمال لا يتذكر: كل حمل هو 1 من 4 من جديد.' } },
+  { q: { en: 'Does carrying the change make you ill?', ar: 'هل يجعلك حمل هذا التغيّر مريضاً؟', arF: 'هل يجعلك حمل هذا التغيّر مريضة؟' },
+    options: [{ en: 'Yes, mildly', ar: 'نعم، قليلاً' }, { en: 'No, carriers are healthy', ar: 'لا، الحامل بصحة جيدة' }, { en: 'Only in old age', ar: 'فقط في الكِبَر' }], right: 1,
+    why: { en: 'Carriers are healthy. It matters for children with a partner who carries the same gene.', ar: 'حاملو التغيّر بصحة جيدة، ويهم ذلك للأطفال مع شريك يحمل الجين نفسه.' } },
+  { q: { en: 'If a first child has the condition, does the chance change next time?', ar: 'إذا أصيب الطفل الأول، هل يتغيّر الاحتمال في الحمل التالي؟' },
+    options: [{ en: 'It goes down', ar: 'ينخفض' }, { en: 'It stays 1 in 4', ar: 'يبقى 1 من 4' }, { en: 'It goes up', ar: 'يرتفع' }], right: 1,
+    why: { en: 'What happened before doesn’t change it: every pregnancy is 1 in 4.', ar: 'لا يتأثر الاحتمال بما سبق: يبقى 1 من 4 في كل حمل.' } },
+];
+const XL: Q[] = [
+  { q: { en: 'For each son, what is the chance of having the condition?', ar: 'لكل ابن، ما احتمال أن يصاب بالحالة؟' },
+    options: [{ en: '1 in 4', ar: '1 من 4' }, { en: '1 in 2', ar: '1 من 2' }, { en: 'None', ar: 'لا احتمال' }], right: 1,
+    why: { en: 'Each son gets his X from his mother: a 1 in 2 chance it is the changed one.', ar: 'يرث كل ابن الكروموسوم X من أمه: احتمال 1 من 2 أن يكون هو المتغير.' } },
+  { q: { en: 'Could a daughter be free of the change?', ar: 'هل يمكن أن تخلو ابنة من التغيّر؟' },
+    options: [{ en: 'Yes, often', ar: 'نعم، غالباً' }, { en: 'No, never', ar: 'لا، أبداً' }, { en: 'Only the first', ar: 'الأولى فقط' }], right: 1,
+    why: { en: 'Every daughter gets her father’s X, which carries the change, so each daughter is either affected or a carrier.', ar: 'ترث كل ابنة الكروموسوم X من أبيها وهو يحمل التغيّر، فتكون كل ابنة مصابة أو حاملة.' } },
+  { q: { en: 'Does the chance change from one pregnancy to the next?', ar: 'هل يتغيّر الاحتمال من حمل إلى آخر؟' },
+    options: [{ en: 'It goes down', ar: 'ينخفض' }, { en: 'It stays the same', ar: 'يبقى كما هو' }, { en: 'It goes up', ar: 'يرتفع' }], right: 1,
+    why: { en: 'Each pregnancy starts again with the same chances.', ar: 'يبدأ كل حمل من جديد بالاحتمالات نفسها.' } },
 ];
 const NONE: Q[] = [
   { q: { en: 'Does this result rule out every inherited condition?', ar: 'هل تستبعد هذه النتيجة كل الحالات الوراثية؟' },
-    options: [{ en: 'Yes', ar: 'نعم' }, { en: 'No: it lowers the chance for the conditions tested', ar: 'لا: تخفض احتمال الحالات المفحوصة' }], right: 1,
+    options: [{ en: 'Yes, all of them', ar: 'نعم، كلها' }, { en: 'No, only lowers some', ar: 'لا، تخفض بعضها' }, { en: 'Only after marriage', ar: 'بعد الزواج فقط' }], right: 1,
     why: { en: 'No test covers everything; this one lowers the chance for the conditions it tested.', ar: 'لا يغطي أي فحص كل شيء، وهذا يخفض احتمال الحالات التي فحصها.' } },
-  { q: { en: 'If you carry a gene, are you ill?', ar: 'إذا كنت تحمل جيناً، هل أنت مريض؟' },
-    options: [{ en: 'Yes', ar: 'نعم' }, { en: 'No', ar: 'لا' }], right: 1,
-    why: { en: 'Carriers are healthy.', ar: 'من يحملون التغيّرات الجينية أصحاء.' } },
-  { q: { en: 'Could your brothers, sisters or cousins carry genes you carry?', ar: 'هل قد يحمل إخوتك أو أبناء عمومتك جينات تحملها؟' },
-    options: [{ en: 'Yes', ar: 'نعم' }, { en: 'No', ar: 'لا' }], right: 0,
-    why: { en: 'Relatives can share the same changes; a sibling has about a 1 in 2 chance.', ar: 'قد يتشارك الأقارب التغيّرات نفسها؛ وللأخ احتمال يقارب 1 من 2.' } },
+  { q: { en: 'If you carry a change in a gene, are you ill?', ar: 'إذا كنت تحمل تغيّراً في جين، هل أنت مريض؟', arF: 'إذا كنتِ تحملين تغيّراً في جين، هل أنتِ مريضة؟' },
+    options: [{ en: 'Yes, mildly', ar: 'نعم، قليلاً' }, { en: 'No, carriers are healthy', ar: 'لا، الحامل بصحة جيدة' }, { en: 'Only in old age', ar: 'فقط في الكِبَر' }], right: 1,
+    why: { en: 'Carriers are healthy.', ar: 'حاملو التغيّر بصحة جيدة.' } },
+  { q: { en: 'Could your brothers, sisters or cousins carry the same changes you carry?', ar: 'هل يمكن أن يحمل إخوتك أو أبناء عمومتك التغيّرات نفسها التي تحملها؟', arF: 'هل يمكن أن يحمل إخوتك أو أبناء عمومتك التغيّرات نفسها التي تحملينها؟' },
+    options: [{ en: 'Yes, they could', ar: 'نعم، يمكن' }, { en: 'No, never', ar: 'لا، أبداً' }, { en: 'Only cousins', ar: 'أبناء العم فقط' }], right: 0,
+    why: { en: 'Relatives can share the same changes; a brother or sister has about a 1 in 2 chance.', ar: 'قد يتشارك الأقارب التغيّرات نفسها، وللأخ أو الأخت احتمال يقارب 1 من 2.' } },
 ];
 
 export function TeachBack({ lang, t, level, kind, identity, onCounsellor }: {
-  lang: Locale; t: T; level: Level; kind: 'shared' | 'none'; identity: string | null; onCounsellor: () => void;
+  lang: Locale; t: T; level: Level; kind: 'shared' | 'xl' | 'none'; identity: string | null; onCounsellor: () => void;
 }) {
-  const qs = kind === 'shared' ? SHARED : NONE;
+  const qs = kind === 'shared' ? SHARED : kind === 'xl' ? XL : NONE;
   const [first, setFirst] = useState<(number | null)[]>([null, null, null]);
   const [now, setNow] = useState<(number | null)[]>([null, null, null]);
   const [sent, setSent] = useState(false);
@@ -63,12 +75,13 @@ export function TeachBack({ lang, t, level, kind, identity, onCounsellor }: {
         {qs.map((q, i) => {
           const a = now[i];
           const right = a === q.right;
+          const qid = `tb-${kind}-${i}`;
           return (
             <li key={i}>
-              <p className="text-[14px] font-medium">{t(q.q)}</p>
-              <div className="mt-1.5 flex flex-wrap gap-2">
+              <p id={qid} className="text-[14px] font-medium">{t(q.q)}</p>
+              <div className="mt-1.5 flex flex-wrap gap-2" role="radiogroup" aria-labelledby={qid}>
                 {q.options.map((o, j) => (
-                  <button key={j} aria-pressed={a === j} disabled={right && a !== j} onClick={() => choose(i, j)}
+                  <button key={j} role="radio" aria-checked={a === j} disabled={right && a !== j} onClick={() => choose(i, j)}
                     className={`rounded-[2px] border px-3 py-2 text-[13px] ${a === j ? (right ? 'border-sage bg-sage text-wool' : 'border-madder text-madder') : 'border-ink-3'} disabled:opacity-50`}>{t(o)}</button>
                 ))}
               </div>
@@ -85,11 +98,11 @@ export function TeachBack({ lang, t, level, kind, identity, onCounsellor }: {
         <p className="mt-4 text-[14px]">
           {firstRight === 3
             ? t({ en: 'All three right first time.', ar: 'الإجابات الثلاث صحيحة من المحاولة الأولى.' })
-            : t({ en: `All three right now (${firstRight} of 3 first time). A counsellor can go over anything that still feels unclear.`, ar: `الإجابات الثلاث صحيحة الآن (${firstRight} من 3 من المحاولة الأولى). ويمكن للمستشار مراجعة ما لا يزال غير واضح.` })}
+            : t({ en: `All three right now (${firstRight} of 3 first time). A genetic counsellor can go over anything that still feels unclear.`, ar: `الإجابات الثلاث صحيحة الآن (${firstRight} من 3 من المحاولة الأولى). ويمكن للمرشد الوراثي مراجعة ما لا يزال غير واضح.` })}
         </p>
       )}
       {answered && allRight && firstRight < 3 && (
-        <button onClick={onCounsellor} className="mt-2 text-[14px] font-medium text-indigo underline underline-offset-4">{t({ en: 'Go over it with a counsellor', ar: 'راجعه مع مستشار', arF: 'راجعيه مع مستشار' })}</button>
+        <button onClick={onCounsellor} className="mt-2 text-[14px] font-medium text-indigo underline underline-offset-4">{t({ en: 'Go over it with a genetic counsellor', ar: 'راجعه مع مرشد وراثي', arF: 'راجعيه مع مرشد وراثي' })}</button>
       )}
     </section>
   );

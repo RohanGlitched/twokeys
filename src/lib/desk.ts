@@ -42,6 +42,8 @@ export interface DeskCase {
   notes: { at: number; by: string; text: string }[];
   sealed: boolean;
   audit: AuditEntry[];
+  /** HMAC over the entry count and last hash, so cutting entries off the end is detected too. */
+  auditSeal?: string;
 }
 
 export interface AuditEntry { at: number; actor: string; action: string; hash: string }
@@ -57,6 +59,11 @@ function chain(prev: string, at: number, actor: string, action: string) {
 export function audit(c: DeskCase, actor: string, action: string, at = Date.now()) {
   const prev = c.audit.at(-1)?.hash ?? '0'.repeat(64);
   c.audit.push({ at, actor, action, hash: chain(prev, at, actor, action) });
+  c.auditSeal = seal(c);
+}
+function seal(c: DeskCase) {
+  const h = hmac(sha256, auditKey(), new TextEncoder().encode(`seal|${c.id}|${c.audit.length}|${c.audit.at(-1)?.hash ?? ''}`));
+  return Array.from(h, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /** True if no entry was edited, reordered or removed by anyone without the server key. */
@@ -66,7 +73,7 @@ export function verifyAudit(c: DeskCase): boolean {
     if (chain(prev, e.at, e.actor, e.action) !== e.hash) return false;
     prev = e.hash;
   }
-  return true;
+  return c.auditSeal === undefined ? c.audit.length === 0 : c.auditSeal === seal(c);
 }
 
 /** `n` working days after `t`. The UAE federal working week has run Monday to Friday since 2022. */

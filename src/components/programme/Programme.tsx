@@ -1,6 +1,6 @@
 'use client';
 // The programme view for the health authority: counselling, understanding and family-cascade numbers,
-// each a differentially private count from the hourly release. Live demo traffic and a seeded
+// each a differentially private count from the weekly release. Live demo traffic and a seeded
 // synthetic month are kept apart and always labelled.
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Locale } from '@/i18n/locales';
@@ -12,8 +12,8 @@ type Understanding = Record<'en' | 'ar' | 'simple' | 'standard' | 'detailed', { 
 interface Family { notes: Cell; readShared: Cell; booked: Cell }
 type Source = 'live' | 'seededSynthetic';
 interface M {
-  hour: number;
-  privacy: { epsilonPerCount: number; epsilonThisRelease: number; minimumCell: number; refreshed: string };
+  week: number;
+  privacy: { epsilonPerCount: number; epsilonThisRelease: number; epsilonCumulative: number; releases: number; minimumCell: number; refreshed: string };
   counselling: Record<Source, Counselling>;
   understanding: Record<Source, Understanding>;
   family: Record<Source, Family>;
@@ -60,7 +60,7 @@ export function Programme({ lang }: { lang: Locale }) {
         {([['live', { en: 'Live demo traffic', ar: 'استخدام العرض الفعلي' }], ['seededSynthetic', { en: 'Synthetic month (illustration)', ar: 'شهر افتراضي (للتوضيح)' }]] as const).map(([k, l]) => (
           <button key={k} aria-pressed={src === k} onClick={() => setSrc(k)} className={`rounded-[2px] border px-3.5 py-2 text-[14px] ${src === k ? 'border-ink bg-ink text-wool' : 'border-ink-3 text-ink-2 hover:border-ink'}`}>{t(l)}</button>
         ))}
-        <span className="ms-auto text-[12px] text-ink-2">{t({ en: `Release for hour ${m.hour}, refreshed hourly`, ar: `إصدار الساعة ${m.hour}، يُحدَّث كل ساعة` })}</span>
+        <span className="ms-auto text-[12px] text-ink-2">{t({ en: `This week’s release (${m.privacy.releases} so far), refreshed weekly`, ar: `إصدار هذا الأسبوع (${m.privacy.releases} حتى الآن)، يُحدَّث أسبوعياً` })}</span>
       </div>
       <p className={`mt-3 border-s-4 px-3 py-2 text-[13px] leading-relaxed ${synthetic ? 'border-camel bg-paper' : 'border-sage bg-paper'}`}>
         {synthetic
@@ -102,7 +102,8 @@ export function Programme({ lang }: { lang: Locale }) {
           <ul className="mt-3 list-disc space-y-2 ps-5 text-[14px] leading-relaxed text-ink-2">
             <li>{t({ en: `Every count carries random noise (differential privacy, ε = ${m.privacy.epsilonPerCount} per count; this release spends ε = ${m.privacy.epsilonThisRelease} in total on live records), so no single person changes what you see.`, ar: `يحمل كل عدد ضجيجاً عشوائياً (الخصوصية التفاضلية، ε = ${m.privacy.epsilonPerCount} لكل عدد، ويستهلك هذا الإصدار ε = ${m.privacy.epsilonThisRelease} إجمالاً على السجلات الفعلية)، فلا يغيّر شخص واحد ما تراه.` })}</li>
             <li>{t({ en: `Groups smaller than ${m.privacy.minimumCell} are hidden, and rates and medians appear only above that size.`, ar: `تُحجب المجموعات الأصغر من ${m.privacy.minimumCell}، ولا تظهر النسب والوسيطات إلا فوق هذا الحجم.` })}</li>
-            <li>{t({ en: 'One release per hour, cached: asking again returns the same numbers, so the noise can’t be averaged away.', ar: 'إصدار واحد كل ساعة، محفوظ: إعادة الطلب تعيد الأرقام نفسها، فلا يمكن إلغاء الضجيج بالمتوسط.' })}</li>
+            <li>{t({ en: `One release a week, cached: asking again returns the same numbers. The noise comes from a cryptographic source, so it can’t be recomputed or averaged away. Total spent so far across all releases: ε = ${m.privacy.epsilonCumulative}.`, ar: `إصدار واحد كل أسبوع، محفوظ: إعادة الطلب تعيد الأرقام نفسها. ويأتي الضجيج من مصدر تشفيري، فلا يمكن إعادة حسابه أو إلغاؤه بالمتوسط. المجموع المستهلك عبر كل الإصدارات حتى الآن: ε = ${m.privacy.epsilonCumulative}.` })}</li>
+            <li>{t({ en: 'Medians are shown only for the synthetic month: they can’t be noised safely at this scale. Counsellors see their exact queue on the desk; only these published numbers are noised.', ar: 'تظهر الوسيطات للشهر الافتراضي فقط، إذ لا يمكن إضافة الضجيج إليها بأمان على هذا النطاق. ويرى المرشدون قائمتهم الدقيقة في المكتب، ولا يُضاف الضجيج إلا لهذه الأرقام المنشورة.' })}</li>
             <li>{t({ en: 'The service never learns which couples share a gene unless they book. The comparison happens on their phones; the lab names matches only to the two people paired.', ar: 'لا تعرف الخدمة أي زوجين يتشاركان جيناً إلا إذا حجزا. فالمقارنة تجري على هاتفيهما، ولا يسمّي المختبر التطابق إلا للشخصين المقترنين.' })}</li>
           </ul>
         </div>

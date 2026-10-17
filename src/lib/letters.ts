@@ -6,13 +6,22 @@ import { geneQ } from './genefreq';
 export type Relation = 'sibling' | 'half-sibling' | 'aunt-uncle' | 'niece-nephew' | 'first-cousin' | 'parent' | 'child';
 export const RELATIONS: Relation[] = ['sibling', 'parent', 'child', 'half-sibling', 'aunt-uncle', 'niece-nephew', 'first-cousin'];
 
-export interface LetterBody { v: 1; gene: string; relation: Relation; chance: number; population: number | null; lang: 'en' | 'ar' }
+export interface LetterBody { v: 1 | 2; gene: string; relation: Relation; chance: number | null; population: number | null; lang: 'en' | 'ar'; inheritance?: 'AR' | 'XL' }
 
-export function letterFor(gene: string, relation: Relation, lang: 'en' | 'ar'): LetterBody {
+/**
+ * Classic CAH only: the published Emirati CYP21A2 carrier rate includes common non-classic alleles,
+ * so the background rate uses UAE newborn screening instead (classic CAH 1 in 9,030 → carriers ≈ 2q).
+ */
+const BACKGROUND_OVERRIDE: Record<string, number> = { CYP21A2: 2 * Math.sqrt(1 / 9030) };
+
+export function letterFor(gene: string, relation: Relation, lang: 'en' | 'ar', inheritance: 'AR' | 'XL' = 'AR'): LetterBody {
+  // X-linked chances depend on which parent carries it and on the relative's sex: the letter explains
+  // that and leaves the number to a genetic counsellor.
+  if (inheritance === 'XL') return { v: 2, gene, relation, lang, inheritance, chance: null, population: null };
   const q = geneQ(gene);
   const r = RELATIVE_SHARE[relation];
-  const pop = q === null ? null : carrierFreq(q);
-  return { v: 1, gene, relation, lang, chance: pop === null ? r : r + (1 - r) * pop, population: pop };
+  const pop = BACKGROUND_OVERRIDE[gene] ?? (q === null ? null : carrierFreq(q));
+  return { v: 2, gene, relation, lang, inheritance, chance: pop === null ? r : r + (1 - r) * pop, population: pop };
 }
 
 export { oneIn };

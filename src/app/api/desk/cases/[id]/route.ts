@@ -1,14 +1,15 @@
 // One case. Counsellors (named accounts) view and act on it, and every view is logged; the signed-in
 // person who booked it can withdraw consent.
 import { audit, deskView, getCase, saveCase, verifyAudit, withdraw, type CaseStatus } from '@/lib/desk';
-import { deskAuthorised, deskUser } from '@/lib/deskauth';
+import { deskGate, deskUser } from '@/lib/deskauth';
 import { needIdentity, personFrom } from '@/lib/identity';
 import { readJson } from '@/lib/http';
 
 const NEXT: Record<string, CaseStatus> = { contact: 'contacted', counsel: 'counselled', refer: 'referred', close: 'closed' };
 
 export async function GET(req: Request, ctx: RouteContext<'/api/desk/cases/[id]'>) {
-  if (!deskAuthorised(req)) return Response.json({ error: 'Counsellors only.' }, { status: 401 });
+  const gate = await deskGate(req);
+  if (gate) return gate;
   const { id } = await ctx.params;
   const c = await getCase(id);
   if (!c) return Response.json({ error: 'No such case.' }, { status: 404 });
@@ -18,7 +19,8 @@ export async function GET(req: Request, ctx: RouteContext<'/api/desk/cases/[id]'
 }
 
 export async function PATCH(req: Request, ctx: RouteContext<'/api/desk/cases/[id]'>) {
-  if (!deskAuthorised(req)) return Response.json({ error: 'Counsellors only.' }, { status: 401 });
+  const gate = await deskGate(req);
+  if (gate) return gate;
   const by = deskUser(req)!;
   const { id } = await ctx.params;
   const c = await getCase(id);
@@ -34,7 +36,7 @@ export async function PATCH(req: Request, ctx: RouteContext<'/api/desk/cases/[id
     c.status = NEXT[b.action];
     if (b.action === 'contact' && !c.firstContactAt) c.firstContactAt = Date.now();
     if (b.action === 'refer') c.referral = { service: String(b.service ?? 'Reproductive genetics clinic').slice(0, 120), at: Date.now() };
-    audit(c, `counsellor:${by}`, b.action === 'refer' ? `referred to ${c.referral!.service}` : `marked ${c.status}`);
+    audit(c, `counsellor:${by}`, b.action === 'refer' ? 'referral recorded' : `marked ${c.status}`);
   } else {
     return Response.json({ error: 'Unknown action.' }, { status: 400 });
   }

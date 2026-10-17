@@ -9,8 +9,8 @@ import { Sadu } from '@/components/Sadu';
 type L = { en: string; ar: string };
 
 const FACTS: { n: L; label: L; src: string; href: string }[] = [
-  { n: { en: '1 in 13', ar: '1 من 13' }, label: { en: 'couples in Dubai’s first 1,000 screened carried the same gene (including alpha-thalassaemia)', ar: 'من أول 1,000 زوجين فُحصوا في دبي يحملان الجين نفسه (بما فيه ألفا ثلاسيميا)' }, src: 'Nature Medicine 2026', href: 'https://www.nature.com/articles/s41591-026-04251-7' },
-  { n: { en: '11%', ar: '11%' }, label: { en: 'of 1,118 Abu Dhabi couples had a positive result on 570 genes', ar: 'من 1,118 زوجين في أبوظبي كانت نتيجتهم إيجابية على 570 جيناً' }, src: 'M42 and DoH', href: 'https://m42.ae/media/irlib1qa/premarital-screening-enabled-by-the-emirati-genome-program.pdf' },
+  { n: { en: '1 in 13', ar: '1 من 13' }, label: { en: 'couples in Dubai’s first 1,000 screened carried the same gene (79, or 7.9%, including alpha-thalassaemia)', ar: 'من أول ألف زوج فُحصوا في دبي يحملان الجين نفسه (79 زوجاً أو 7.9%، بما فيه ألفا ثلاسيميا)' }, src: 'Nature Medicine 2026', href: 'https://www.nature.com/articles/s41591-026-04251-7' },
+  { n: { en: '565', ar: '565' }, label: { en: 'of 11,748 Abu Dhabi couples screened 2022 to July 2026 had an increased chance (4.8%)', ar: 'من 11,748 زوجاً فُحصوا في أبوظبي بين 2022 ويوليو 2026 كان لديهم احتمال أعلى (4.8%)' }, src: 'DoH, via Gulf News', href: 'https://gulfnews.com/uae/health/abu-dhabi-genetic-screening-flags-565-incompatible-cases-among-couples-1.500697261' },
   { n: { en: '0.1', ar: '0.1' }, label: { en: 'genetic counsellors per million people in the Arab region (US: 12)', ar: 'مستشار وراثي لكل مليون شخص في المنطقة العربية (الولايات المتحدة: 12)' }, src: 'J Genet Couns 2021', href: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8611926' },
 ];
 
@@ -47,7 +47,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
               {t({ en: 'Know what you could pass on together.', ar: 'اعرفا ما قد تنقلانه معاً.' })}
             </h1>
             <p className="mt-6 max-w-[34em] text-[18px] leading-relaxed text-ink-2">
-              {t({ en: 'Two Keys compares a couple’s premarital carrier results inside their own phones. They learn only the genes they both carry, explained in plain Arabic or English, with a counsellor one tap away. Neither learns any other gene the other carries, their families learn nothing, and the relay in between can’t read a thing.', ar: 'يقارن «مفتاحان» نتائج الفحص الجيني قبل الزواج داخل هاتفي الزوجين. فيعرفان الجينات التي يحملانها معاً فقط، مشروحة بعربية أو إنجليزية واضحة، والمستشار على بُعد ضغطة. ولا يعرف أي منهما أي جين آخر يحمله الآخر، ولا تعرف العائلتان شيئاً، ولا يستطيع الوسيط بينهما قراءة أي شيء.' })}
+              {t({ en: 'Every carrier result understood, acted on in time, and passed safely to relatives, without needing more counsellors. A couple compares results inside their own phones and learns only the genes they both carry, explained in plain Arabic or English, with a genetic counsellor one tap away. Neither learns any other gene the other carries, and their families learn nothing.', ar: 'كل نتيجة لحمل الصفة الوراثية مفهومة، ويُتصرف بها في وقتها، وتصل بأمان إلى الأقارب، دون الحاجة إلى مزيد من المرشدين. يقارن الزوجان النتائج داخل هاتفيهما ولا يعرفان إلا الجينات التي يحملانها معاً، مشروحة بعربية أو إنجليزية واضحة، والمرشد الوراثي على بُعد ضغطة. ولا يعرف أي منهما أي جين آخر يحمله الآخر، ولا تعرف العائلتان شيئاً.' })}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href={`/${lang}/demo`} className="rounded-[2px] bg-ink px-5 py-3.5 text-[16px] font-medium text-wool">{t({ en: 'Try it with two phones', ar: 'جرّبه بهاتفين' })}</Link>

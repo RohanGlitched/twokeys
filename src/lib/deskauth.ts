@@ -1,4 +1,5 @@
 import 'server-only';
+import { limited } from './ratelimit';
 
 /**
  * Role check for the counsellor desk. The demo has named counsellor accounts (x-desk-user) behind
@@ -11,6 +12,13 @@ export const COUNSELLORS = ['Dr. Fatima Al Hammadi (synthetic)', 'Dr. Yousef Al 
 export function deskUser(req: Request): string | null {
   const u = decodeURIComponent(req.headers.get('x-desk-user') ?? '');
   return (COUNSELLORS as readonly string[]).includes(u) ? u : null;
+}
+
+/** Checks the desk sign-in; failed attempts are limited to 20 an hour, so the passcode can't be guessed online. */
+export async function deskGate(req: Request): Promise<Response | null> {
+  if (deskAuthorised(req)) return null;
+  if (await limited(req, 'desk-fail', 20)) return Response.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+  return Response.json({ error: 'Counsellors only.' }, { status: 401 });
 }
 
 export function deskAuthorised(req: Request): boolean {

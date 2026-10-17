@@ -60,3 +60,7 @@ describe('worry is acknowledged (held-out miss h03)', () => {
   it.each(['يعني شو يصير إذا كلنا نحمل هالجين؟ خايفة والله', 'I am so worried about our kids', 'ana 5ayfa jiddan', 'أنا قلقانة من النتيجة'])('catches %s', (q) => expect(expressesWorry(q)).toBe(true));
   it.each(['What does it mean that we both carry this?', 'ما معنى هذا بالضبط؟'])('leaves %s alone', (q) => expect(expressesWorry(q)).toBe(false));
 });
+
+describe('Arabizi distress is caught by the keyword guard', () => {
+  it.each(['ana 3ayza amoot', 'bdi amoot wallah', 'hayati 5alsat', 'mafi fayda mn 7ayati', 'msh 3ayez a3eesh keda'])('catches %s', (q) => expect(guardIntent(q)).toBe('crisis'));
+});

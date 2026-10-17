@@ -36,14 +36,14 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
     expect(b.personal).toBe(0);
   }, 60_000);
 
-  it('Latifa and Ahmed: two mild GJB2 changes never match', async () => {
+  it('Latifa and Ahmed: two milder GJB2 changes are a low-concern match', async () => {
     const link = newLink();
     const [ia, ib] = await Promise.all([as('latifa'), as('ahmed')]);
     const [a] = await Promise.all([
       runInitiator({ identity: ia, link, base: BASE }),
       runResponder({ identity: ib, link, base: BASE }),
     ]);
-    expect(a.genes).toEqual([]);
+    expect(a.genes).toEqual([{ gene: 'GJB2', inheritance: 'AR', strength: 0 }]);
   }, 60_000);
 
   it('a third person cannot take a seat', async () => {
@@ -66,6 +66,39 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
     expect(b.waiting).toBe(false);
     expect(b.findings.map((f: { gene: string }) => f.gene)).toEqual(['ABCA4']);
     expect((await share(ia, 'A')).findings.map((f: { gene: string }) => f.gene)).toEqual(['USH2A', 'HBA2']);
+  }, 60_000);
+
+  it('two people racing for the same seat: exactly one gets it', async () => {
+    const link = newLink();
+    const [ia, ib, ic] = await Promise.all([as('mariam'), as('saeed'), as('rashid')]);
+    const take = (identity: string) => fetch(`${BASE}/api/lab/tokens`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session: sessionId(link), role: 'B' }) }).then((r) => r.status);
+    const statuses = await Promise.all([take(ib), take(ic)]);
+    expect(statuses.sort()).toEqual([200, 409]);
+    void ia;
+  }, 60_000);
+
+  it('nothing is named until both people confirm each other', async () => {
+    const link = newLink();
+    const [ia, ib] = await Promise.all([as('mariam'), as('saeed')]);
+    const post = (path: string, identity: string, body: object) => fetch(`${BASE}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session: sessionId(link), ...body }) }).then((r) => r.json());
+    await post('/api/lab/tokens', ia, { role: 'A' });
+    await post('/api/lab/tokens', ib, { role: 'B' });
+    // A seated person asking straight away, before any confirmation, learns nothing.
+    expect(await post('/api/lab/reveal', ib, { role: 'B', matched: [] })).toEqual({ waiting: true });
+    const who = await post('/api/lab/confirm', ib, { role: 'B' });
+    expect(who.partner.name.en).toBe('Mariam');
+    expect(await post('/api/lab/reveal', ib, { role: 'B', matched: [] })).toEqual({ waiting: true });
+  }, 60_000);
+
+  it('a person who doesn’t recognise who joined can stop', async () => {
+    const link = newLink();
+    const [ia, ib] = await Promise.all([as('noura'), as('khalid')]);
+    const results = await Promise.allSettled([
+      runInitiator({ identity: ia, link, base: BASE, timeoutMs: 8000, confirmPartner: async () => false }),
+      runResponder({ identity: ib, link, base: BASE, timeoutMs: 8000 }),
+    ]);
+    expect(results[0].status).toBe('rejected');
+    expect(results[1].status).toBe('rejected');
   }, 60_000);
 
   it('the lab refuses tokens without a signed identity', async () => {

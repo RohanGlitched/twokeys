@@ -72,6 +72,7 @@ export type Step =
   | { kind: 'received'; slot: string; bytes: number }
   | { kind: 'waiting'; for: string }
   | { kind: 'proof'; ok: true }
+  | { kind: 'confirmed'; partner: string }
   | { kind: 'done'; result: PairResult };
 
 export interface RunOptions {
@@ -82,7 +83,11 @@ export interface RunOptions {
   onStep?: (s: Step) => void;
   signal?: AbortSignal;
   timeoutMs?: number;
+  /** Shows the person who joined and asks "is this your partner?". Tests pass one that says yes. */
+  confirmPartner?: (partner: Partner) => Promise<boolean>;
 }
+
+export interface Partner { name: { en: string; ar: string }; sex: 'F' | 'M' }
 
 async function api<T>(base: string, path: string, init?: RequestInit, identity?: string): Promise<T> {
   const res = await fetch(`${base}${path}`, { ...init, headers: { 'content-type': 'application/json', ...(identity ? { 'x-person': identity } : {}) } });
@@ -97,9 +102,31 @@ async function tokens(o: RunOptions, role: 'A' | 'B'): Promise<{ tokens: Token[]
   return r;
 }
 
-async function reveal(o: RunOptions, role: 'A' | 'B', matched: number[]) {
-  return api<{ genes: SharedGene[]; agrees: boolean }>(o.base ?? '', '/api/lab/reveal', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, matched }) }, o.identity);
+/** Shows the person who joined; nothing is named until both people confirm each other. */
+async function confirm(o: RunOptions, role: 'A' | 'B') {
+  const path = '/api/lab/confirm';
+  const body = (ok?: boolean) => ({ method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, ok }) });
+  const { partner } = await api<{ partner: Partner | null }>(o.base ?? '', path, body(), o.identity);
+  if (!partner) throw new Error('This pairing is incomplete.');
+  const yes = o.confirmPartner ? await o.confirmPartner(partner) : true;
+  if (!yes) throw new Error('Stopped: you didn’t recognise the person who joined. Start a new pairing.');
+  await api(o.base ?? '', path, body(true), o.identity);
+  o.onStep?.({ kind: 'confirmed', partner: partner.name.en });
 }
+
+/** Reports what this phone matched, then waits until the partner has confirmed and reported too. */
+async function reveal(o: RunOptions, role: 'A' | 'B', matched: string[]) {
+  const until = Date.now() + (o.timeoutMs ?? 10 * 60_000);
+  for (let wait = 500; Date.now() < until; wait = Math.min(wait * 1.25, 2000)) {
+    if (o.signal?.aborted) throw new Error('Cancelled.');
+    const r = await api<{ waiting: boolean; genes?: SharedGene[]; agrees?: boolean }>(o.base ?? '', '/api/lab/reveal', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, matched }) }, o.identity);
+    if (!r.waiting) return { genes: r.genes ?? [], agrees: !!r.agrees };
+    o.onStep?.({ kind: 'waiting', for: 'partner-confirm' });
+    await new Promise((res) => setTimeout(res, wait));
+  }
+  throw new Error('Your partner hasn’t confirmed yet. Ask them to check their screen, or start over.');
+}
+const tokensAt = (all: Token[], idx: number[]) => idx.map((i) => all.find((t) => t.i === i)!.token);
 
 async function send(o: RunOptions, slot: string, msg: unknown, sample: string[]) {
   const c = await seal(o.link, slot, msg);
@@ -133,7 +160,8 @@ export async function runInitiator(o: RunOptions): Promise<PairResult> {
   const { msg: m3, outcome } = me.step3(m2);
   o.onStep?.({ kind: 'proof', ok: true });
   await send(o, 'm3', m3, m3.ba);
-  const r = await reveal(o, 'A', outcome.matched);
+  await confirm(o, 'A');
+  const r = await reveal(o, 'A', tokensAt(t.tokens, outcome.matched));
   const result: PairResult = { ...r, personal: t.personal, ms: performance.now() - t0 };
   o.onStep?.({ kind: 'done', result });
   return result;
@@ -150,7 +178,8 @@ export async function runResponder(o: RunOptions): Promise<PairResult> {
   const m3 = await receive<Msg3>(o, 'm3');
   const outcome = me.step4(m3);
   o.onStep?.({ kind: 'proof', ok: true });
-  const r = await reveal(o, 'B', outcome.matched);
+  await confirm(o, 'B');
+  const r = await reveal(o, 'B', tokensAt(t.tokens, outcome.matched));
   const result: PairResult = { ...r, personal: t.personal, ms: performance.now() - t0 };
   o.onStep?.({ kind: 'done', result });
   return result;

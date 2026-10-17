@@ -19,6 +19,8 @@ export async function POST(req: Request) {
     level: b.level === 'simple' || b.level === 'detailed' ? b.level : 'standard',
     genes: known(b.genes),
     xl: known(b.xl),
+    sex: b.sex === 'F' || b.sex === 'M' ? b.sex : undefined,
+    strengths: b.strengths && typeof b.strengths === 'object' ? Object.fromEntries(Object.entries(b.strengths).filter(([g, v]) => g in CONDITIONS && [0, 1, 2].includes(Number(v))).map(([g, v]) => [g, Number(v)])) : undefined,
     related: !!b.related,
     question,
     history: Array.isArray(b.history) ? b.history.filter((h) => h && (h.role === 'user' || h.role === 'assistant') && typeof h.text === 'string').slice(-6) : [],
@@ -32,6 +34,7 @@ export async function POST(req: Request) {
     db.incr(`mon:${day}:lang:${b.lang === 'ar' ? 'ar' : 'en'}`, ttl),
     out.escalate ? db.incr(`mon:${day}:escalate`, ttl) : null,
     out.urgent ? db.incr(`mon:${day}:urgent`, ttl) : null,
-  ]).catch(() => {});
+    out.model ? db.incr(`mon:${day}:model:${out.model}`, ttl) : null,
+  ]).catch((e) => console.error('monitor write failed', e));
   return Response.json(out, { headers: { 'cache-control': 'no-store' } });
 }

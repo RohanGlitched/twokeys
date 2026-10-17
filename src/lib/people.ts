@@ -36,13 +36,13 @@ export const PEOPLE: Person[] = [
 
 export const COUPLES: Couple[] = [
   { id: 'mariam-saeed', a: 'mariam', b: 'saeed', relationship: 'first-cousins',
-    story: { en: 'First cousins. Their fathers are brothers.', ar: 'أبناء عمومة من الدرجة الأولى، والداهما أخوان.' } },
+    story: { en: 'First cousins. Their fathers are brothers.', ar: 'ابنا عمّ من الدرجة الأولى: أبوها وأبوه أخوان.' } },
   { id: 'noura-khalid', a: 'noura', b: 'khalid', relationship: 'unrelated',
     story: { en: 'Not related. They met at university.', ar: 'لا قرابة بينهما، تعارفا في الجامعة.' } },
   { id: 'hessa-rashid', a: 'hessa', b: 'rashid', relationship: 'double-first-cousins',
-    story: { en: 'Double first cousins: two brothers married two sisters.', ar: 'أبناء عمومة وخؤولة معاً: أخوان تزوجا أختين.' } },
+    story: { en: 'Double first cousins: two brothers married two sisters.', ar: 'ابنا عمّ وابنا خالة في آن واحد: أخوان تزوجا أختين.' } },
   { id: 'latifa-ahmed', a: 'latifa', b: 'ahmed', relationship: 'second-cousins',
-    story: { en: 'Second cousins. Their grandmothers are sisters.', ar: 'أبناء عمومة من الدرجة الثانية، جدتاهما أختان.' } },
+    story: { en: 'Second cousins. Their grandmothers are sisters.', ar: 'قريبان من الدرجة الثانية: جدّتاهما أختان.' } },
 ];
 
 export const personById = (id: string) => PEOPLE.find((p) => p.id === id) ?? null;

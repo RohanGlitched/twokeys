@@ -26,8 +26,8 @@ const LOOK: Record<string, L[]> = {
     { en: 'Double first cousins: the untested-conditions note uses the double-cousin figure.', ar: 'أبناء عمومة وخؤولة معاً: تستخدم الملاحظة رقمهم الخاص.' },
   ],
   'latifa-ahmed': [
-    { en: 'They both carry a milder GJB2 change, which is not reported as a match.', ar: 'يحمل كلاهما تغيّراً أخف في GJB2، ولا يُبلَّغ عنه كتطابق.' },
-    { en: 'Ahmed’s CYP1B1 stays private.', ar: 'يبقى CYP1B1 لدى أحمد خاصاً.' },
+    { en: 'Both carry a milder GJB2 change: shown as a low-concern match (a mild form is possible), in green.', ar: 'يحمل كلاهما تغيّراً أخف في GJB2: يظهر كتطابق منخفض الأثر (قد يظهر شكل خفيف)، باللون الأخضر.' },
+    { en: 'Ahmed’s CYP1B1 and Latifa’s SMN1 stay private.', ar: 'يبقى CYP1B1 لدى أحمد وSMN1 لدى لطيفة خاصين.' },
   ],
 };
 
@@ -71,7 +71,7 @@ export function TwoPhones({ lang, couples, names }: { lang: Locale; couples: Cou
         {couples.map((x) => (
           <button key={x.id} aria-pressed={x.id === coupleId} onClick={() => { setCoupleId(x.id); reset(); }}
             className={`rounded-[2px] border px-3.5 py-2 text-[14px] ${x.id === coupleId ? 'border-ink bg-ink text-wool' : 'border-ink-3 text-ink-2 hover:border-ink'}`}>
-            {t(names[x.a])} {lang === 'ar' ? 'و' : '&'} {t(names[x.b])}
+            {lang === 'ar' ? `${t(names[x.a])} و${t(names[x.b])}` : `${t(names[x.a])} & ${t(names[x.b])}`}
           </button>
         ))}
         <button onClick={reset} className="ms-auto text-[14px] text-indigo underline underline-offset-4">{t({ en: 'Reset both phones', ar: 'أعد ضبط الهاتفين' })}</button>
@@ -82,9 +82,10 @@ export function TwoPhones({ lang, couples, names }: { lang: Locale; couples: Cou
         <div className="rounded-[3px] border border-rule bg-paper px-4 py-3">
           <p className="text-[14px] font-medium">{t({ en: 'Try it', ar: 'جرّبه' })}</p>
           <ol className="mt-1 list-decimal space-y-0.5 ps-5 text-[13px] text-ink-2">
-            <li>{t({ en: 'On the first phone, tap “Pair with your partner”.', ar: 'في الهاتف الأول، اضغط «اقترن بشريكك».' })}</li>
             <li>{t({ en: 'Check that both phones show the same three words.', ar: 'تحقق من ظهور الكلمات الثلاث نفسها على الهاتفين.' })}</li>
             <li>{t({ en: 'Tap “Compare now” on both phones, in any order.', ar: 'اضغط «قارن الآن» على الهاتفين، بأي ترتيب.' })}</li>
+            <li>{t({ en: 'Each phone asks “is this your partner?”: tap Yes on both.', ar: 'يسأل كل هاتف «هل هذا شريكك؟»: اضغط نعم على الهاتفين.' })}</li>
+            <li>{t({ en: 'Then try: the Simple reading level, “Ask a question” (try a worried or Gulf-Arabic message), book a counsellor, make a family note, and Hessa’s personal result.', ar: 'ثم جرّب: مستوى القراءة المبسّط، و«اطرح سؤالاً» (جرّب رسالة قلقة أو باللهجة الخليجية)، وحجز مرشد، وإنشاء رسالة للعائلة، ونتيجة حصة الخاصة.' })}</li>
           </ol>
         </div>
         <div className="rounded-[3px] border border-rule bg-paper px-4 py-3">

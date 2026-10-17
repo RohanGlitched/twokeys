@@ -10,43 +10,47 @@ type L = { en: string; ar: string };
 
 const PROPS: { h: L; b: L }[] = [
   { h: { en: 'No forged genes', ar: 'لا جينات مزوّرة' }, b: { en: 'Only the lab can make a token, so a partner can’t add genes they don’t carry to fish for the other’s results. This is authorised PSI (De Cristofaro and Tsudik, 2009), with the lab as the trusted issuer.', ar: 'لا يصنع الرمز إلا المختبر، فلا يستطيع الشريك إضافة جينات لا يحملها للتجسس على نتائج الآخر. هذا هو PSI المخوَّل (De Cristofaro وTsudik، 2009)، والمختبر هو الجهة الموثوقة التي تصدر الرموز.' } },
-  { h: { en: 'No reuse', ar: 'لا إعادة استخدام' }, b: { en: 'Tokens are bound to one pairing and its two seats. Each seat is claimed once, atomically; a friend’s card or an old pairing matches nothing.', ar: 'الرموز مرتبطة باقتران واحد وبمقعديه. يُحجز كل مقعد مرة واحدة فقط، ولا يطابق شيئاً بطاقةُ صديق أو اقترانٌ قديم.' } },
-  { h: { en: 'Honest locking, proved', ar: 'قفل أمين، مُثبت' }, b: { en: 'Every locked list comes with a short proof (batched Chaum–Pedersen, as in RFC 9497) that one secret locked every entry. A phone that cheats is rejected before anything is compared.', ar: 'تصل كل قائمة مقفلة مع إثبات قصير (Chaum–Pedersen مجمّع، كما في RFC 9497) أن سراً واحداً أقفل كل العناصر. ويُرفض الهاتف الغشاش قبل أي مقارنة.' } },
-  { h: { en: 'No counting', ar: 'لا عدّ' }, b: { en: 'Every list has 64 entries, so nobody learns how many genes the other carries.', ar: 'كل قائمة فيها 64 عنصراً، فلا يعرف أحد عدد جينات الآخر.' } },
-  { h: { en: 'Severity-aware matching', ar: 'مطابقة تراعي الشدة' }, b: { en: 'Role tags mean a serious change matches a milder one, which is shown as a milder-form chance, while two milder changes (like two GJB2 p.Val37Ile) are not reported as a match.', ar: 'تجعل الوسوم التغيّر الشديد يطابق التغيّر الأخف، ويُعرض ذلك كاحتمال لشكل أخف، بينما لا يُبلَّغ عن تغيّرين أخفين (مثل GJB2 p.Val37Ile مرتين) كتطابق.' } },
-  { h: { en: 'X-linked results reach the woman', ar: 'نتائج كروموسوم X تصل إلى المرأة' }, b: { en: 'A woman’s X-linked carrier result matters for her sons whatever her partner carries, so it comes to her as a personal result, never only through a pairing.', ar: 'نتيجة المرأة التي تحمل تغيّراً على الكروموسوم X تهم أبناءها أياً كان شريكها، لذا تصلها كنتيجة شخصية، لا عبر الاقتران وحده.' } },
+  { h: { en: 'Both people confirm who joined', ar: 'يؤكد الطرفان هوية من انضم' }, b: { en: 'Each seat is claimed once, atomically. Before anything is named, each person sees the other’s signed-in name and confirms it, so someone who photographed the code can’t silently learn a result.', ar: 'يُحجز كل مقعد مرة واحدة فقط. وقبل أن يُسمّى أي شيء يرى كل شخص اسم الآخر المسجّل ويؤكده، فلا يستطيع من صوّر الرمز أن يعرف نتيجة خفية.' } },
+  { h: { en: 'Honest re-locking, proved', ar: 'إعادة قفل أمينة، مُثبتة' }, b: { en: 'Every list a phone re-locks comes with a short proof (batched Chaum–Pedersen, as in RFC 9497) that one secret was used throughout. A cheating re-lock is rejected.', ar: 'تصل كل قائمة يعيد الهاتف قفلها مع إثبات قصير (Chaum–Pedersen مجمّع، كما في RFC 9497) أن سراً واحداً استُخدم في كل العناصر. وتُرفض إعادة القفل الغشاشة.' } },
+  { h: { en: 'No counting', ar: 'لا عدّ' }, b: { en: 'The lab hands every phone exactly 64 tokens, real ones hidden among decoys, so neither the partner nor anyone holding the phone learns how many findings there are.', ar: 'يعطي المختبر كل هاتف 64 رمزاً بالضبط، تختبئ الحقيقية بينها بين رموز تمويهية، فلا يعرف الشريك ولا من يمسك الهاتف عدد النتائج.' } },
+  { h: { en: 'Severity-aware matching', ar: 'مطابقة تراعي الشدة' }, b: { en: 'Role tags grade a shared gene as a full match, a milder match (one milder change) or a low-concern match (two milder changes). One trade-off: for a shared gene, your partner learns whether your change is the milder one, because the chance depends on it.', ar: 'تصنّف الوسوم الجين المشترك كتطابق كامل أو أخف (تغيّر أخف لدى أحدكما) أو منخفض الأثر (تغيّران أخفان). ومقابل ذلك: في الجين المشترك يعرف شريكك إن كان تغيّرك هو الأخف، لأن الاحتمال يعتمد عليه.' } },
+  { h: { en: 'X-linked results reach the person', ar: 'نتائج كروموسوم X تصل إلى صاحبها' }, b: { en: 'An X-linked result matters whoever the partner is (a woman’s sons; a man’s own health and daughters), so it comes to the person as a personal result, never only through a pairing.', ar: 'تهم نتيجة الكروموسوم X أياً كان الشريك (أبناء المرأة، وصحة الرجل وبناته)، لذا تصل إلى صاحبها كنتيجة شخصية، لا عبر الاقتران وحده.' } },
 ];
 
 type Row = { who: L; learns: L; cannot: L; how: L };
 const THREATS: Row[] = [
   { who: { en: 'Your partner', ar: 'شريكك' },
-    learns: { en: 'The genes you both carry (that is the point), and that you took part.', ar: 'الجينات التي تحملانها معاً (وهذا هو الغرض)، وأنك شاركت.' },
+    learns: { en: 'The genes you both carry and whether each change is the milder one (that is the point), and that you took part.', ar: 'الجينات التي تحملانها معاً وهل التغيّر هو الأخف (وهذا هو الغرض)، وأنك شاركت.' },
     cannot: { en: 'Any gene only you carry, or how many you carry, unless you both choose to see everything.', ar: 'أي جين تحمله وحدك، أو عدد جيناتك، إلا إذا اخترتما معاً رؤية كل شيء.' },
-    how: { en: 'Lab-only tokens, padded lists, proofs on every lock', ar: 'رموز لا يصنعها إلا المختبر، وقوائم محشوة، وإثبات لكل قفل' } },
+    how: { en: 'Lab-only tokens, 64 per phone with decoys, proofs on re-locks', ar: 'رموز لا يصنعها إلا المختبر، 64 لكل هاتف مع رموز تمويهية، وإثبات لإعادة القفل' } },
+  { who: { en: 'Someone who sees the pairing code', ar: 'من يرى رمز الاقتران' },
+    learns: { en: 'Nothing, unless the person who shared it confirms them by name.', ar: 'لا شيء، إلا إذا أكده صاحب الرمز بالاسم.' },
+    cannot: { en: 'Take a seat silently: the lab names nothing until both seated people confirm each other.', ar: 'حجز مقعد خفية: فلا يسمّي المختبر شيئاً حتى يؤكد الطرفان بعضهما.' },
+    how: { en: 'Atomic seats; named confirmation; reveal only after both confirm and both phones finish', ar: 'مقاعد ذرية، وتأكيد بالاسم، وكشف بعد تأكيد الطرفين وانتهاء الهاتفين فقط' } },
   { who: { en: 'A modified phone', ar: 'هاتف معدَّل' },
     learns: { en: 'No more than an honest phone. It can refuse to finish.', ar: 'لا أكثر من الهاتف الأمين، ويمكنه رفض الإكمال.' },
-    cannot: { en: 'Fake a match, hide one, or show its partner a wrong result: the lab recomputes the match itself.', ar: 'تزوير تطابق أو إخفاؤه أو عرض نتيجة خاطئة على الشريك: فالمختبر يعيد حساب التطابق بنفسه.' },
-    how: { en: 'Proof checks; lab-confirmed reveal; disagreement is flagged', ar: 'فحص الإثبات، وكشف يؤكده المختبر، وتنبيه عند الاختلاف' } },
+    cannot: { en: 'Fake a match, hide one, or show its partner a wrong result: the lab names the result from its own records.', ar: 'تزوير تطابق أو إخفاؤه أو عرض نتيجة خاطئة على الشريك: فالمختبر يسمّي النتيجة من سجلاته.' },
+    how: { en: 'Proof checks; lab-confirmed result; disagreement is flagged', ar: 'فحص الإثبات، ونتيجة يؤكدها المختبر، وتنبيه عند الاختلاف' } },
   { who: { en: 'The relay', ar: 'الوسيط' },
     learns: { en: 'That two devices exchanged a few kilobytes, and when.', ar: 'أن جهازين تبادلا بضعة كيلوبايتات، ومتى.' },
     cannot: { en: 'Read anything: messages are encrypted with a key that never reaches a server.', ar: 'قراءة أي شيء: فالرسائل مشفّرة بمفتاح لا يصل إلى أي خادم.' },
     how: { en: 'AES-GCM, key in the link #fragment; write-once slots; 10-minute expiry', ar: 'AES-GCM بمفتاح في جزء الرابط بعد #، وخانات تُكتب مرة، وانتهاء بعد 10 دقائق' } },
   { who: { en: 'The lab (single-lab setting, today)', ar: 'المختبر (مختبر واحد، اليوم)' },
-    learns: { en: 'That these two people paired. It already holds both results, so it could compute the match itself.', ar: 'أن هذين الشخصين اقترنا. وهو يملك النتيجتين أصلاً، فيستطيع حساب التطابق بنفسه.' },
-    cannot: { en: 'Nothing new about either person. It is trusted, as it is today.', ar: 'لا شيء جديد عن أي منهما. فهو موثوق، كما هو اليوم.' },
+    learns: { en: 'That these two people paired, and the match it names. It already holds both results.', ar: 'أن هذين الشخصين اقترنا، والتطابق الذي يسمّيه. وهو يملك النتيجتين أصلاً.' },
+    cannot: { en: 'Nothing new about either person. It is trusted, as it is today. In this demo the lab and the relay run on one server; in production they are separate operators.', ar: 'لا شيء جديد عن أي منهما، فهو موثوق كما هو اليوم. وفي هذا العرض يعمل المختبر والوسيط على خادم واحد، وفي الإنتاج يشغّلهما طرفان منفصلان.' },
     how: { en: 'Trust, audit, and law (Decree-Law 49/2023)', ar: 'الثقة والتدقيق والقانون (المرسوم بقانون 49/2023)' } },
-  { who: { en: 'A counsellor', ar: 'المستشار' },
-    learns: { en: 'Only what a person ticked when booking, under a named account; every view is logged.', ar: 'ما اختاره الشخص عند الحجز فقط، عبر حساب مسمّى، وكل اطلاع مسجَّل.' },
-    cannot: { en: 'See a partner’s own results, or anything after consent is withdrawn.', ar: 'رؤية نتائج الشريك الخاصة، أو أي شيء بعد سحب الموافقة.' },
-    how: { en: 'Itemised versioned consent; HMAC-keyed audit chain; erase and seal on withdrawal', ar: 'موافقة مفصّلة ومرقّمة، وسلسلة تدقيق بمفتاح HMAC، ومسح وختم عند السحب' } },
+  { who: { en: 'A genetic counsellor', ar: 'المرشد الوراثي' },
+    learns: { en: 'Only what a person ticked when booking; the shared genes come from the lab. Every case opened is logged.', ar: 'ما اختاره الشخص عند الحجز فقط، والجينات المشتركة يحددها المختبر. وكل حالة تُفتح تُسجَّل.' },
+    cannot: { en: 'See a partner’s own results, or what was shared after consent is withdrawn. Demo: one passcode with a chosen name; production: per-clinician sign-in.', ar: 'رؤية نتائج الشريك الخاصة، أو ما شُورك بعد سحب الموافقة. في العرض: رمز مرور واحد مع اسم يُختار؛ وفي الإنتاج: دخول لكل طبيب.' },
+    how: { en: 'Itemised consent; keyed and sealed audit chain; queue shows summaries only; failed sign-ins limited', ar: 'موافقة مفصّلة، وسلسلة تدقيق بمفتاح وختم، وقائمة بملخصات فقط، وحد لمحاولات الدخول الفاشلة' } },
   { who: { en: 'A health-authority analyst', ar: 'محلل في الجهة الصحية' },
-    learns: { en: 'Hourly aggregate counts with random noise; groups under 5 hidden.', ar: 'أعداد إجمالية كل ساعة مع ضجيج عشوائي، وتُحجب المجموعات الأصغر من 5.' },
+    learns: { en: 'Weekly aggregate counts with random noise; groups under 5 hidden.', ar: 'أعداد إجمالية أسبوعية مع ضجيج عشوائي، وتُحجب المجموعات الأصغر من 5.' },
     cannot: { en: 'Any individual, which couples share a gene, or any marriage or pregnancy decision.', ar: 'أي فرد، أو أي زوجين يتشاركان جيناً، أو أي قرار زواج أو حمل.' },
-    how: { en: 'Differential privacy, cached release, budget shown', ar: 'الخصوصية التفاضلية، وإصدار محفوظ، وميزانية معلنة' } },
+    how: { en: 'Differential privacy with cryptographic noise, one cached release a week, budget published', ar: 'الخصوصية التفاضلية بضجيج تشفيري، وإصدار محفوظ كل أسبوع، وميزانية منشورة' } },
   { who: { en: 'Anyone else on the internet', ar: 'أي شخص آخر على الإنترنت' },
-    learns: { en: 'Nothing about a person.', ar: 'لا شيء عن أي شخص.' },
-    cannot: { en: 'Get tokens or results without signing in, or take a seat in someone’s pairing.', ar: 'الحصول على رموز أو نتائج دون تسجيل الدخول، أو حجز مقعد في اقتران غيره.' },
-    how: { en: 'Signed identity (UAE PASS in production), atomic seats, rate limits', ar: 'هوية موقّعة (UAE PASS في الإنتاج)، ومقاعد ذرية، وحدود للطلبات' } },
+    learns: { en: 'In this demo, anyone may sign in as any synthetic person; there are no real people. In production, nothing about a person.', ar: 'في هذا العرض يمكن لأي شخص الدخول باسم أي شخص افتراضي، ولا يوجد أشخاص حقيقيون. وفي الإنتاج: لا شيء عن أي شخص.' },
+    cannot: { en: 'In production: get tokens or results without UAE PASS, or join someone’s pairing without being confirmed.', ar: 'في الإنتاج: الحصول على رموز أو نتائج دون UAE PASS، أو الانضمام إلى اقتران غيره دون تأكيده.' },
+    how: { en: 'Signed identity (UAE PASS in production), atomic seats, named confirmation, rate limits', ar: 'هوية موقّعة (UAE PASS في الإنتاج)، ومقاعد ذرية، وتأكيد بالاسم، وحدود للطلبات' } },
 ];
 
 export default async function HowPage({ params }: PageProps<'/[lang]/how'>) {
@@ -57,7 +61,7 @@ export default async function HowPage({ params }: PageProps<'/[lang]/how'>) {
     <>
       <Nav lang={lang} path="/how" />
       <main className="mx-auto max-w-[1240px] px-6 pt-6 md:px-8">
-        <h1 className="max-w-3xl text-[clamp(32px,3.6vw,48px)] font-semibold leading-tight tracking-tight">{t({ en: 'How two phones find a shared gene without showing anything else', ar: 'كيف يجد هاتفان جيناً مشتركاً دون أن يكشفا أي شيء آخر' })}</h1>
+        <h1 className="max-w-3xl text-[clamp(32px,3.6vw,48px)] font-semibold leading-tight tracking-tight">{t({ en: 'How two phones and a lab find a shared gene without showing anything else', ar: 'كيف يجد هاتفان ومختبر جيناً مشتركاً دون كشف أي شيء آخر' })}</h1>
         <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-ink-2">{t({ en: 'This runs the real protocol in your browser, with a throwaway lab key. Every value below is the actual value.', ar: 'يشغّل هذا البروتوكول الحقيقي في متصفحك بمفتاح مختبر مؤقت. كل قيمة أدناه هي القيمة الفعلية.' })}</p>
         <section className="mt-10 border-t-[1.5px] border-ink pt-8"><Theatre lang={lang} /></section>
 

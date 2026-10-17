@@ -9,14 +9,16 @@ const S = 'a1'.repeat(32);
 const ar = (gene: string, severity: 'severe' | 'mild' = 'severe'): Finding => ({ gene, inheritance: 'AR', severity });
 const xl = (gene: string): Finding => ({ gene, inheritance: 'XL', severity: 'severe' });
 
-/** Runs a pairing and maps each side's matched indices back to genes through the lab's labels. */
+/** Runs a pairing and maps each side's matched tokens back to genes through the lab's labels. */
 function pair(a: Finding[], b: Finding[], opts: { session?: string; keyB?: Uint8Array } = {}) {
-  const la = sessionTokens(labKey, opts.session ?? S, 'A', a);
-  const lb = sessionTokens(opts.keyB ?? labKey, S, 'B', b);
-  const r = runLocally(issue(labKey, opts.session ?? S, 'A', a), issue(opts.keyB ?? labKey, S, 'B', b));
-  const names = (idx: number[], l: typeof la) => [...new Set(idx.map((i) => l[i].label))].sort();
-  return { ...r, aGenes: names(r.aLearns.matched, la), bGenes: names(r.bLearns.matched, lb) };
+  const la = new Map(sessionTokens(labKey, opts.session ?? S, 'A', a).map((t) => [t.token, t.label]));
+  const lb = new Map(sessionTokens(opts.keyB ?? labKey, S, 'B', b).map((t) => [t.token, t.label]));
+  const ia = issue(labKey, opts.session ?? S, 'A', a), ib = issue(opts.keyB ?? labKey, S, 'B', b);
+  const r = runLocally(ia, ib);
+  const names = (idx: number[], issued: Token[], l: Map<string, string>) => [...new Set(idx.map((i) => l.get(issued.find((t) => t.i === i)!.token)!))].sort();
+  return { ...r, aGenes: names(r.aLearns.matched, ia, la), bGenes: names(r.bLearns.matched, ib, lb) };
 }
+const tokensOf = (idx: number[], issued: Token[]) => new Set(idx.map((i) => issued.find((t) => t.i === i)!.token));
 
 describe('session-bound authorised PSI with proofs', () => {
   it('both partners find exactly the genes both carry', () => {
@@ -28,17 +30,27 @@ describe('session-bound authorised PSI with proofs', () => {
   it('the lab’s own intersection agrees with the phones, and grades severity', () => {
     const a = [ar('HBB'), ar('GJB2', 'mild')];
     const b = [ar('HBB'), ar('GJB2')];
-    const r = runLocally(issue(labKey, S, 'A', a), issue(labKey, S, 'B', b));
+    const ia = issue(labKey, S, 'A', a), ib = issue(labKey, S, 'B', b);
+    const r = runLocally(ia, ib);
     const truth = intersection(labKey, S, a, b);
-    expect(new Set(r.aLearns.matched)).toEqual(truth.A);
-    expect(new Set(r.bLearns.matched)).toEqual(truth.B);
+    expect(tokensOf(r.aLearns.matched, ia)).toEqual(truth.A);
+    expect(tokensOf(r.bLearns.matched, ib)).toEqual(truth.B);
     expect(truth.genes).toEqual([{ gene: 'GJB2', inheritance: 'AR', strength: 1 }, { gene: 'HBB', inheritance: 'AR', strength: 2 }]);
   });
 
-  it('severe × mild matches, mild × mild does not', () => {
+  it('severity is graded: full, milder and low-concern matches', () => {
     expect(pair([ar('GJB2', 'severe')], [ar('GJB2', 'mild')]).aGenes).toEqual(['GJB2']);
     expect(pair([ar('GJB2', 'mild')], [ar('GJB2', 'severe')]).bGenes).toEqual(['GJB2']);
-    expect(pair([ar('GJB2', 'mild')], [ar('GJB2', 'mild')]).aGenes).toEqual([]);
+    expect(pair([ar('GJB2', 'mild')], [ar('GJB2', 'mild')]).aGenes).toEqual(['GJB2']);
+    const g = (a: Finding[], b: Finding[]) => intersection(labKey, S, a, b).genes.map((x) => x.strength);
+    expect(g([ar('GJB2')], [ar('GJB2')])).toEqual([2]);
+    expect(g([ar('GJB2')], [ar('GJB2', 'mild')])).toEqual([1]);
+    expect(g([ar('GJB2', 'mild')], [ar('GJB2', 'mild')])).toEqual([0]);
+  });
+
+  it('phones always receive exactly SET_SIZE tokens, real ones hidden among decoys', () => {
+    expect(issue(labKey, S, 'A', []).length).toBe(SET_SIZE);
+    expect(issue(labKey, S, 'A', [ar('HBB'), ar('CFTR', 'mild')]).length).toBe(SET_SIZE);
   });
 
   it('X-linked genes match only when she carries and he is affected', () => {
@@ -57,7 +69,7 @@ describe('session-bound authorised PSI with proofs', () => {
   });
 
   it('every message has a fixed size, so the number of findings stays hidden', () => {
-    for (const r of [pair([], []), pair(Array.from({ length: 30 }, (_, i) => ar(`G${i}`)), [ar('HBB')])]) {
+    for (const r of [pair([], []), pair(Array.from({ length: 20 }, (_, i) => ar(`G${i}`)), [ar('HBB')])]) {
       expect(r.relaySaw.m1.a).toHaveLength(SET_SIZE);
       expect(r.relaySaw.m2.ab).toHaveLength(SET_SIZE);
       expect(r.relaySaw.m2.b).toHaveLength(SET_SIZE);

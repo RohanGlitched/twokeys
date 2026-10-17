@@ -13,10 +13,15 @@ export const RELATION_NAME: Record<Relation, L> = {
   sibling: { en: 'brother or sister', ar: 'أخ أو أخت' },
   parent: { en: 'parent', ar: 'أحد الوالدين' },
   child: { en: 'son or daughter', ar: 'ابن أو ابنة' },
-  'half-sibling': { en: 'half-brother or half-sister', ar: 'أخ أو أخت غير شقيق' },
-  'aunt-uncle': { en: 'aunt or uncle', ar: 'عم أو عمة أو خال أو خالة' },
+  'half-sibling': { en: 'half-brother or half-sister', ar: 'أخ غير شقيق أو أخت غير شقيقة' },
+  'aunt-uncle': { en: 'aunt or uncle', ar: 'عمّ أو عمّة أو خال أو خالة' },
   'niece-nephew': { en: 'niece or nephew', ar: 'ابن أو ابنة أخ أو أخت' },
-  'first-cousin': { en: 'first cousin', ar: 'ابن عم أو خال من الدرجة الأولى' },
+  'first-cousin': { en: 'first cousin', ar: 'ابن أو ابنة عمّ أو عمّة أو خال أو خالة' },
+};
+/** The same, after بصفتك (accusative). */
+const RELATION_AS: Record<Relation, string> = {
+  sibling: 'أخاً أو أختاً', parent: 'أحدَ الوالدين', child: 'ابناً أو ابنةً', 'half-sibling': 'أخاً غير شقيق أو أختاً غير شقيقة',
+  'aunt-uncle': 'عمّاً أو عمّةً أو خالاً أو خالةً', 'niece-nephew': 'ابنَ أو ابنةَ أخ أو أخت', 'first-cousin': 'ابنَ أو ابنةَ عمّ أو عمّة أو خال أو خالة',
 };
 
 export function LetterView({ lang, id }: { lang: Locale; id: string }) {
@@ -66,34 +71,40 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
             {t({ en: 'Someone in your family wanted you to know this.', ar: 'أراد أحد أفراد عائلتك أن تعرف هذا.' })}
           </h1>
           <p className="mt-4 text-[17px] leading-relaxed">
-            {t({ en: `They found out they are a healthy carrier of a change in the ${body.gene} gene${c ? `, linked to ${c.name.en}` : ''}.`, ar: `علموا أنهم يحملون، وهم أصحاء، تغيّراً في جين ${body.gene}${c ? `، المرتبط بـ${c.name.ar}` : ''}.` })}
+            {t({ en: `A relative of yours found out they are a healthy carrier of a change in the ${body.gene} gene${c ? `, linked to ${c.name.en}` : ''}.`, ar: `تبيّن لأحد أقاربك أنه يحمل تغيّراً في جين ${body.gene}${c ? ` المرتبط بـ${c.name.ar}` : ''}، وهو بصحة جيدة.` })}
           </p>
+          {body.chance === null ? (
+            <p className="mt-5 border-y border-ink py-4 text-[16px] leading-relaxed">
+              {t({ en: 'This change is on the X chromosome. Women in the family may carry it without symptoms, and men in the family may have the condition. Your own chance depends on how you are related and on who in the family carries it; a genetic counsellor can work it out with a simple test.', ar: 'هذا التغيّر على الكروموسوم X. قد تحمله نساء العائلة دون أعراض، وقد يُصاب به رجالها. ويعتمد احتمالك على صلة قرابتك وعلى من يحمله في العائلة، ويمكن للمرشد الوراثي حسابه بفحص بسيط.' })}
+            </p>
+          ) : (
           <div className="mt-6 grid grid-cols-2 border-y border-ink">
             <div className="border-e border-rule py-4 pe-4">
               <p className="text-[30px] font-semibold leading-tight tracking-tight"><bdi>{per100(body.chance, lang)}</bdi></p>
-              <p className="text-[13px] text-ink-2">{t({ en: `your chance of carrying it, as their ${RELATION_NAME[body.relation].en}`, ar: `احتمال أن تحمله، بصفتك ${RELATION_NAME[body.relation].ar}` })}</p>
+              <p className="text-[13px] text-ink-2">{t({ en: `your chance of also carrying it, as their ${RELATION_NAME[body.relation].en}`, ar: `احتمال أن تكون حاملاً لهذا التغيّر أيضاً، بصفتك ${RELATION_AS[body.relation]}` })}</p>
             </div>
             <div className="py-4 ps-4">
               <p className="text-[30px] font-semibold leading-tight tracking-tight text-ink-2"><bdi>{body.population !== null ? per100(body.population, lang) : t({ en: 'not known', ar: 'غير معروف' })}</bdi></p>
-              <p className="text-[13px] text-ink-2">{t({ en: 'for someone with no relative known to carry it', ar: 'لشخص ليس له قريب معروف بحمله' })}</p>
+              <p className="text-[13px] text-ink-2">{t({ en: 'for someone with no relative known to carry it', ar: 'لشخص لا يُعرف أن أحد أقاربه يحمل هذا التغيّر' })}</p>
             </div>
           </div>
+          )}
           <p className="mt-5 text-[15px] leading-relaxed text-ink-2">
-            {t({ en: 'Being a carrier is not a disease, and it usually doesn’t affect your own health. It matters if you plan a family with someone who carries the same gene. A carrier test is part of premarital screening, and your doctor or any premarital screening centre can arrange one at any time.', ar: 'حمل تغيّر جيني لا يعني أنك مريض، ولا يؤثر عادة في صحتك. ويهم إذا خططت لتكوين أسرة مع شخص يحمل الجين نفسه. وفحص الكشف عن حمل التغيّر جزء من الفحص قبل الزواج، ويمكن لطبيبك أو أي مركز للفحص قبل الزواج ترتيبه في أي وقت.' })}
+            {t({ en: 'Being a carrier is not a disease, and it usually doesn’t affect your own health. It matters if you plan a family with someone who carries the same gene. A carrier test is part of premarital screening, and your doctor or any premarital screening centre can arrange one at any time. Ask the genetic counsellor to look for your family’s exact change, as some tests miss some changes.', ar: 'أن تكون حاملاً للتغيّر لا يعني أنك مريض، ولا يؤثر عادة في صحتك. ويهم إذا خططت لتكوين أسرة مع شخص يحمل الجين نفسه. وفحص حاملي الصفة الوراثية جزء من الفحص قبل الزواج، ويمكن لطبيبك أو أي مركز للفحص قبل الزواج ترتيبه في أي وقت. واطلب من المرشد الوراثي أن يسأل عن التغيّر المحدد في عائلتك، فبعض الفحوص لا تكشف كل التغيّرات.' })}
           </p>
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
             <a className="text-indigo underline underline-offset-2" href="https://www.doh.gov.ae/" target="_blank" rel="noreferrer">{t({ en: 'Department of Health, Abu Dhabi', ar: 'دائرة الصحة، أبوظبي' })}</a>
             {c && <a className="text-indigo underline underline-offset-2" href={c.source.url} target="_blank" rel="noreferrer">{c.source.label}</a>}
           </p>
           <div className="mt-8 border-t border-ink pt-5">
-            <p className="text-[15px] font-medium">{t({ en: 'Do you want them to know?', ar: 'هل تريد أن يعرفوا؟' })}</p>
-            <p className="mt-1 text-[13px] text-ink-2">{t({ en: 'Only if you choose. They see a number go up, never your name. Nothing has been sent yet.', ar: 'فقط إن اخترت ذلك. يرون عدداً يزداد، ولا يرون اسمك أبداً. ولم يُرسل شيء بعد.' })}</p>
+            <p className="text-[15px] font-medium">{t({ en: 'Do you want them to know?', ar: 'هل تريد أن يعرف من أرسلها؟' })}</p>
+            <p className="mt-1 text-[13px] text-ink-2">{t({ en: 'Only if you choose. They see a number go up, never your name. Nothing has been sent yet.', ar: 'فقط إن اخترت ذلك. يرى المرسل عدداً يزداد، ولا يرى اسمك أبداً. ولم يُرسل شيء بعد.' })}</p>
             <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
               <button onClick={() => tell('read')} disabled={told.read} className="rounded-[2px] border border-ink px-4 py-3 text-[15px] font-medium disabled:opacity-60">
-                {told.read ? t({ en: 'They’ll know you read it', ar: 'سيعرفون أنك قرأتها' }) : t({ en: 'Let them know I read this', ar: 'أخبرهم أنني قرأتها' })}
+                {told.read ? t({ en: 'They’ll know you read it', ar: 'سيعرف المرسل أنك قرأتها' }) : t({ en: 'Let them know I read this', ar: 'أخبر المرسل أنني قرأتها' })}
               </button>
               <button onClick={() => tell('booked')} disabled={told.booked} className="rounded-[2px] bg-ink px-4 py-3 text-[15px] font-medium text-wool disabled:opacity-60">
-                {told.booked ? t({ en: 'They’ll know you booked a test', ar: 'سيعرفون أنك حجزت فحصاً' }) : t({ en: 'Let them know I booked a test', ar: 'أخبرهم أنني حجزت فحصاً' })}
+                {told.booked ? t({ en: 'They’ll know you booked a test', ar: 'سيعرف المرسل أنك حجزت فحصاً' }) : t({ en: 'Let them know I booked a test', ar: 'أخبر المرسل أنني حجزت فحصاً' })}
               </button>
             </div>
           </div>

@@ -15,9 +15,15 @@ import { FACTS } from './knowledge';
 import { awsConfig } from './aws';
 
 export type Lang = 'en' | 'ar';
-export interface AskInput { lang: Lang; level: Level; genes: string[]; xl: string[]; related: boolean; question: string; history?: { role: 'user' | 'assistant'; text: string }[]; noGuards?: boolean }
+export interface AskInput {
+  lang: Lang; level: Level; genes: string[]; xl: string[]; related: boolean; question: string; history?: { role: 'user' | 'assistant'; text: string }[]; noGuards?: boolean;
+  /** The person asking, so Arabic addresses them correctly (their partner is the other sex). */
+  sex?: 'F' | 'M';
+  /** Match strength per shared gene: 2 full, 1 one milder change, 0 both milder. */
+  strengths?: Record<string, number>;
+}
 export type Intent = 'crisis' | 'probe' | 'decide' | 'faith' | 'termination' | 'other';
-export interface Checks { numbersOk: boolean; nonDirective: boolean; citesOk: boolean; oddsOk: boolean; personaOk: boolean; languageOk: boolean; framingOk: boolean }
+export interface Checks { numbersOk: boolean; nonDirective: boolean; citesOk: boolean; oddsOk: boolean; personaOk: boolean; languageOk: boolean; framingOk: boolean; xlOk: boolean; strengthOk: boolean }
 export interface AskOutput {
   answer: string;
   cites: string[];
@@ -35,6 +41,8 @@ export interface AskOutput {
 export const CRISIS = [
   /\b(suicid\w*|kill (my|him|her)self|end (my|it) (life|all)|end it all|self[- ]?harm|hurt(ing)? myself|want(ed)? to die|wanna die|wish i (was|were) dead|don'?t want to (live|be alive|exist)|no (reason|point) (in |to )?(living|live|go on)|better off without me|can'?t go on|take my (own )?life)\b/i,
   /(انتحار|انتحر|أقتل نفسي|اقتل نفسي|أؤذي نفسي|اذي نفسي|إيذاء نفسي|أنهي حياتي|انهي حياتي|أنهي كل شيء|أريد أن أموت|اريد ان اموت|أبي أموت|ابي اموت|أبغى أموت|ابغى اموت|أتمنى الموت|اتمنى الموت|لا أريد (أن أعيش|العيش)|ما (أبي|ابي|أبغى|ابغى) (أعيش|اعيش)|تعبت من الحياة|لا فائدة من الحياة|ما له داعي أعيش|الموت أحسن)/,
+  // Arabizi (Arabic in Latin letters and digits), Gulf and Egyptian spellings.
+  /\b(a2tol|a2tl|aktol|a9tl)\s*nafs[iy]|\b(ab[iy]|bd[iy]|3ayez|3ayza|abgha|abga)\s*(amoot|amout|amut|a?moot)|\b(ant7ar|anta7ar|nt7ar|enti7ar)\b|\b(m(e|i)?sh|mo|ma)\s*(3ayez|3ayza|abi|bdi|abgha)\s*a?3[ie]+sh|\bhayati\s*(5ls|5alsat|khalsat|5alas)|\b(ma\s*fi|mafi|mfi)\s*(fayda|fydeh|faydeh)\s*(mn|min)\s*(7ayati|hayati|el 7aya)/i,
 ];
 export const PARTNER_PROBE = [
   /\b(what|which|anything|does|did|is|are|how many)\b[^?]*\b(my|his|her|their)\s+(partner|husband|wife|fianc[ée]e?|fiance|future (husband|wife))('?s)?\b[^?]*\b(carr(y|ies)|results?|genes?|else)\b/i,
@@ -54,28 +62,37 @@ export const DECIDE_FOR_ME = [
 export const FAITH = [/\b(haram|halal|sinful|allowed in islam|islamically|fatwa|religion allow)\b/i, /(حرام|حلال|يجوز|جائز شرعاً|فتوى|شرعاً|الشرع)/];
 export const TERMINATION = [/\b(abort|abortion|terminat\w+ (the |a )?pregnan\w+|end (the|a) pregnancy)\b/i, /(إجهاض|اجهاض|إنهاء الحمل|انهاء الحمل|نسقط الجنين)/];
 
-export const REPLIES: Record<Exclude<Intent, 'other'>, { en: string; ar: string }> = {
+type Said = { en: string; ar: string; arF: string };
+export const HELP_LINE = { en: 'UAE Mental Support Line 800 4673 (800 HOPE)', ar: 'خط الدعم النفسي في الإمارات 800 4673 (800 HOPE)' };
+export const REPLIES: Record<Exclude<Intent, 'other'>, Said> = {
   crisis: {
-    en: 'I’m sorry you’re feeling this way, and you don’t have to carry it alone. If you might hurt yourself, call 999 (or 998 for an ambulance) now, or go to the nearest emergency department. You can also tap “Ask a counsellor to call me today” below, and a person will contact you.',
-    ar: 'يؤسفني أنك تمرّ بهذا، ولست وحدك. إن كنت قد تؤذي نفسك، فاتصل الآن بالرقم 999 (أو 998 للإسعاف)، أو توجّه إلى أقرب قسم طوارئ. ويمكنك أيضاً الضغط على «اطلب اتصال مستشار اليوم» أدناه، وسيتواصل معك شخص.',
+    en: `I’m sorry you’re feeling this way, and you don’t have to carry it alone. If you might hurt yourself, call 999 (or 998 for an ambulance) now, or go to the nearest emergency department. To talk to someone now: ${HELP_LINE.en}. You can also tap “Ask a counsellor to call me today” below, and a person will contact you.`,
+    ar: `يؤسفني أنك تمرّ بهذا، ولست وحدك. إن كنت قد تؤذي نفسك فاتصل الآن بـ999 (أو 998 للإسعاف) أو توجّه إلى أقرب قسم طوارئ. وللتحدث مع أحد الآن: ${HELP_LINE.ar}. ويمكنك أيضاً الضغط على «اطلب من مرشد الاتصال بي اليوم» أدناه، وسيتواصل معك شخص.`,
+    arF: `يؤسفني أنكِ تمرّين بهذا، ولستِ وحدك. إن كنتِ قد تؤذين نفسك فاتصلي الآن بـ999 (أو 998 للإسعاف) أو توجّهي إلى أقرب قسم طوارئ. وللتحدث مع أحد الآن: ${HELP_LINE.ar}. ويمكنك أيضاً الضغط على «اطلبي من مرشد الاتصال بي اليوم» أدناه، وسيتواصل معك شخص.`,
   },
   probe: {
-    en: 'I can’t share anything about your partner beyond the genes you both carry. That privacy protects both of you. If you’d like to talk it through together, a counsellor can meet you as a couple.',
-    ar: 'لا يمكنني مشاركة أي شيء عن شريكك غير الجينات التي تحملانها معاً، فهذه الخصوصية تحميكما كليكما. وإن أردتما الحديث معاً، يمكن للمستشار أن يلتقيكما كزوجين.',
+    en: 'I can’t share anything about your partner beyond the genes you both carry. That privacy protects both of you. If you’d like to talk it through together, a genetic counsellor can meet you as a couple.',
+    ar: 'لا يمكنني مشاركة أي شيء عن شريكتك غير الجينات التي تحملانها معاً، فهذه الخصوصية تحميكما كليكما. وإن أردتما الحديث معاً، يمكن للمرشد الوراثي أن يلتقيكما معاً.',
+    arF: 'لا يمكنني مشاركة أي شيء عن شريكك غير الجينات التي تحملانها معاً، فهذه الخصوصية تحميكما كليكما. وإن أردتما الحديث معاً، يمكن للمرشد الوراثي أن يلتقيكما معاً.',
   },
   decide: {
-    en: 'That decision is yours, and couples in your situation choose differently. The options include going ahead with no change, testing during pregnancy, IVF with embryo testing, reconsidering plans together, adoption or fostering, and talking with a counsellor first. No option is right for everyone; a counsellor can go through what each involves.',
-    ar: 'هذا القرار لكما، ويختار الأزواج في وضعكما خيارات مختلفة. تشمل الخيارات المضي دون تغيير، أو الفحص أثناء الحمل، أو أطفال الأنابيب مع فحص الأجنة، أو إعادة النظر في الخطط معاً، أو الكفالة والرعاية، أو التحدث مع مستشار أولاً. لا يوجد خيار صحيح للجميع، ويمكن للمستشار شرح ما يتضمنه كل خيار.',
+    en: 'That decision is yours, and couples in your situation choose differently. The options include going ahead with no change, testing during pregnancy, IVF with embryo testing, reconsidering plans together, kafala or fostering, and talking with a genetic counsellor first. No option is right for everyone; a counsellor can go through what each involves.',
+    ar: 'هذا القرار لكما، ويختار الأزواج في وضعكما خيارات مختلفة. تشمل الخيارات المضي دون تغيير، أو الفحص أثناء الحمل، أو أطفال الأنابيب مع فحص الأجنة، أو إعادة النظر في الخطط معاً، أو الكفالة والرعاية، أو التحدث مع مرشد وراثي أولاً. لا يوجد خيار صحيح للجميع، ويمكن للمرشد شرح ما يتضمنه كل خيار.',
+    arF: 'هذا القرار لكما، ويختار الأزواج في وضعكما خيارات مختلفة. تشمل الخيارات المضي دون تغيير، أو الفحص أثناء الحمل، أو أطفال الأنابيب مع فحص الأجنة، أو إعادة النظر في الخطط معاً، أو الكفالة والرعاية، أو التحدث مع مرشد وراثي أولاً. لا يوجد خيار صحيح للجميع، ويمكن للمرشد شرح ما يتضمنه كل خيار.',
   },
   faith: {
-    en: 'Questions of faith are best taken to a scholar you trust; I can’t give religious rulings. For the medical side, I can explain your result, and a counsellor can talk it through with you.',
-    ar: 'الأسئلة الشرعية يُفضَّل طرحها على عالِم تثقان به، ولا يمكنني إصدار أحكام شرعية. أما الجانب الطبي، فيمكنني شرح نتيجتكما، ويمكن للمستشار مناقشته معكما.',
+    en: 'Questions of faith are best taken to a scholar you trust; I can’t give religious rulings. For the medical side, I can explain your result, and a genetic counsellor can talk it through with you.',
+    ar: 'الأسئلة الشرعية يُفضَّل طرحها على عالِم تثقان به، ولا يمكنني إصدار أحكام شرعية. أما الجانب الطبي، فيمكنني شرح نتيجتكما، ويمكن للمرشد الوراثي مناقشته معكما.',
+    arF: 'الأسئلة الشرعية يُفضَّل طرحها على عالِم تثقان به، ولا يمكنني إصدار أحكام شرعية. أما الجانب الطبي، فيمكنني شرح نتيجتكما، ويمكن للمرشد الوراثي مناقشته معكما.',
   },
   termination: {
-    en: 'That’s an important question, and a counsellor is the right person for it: they can explain the testing options in pregnancy and what UAE law allows, without judgement. Tap “Talk to a counsellor”.',
-    ar: 'هذا سؤال مهم، والمستشار هو الشخص المناسب له: يمكنه شرح خيارات الفحص أثناء الحمل وما يسمح به القانون في الإمارات، دون أحكام. اضغط «تحدّث إلى مستشار».',
+    en: 'That’s an important question, and a genetic counsellor is the right person for it: they can explain the testing options in pregnancy and what UAE law allows, without judgement. Tap “Talk to a genetic counsellor”.',
+    ar: 'هذا سؤال مهم، والمرشد الوراثي هو الشخص المناسب له: يمكنه شرح خيارات الفحص أثناء الحمل وما يسمح به القانون في الإمارات، دون أحكام. اضغط «تحدّث إلى مرشد وراثي».',
+    arF: 'هذا سؤال مهم، والمرشد الوراثي هو الشخص المناسب له: يمكنه شرح خيارات الفحص أثناء الحمل وما يسمح به القانون في الإمارات، دون أحكام. اضغطي «تحدّثي إلى مرشد وراثي».',
   },
 };
+/** Picks the reply for the asker's language and, in Arabic, their sex. */
+export const said = (l: { en: string; ar: string; arF?: string }, lang: Lang, sex?: 'F' | 'M') => (lang === 'en' ? l.en : sex === 'F' && l.arF ? l.arF : l.ar);
 
 const norm = (s: string) => s.replace(/[‘’ʼ`]/g, "'");
 
@@ -95,7 +112,13 @@ const RELATED = /(cousin|related|relative|consanguin|قرابة|أقارب|اق�
 const INCREASE = /(higher|increase|increases|raised|more likely|greater|extra|adds?\b|أعلى|يزيد|تزيد|يرفع|أكبر|إضافي|يضيف)/i;
 const OTHER = /(other|untested|not tested|outside|does not change|doesn'?t change|not change|أخرى|لم تُفحص|لم تفحص|غير المفحوصة|لا يغيّر|لا يغير|لا تغيّر)/i;
 const PERSONA = [/\b(as a|as your|i am a|i'?m a|speaking as a)\s+(doctor|physician|clinician|genetic counsel?lor|medical professional)\b/i, /(كطبيب|بصفتي طبيب|بصفتي طبيبة|أنا طبيب|انا طبيب|بصفتي مستشار)/];
-const BAD_TERMS = [/\bincompatible\b/i, /(الحمل الجيني|اختبار الحمل|فحص الحمل|غير متوافق|مرتبطان)/];
+const BAD_TERMS = [/\bincompatible\b/i, /(الحمل الجيني|اختبار الحمل|فحص الحمل|غير متوافق|مرتبطان|التبني|تبنّي|تبني)/];
+/** Every Arabic حامل-word must say what is carried (التغيّر / الصفة), or it reads as "pregnant". */
+const bareCarrier = (s: string) => [...s.matchAll(/حامل\S*/g)].some((m) => !/(تغي|الصفة|لهذا)/.test(s.slice(m.index!, m.index! + 30)));
+const DAUGHTER = /(daughter|ابنة|بنات|البنات|بناتك)/i;
+const CARRIER_WORD = /(carrier|حامل)/i;
+const AFFECTED_WORD = /(affected|have the condition|has the condition|مصاب|تصاب|يصاب)/i;
+const MILD_WORD = /(mild|milder|أخف|خفيف)/i;
 const FOREIGN = /[぀-ヿ㐀-鿿가-힯Ѐ-ӿऀ-ॿ]/;
 const DIRECTIVE = [
   /\byou (should|must|need to|have to|ought to)\s+(not\s+)?(marry|cancel|break|have|terminate|abort|do ivf|choose|review|share|tell)\b/i,
@@ -119,7 +142,7 @@ export function allowedNumbers(genes: string[]): Set<string> {
   return new Set(pool.flatMap(numbersIn));
 }
 
-export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: { lang?: Lang; related?: boolean; question?: string } = {}): Checks {
+export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: { lang?: Lang; related?: boolean; question?: string; xl?: string[]; strengths?: Record<string, number> } = {}): Checks {
   const answer = norm(raw);
   const allowed = allowedNumbers(genes);
   const numbersOk = numbersIn(answer).every((n) => allowed.has(n));
@@ -130,10 +153,15 @@ export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: 
   const sentences = answer.split(/[.!?؟\n]+/);
   const oddsOk = !(genes.length > 0 && sentences.some((s) => RELATED.test(s) && INCREASE.test(s) && !OTHER.test(s)));
   const personaOk = !PERSONA.some((r) => r.test(answer));
-  const latinWords = answer.replace(/\b(PGT-M|IVF|CAH|SMA|FMF|HbS|HbC|HbE|DNA)\b/g, '').match(/\b[a-z]{4,}\b/g);
-  const languageOk = !BAD_TERMS.some((r) => r.test(answer)) && !(ctx.lang === 'ar' && (FOREIGN.test(answer) || !!latinWords));
+  const latinWords = answer.replace(/\b(PGT-M|IVF|CAH|SMA|FMF|HbS|HbC|HbE|DNA|HOPE)\b/g, '').replace(/\b[A-Z0-9]{2,}[0-9][A-Z0-9]*\b/g, '').match(/\b[a-z]{4,}\b/gi);
+  const languageOk = !BAD_TERMS.some((r) => r.test(answer)) && !(ctx.lang === 'ar' && (FOREIGN.test(answer) || !!latinWords || bareCarrier(answer)));
   const framingOk = !(/(thiqa|ثقة)/i.test(answer) && !MONEY_Q.test(ctx.question ?? ''));
-  return { numbersOk, nonDirective, citesOk, oddsOk, personaOk, languageOk, framingOk };
+  // X-linked couple (she carries, he is affected): a sentence calling daughters carriers must also say they can be affected.
+  const xlOk = !((ctx.xl?.length ?? 0) > 0 && sentences.some((s) => DAUGHTER.test(s) && CARRIER_WORD.test(s) && !AFFECTED_WORD.test(s)));
+  // A milder match must not be described as a plain "1 in 4 affected" without saying milder.
+  const milder = Object.entries(ctx.strengths ?? {}).filter(([, v]) => v < 2).map(([g]) => g);
+  const strengthOk = !(milder.length > 0 && /1\s*(in|من)\s*4/.test(answer) && AFFECTED_WORD.test(answer) && !MILD_WORD.test(answer));
+  return { numbersOk, nonDirective, citesOk, oddsOk, personaOk, languageOk, framingOk, xlOk, strengthOk };
 }
 const allOk = (c: Checks) => Object.values(c).every(Boolean);
 
@@ -152,20 +180,26 @@ function knowledge(input: AskInput): string {
 const GLOSSARY_AR = [
   'Arabic wording (mandatory):',
   '- carrier = "يحمل التغيّر الجيني" / "حامل للتغيّر الجيني" (f. "تحمل التغيّر الجيني"). NEVER "الحمل الجيني" and never "حامل" or "حاملة" without "للتغيّر"; alone they mean pregnant.',
-  '- carrier test = "فحص الكشف عن حمل الصفة الوراثية"; testing during pregnancy = "الفحص أثناء الحمل". NEVER "اختبار الحمل" or "فحص الحمل".',
+  '- carrier test = "فحص حاملي الصفة الوراثية"; testing during pregnancy = "الفحص أثناء الحمل". NEVER "اختبار الحمل" or "فحص الحمل".',
   '- chance/risk = "احتمال", never "فرصة". related (as cousins) = "أقارب" / "بينكما قرابة", never "مرتبطان".',
-  '- partner = "شريكك" (gender-neutral), never assume husband/wife.',
+  '- partner: follow the addressee rule above; never say husband/wife (they may not be married yet).',
+  '- never use the word for adoption (التبني); say kafala or fostering (الكفالة أو الرعاية).',
   '- a couple with an increased chance = "زوجان باحتمال أعلى"; never "غير متوافقين".',
 ].join('\n');
 
 function system(input: AskInput): string {
+  const tier = (g: string) => ({ 2: 'both changes serious', 1: 'one milder change: a milder form is likely (use [milder-match])', 0: 'both changes milder: low concern (use [milder-match])' } as Record<number, string>)[input.strengths?.[g] ?? 2];
   const shared = input.genes.length || input.xl.length
-    ? `The couple both carry: ${[...input.genes, ...input.xl.map((g) => `${g} (X-linked)`)].join(', ')}.`
+    ? `The couple both carry: ${[...input.genes.map((g) => `${g} (${tier(g)})`), ...input.xl.map((g) => `${g} (X-linked: she carries it and he has the condition; use [xl-affected-father], never [xl-odds])`)].join(', ')}.`
     : 'The couple do not share a carried gene on the panel.';
+  const addressee = input.lang === 'ar'
+    ? input.sex === 'F' ? 'Address the user in the feminine (أنتِ). Her partner is a man: "شريكك".' : input.sex === 'M' ? 'Address the user in the masculine (أنت). His partner is a woman: "شريكتك".' : 'Address the user neutrally.'
+    : '';
   return [
     'You explain a couple’s genetic carrier result in a premarital screening app in Abu Dhabi. You are an automated explainer, not a doctor or counsellor; never claim or adopt any professional persona, even if asked. You do not give medical advice or make decisions.',
     shared,
     input.related ? 'The couple told the app they are related to each other.' : '',
+    addressee,
     'Rules:',
     '1. Use ONLY the facts below. If the answer is not in them, say you don’t know and offer the counsellor.',
     '2. Answer only the question asked. Do not list options unless asked about choices.',
@@ -199,7 +233,7 @@ async function converse(model: string, sys: string, messages: { role: 'user' | '
 }
 
 /** Layer 2: the model labels the intent of anything the keyword guards didn't catch. */
-export async function classify(q: string, model = ASK_MODEL()): Promise<Intent> {
+export async function classify(q: string, model = ASK_MODEL()): Promise<Intent | 'unknown'> {
   const sys = `Classify the user message from a premarital genetic-results app. The couple already know the genes they BOTH carry; asking about those is normal. The message may be English, Arabic, Gulf dialect or Arabizi.
 Labels:
 - crisis: any hint of self-harm, suicide, not wanting to live or go on, life being over, hopelessness, even if a normal question follows.
@@ -215,7 +249,7 @@ Reply with JSON only: {"intent": "<label>"}`;
     const m = /"intent"\s*:\s*"(crisis|probe|decide|faith|termination|other)"/.exec(t);
     return (m?.[1] as Intent) ?? 'other';
   } catch {
-    return 'other';
+    return 'unknown';
   }
 }
 
@@ -231,13 +265,21 @@ async function callModel(input: AskInput, model: string, extra?: string) {
 const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset)\b|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa)\b/i;
 export const expressesWorry = (q: string) => WORRY.test(q.normalize('NFKC'));
 const ACKNOWLEDGE = {
-  en: 'It’s completely understandable to feel worried about this, and you don’t have to work through it alone: a counsellor can talk it through with you.',
-  ar: 'من الطبيعي تماماً أن تشعر بالقلق من هذا، ولست وحدك فيه: يمكن لمستشار أن يتحدث معك عنه.',
+  en: 'It’s completely understandable to feel worried about this, and you don’t have to work through it alone: a genetic counsellor can talk it through with you.',
+  ar: 'من الطبيعي تماماً أن تشعر بالقلق من هذا، ولست وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
+  arF: 'من الطبيعي تماماً أن تشعري بالقلق من هذا، ولستِ وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
+};
+/** When the safety checks themselves can't run, show help rather than an unchecked answer. */
+const CHECK_FAILED = {
+  en: `I couldn’t check your message safely just now. If you are struggling, call 999 (998 for an ambulance) or the ${HELP_LINE.en}. Otherwise a genetic counsellor can answer: tap below.`,
+  ar: `لم أستطع فحص رسالتك بأمان الآن. إن كنت تمرّ بوقت صعب فاتصل بـ999 (998 للإسعاف) أو ${HELP_LINE.ar}. وإلا فيمكن للمرشد الوراثي الإجابة: اضغط أدناه.`,
+  arF: `لم أستطع فحص رسالتك بأمان الآن. إن كنتِ تمرّين بوقت صعب فاتصلي بـ999 (998 للإسعاف) أو ${HELP_LINE.ar}. وإلا فيمكن للمرشد الوراثي الإجابة: اضغطي أدناه.`,
 };
 
 const SAFE_FALLBACK = {
-  en: 'I couldn’t answer that one safely from the checked sources. A counsellor can: tap “Talk to a counsellor”, and they will contact you.',
-  ar: 'لم أستطع الإجابة عن هذا السؤال بأمان من المصادر الموثوقة. يمكن للمستشار ذلك: اضغط «تحدّث إلى مستشار» وسيتواصل معك.',
+  en: 'I couldn’t answer that one safely from the checked sources. A genetic counsellor can: tap below, and they will contact you.',
+  ar: 'لم أستطع الإجابة عن هذا السؤال بأمان من المصادر الموثوقة. يمكن للمرشد الوراثي ذلك: اضغط أدناه وسيتواصل معك.',
+  arF: 'لم أستطع الإجابة عن هذا السؤال بأمان من المصادر الموثوقة. يمكن للمرشد الوراثي ذلك: اضغطي أدناه وسيتواصل معك.',
 };
 
 function problems(c: Checks): string {
@@ -249,27 +291,33 @@ function problems(c: Checks): string {
     !c.languageOk && 'it used a forbidden term or foreign script (see the Arabic wording rules).',
     !c.framingOk && 'it attached insurance cover to one option without being asked.',
     !c.citesOk && 'it did not cite valid fact ids.',
+    !c.xlOk && 'for this X-linked couple, daughters are either affected (1 in 2) or carriers; say both, using [xl-affected-father].',
+    !c.strengthOk && 'this is a milder match: say the 1 in 4 child would usually have a milder form, using [milder-match].',
   ].filter(Boolean).join(' ');
 }
 
 export async function ask(input: AskInput, model = ASK_MODEL()): Promise<AskOutput> {
   const t0 = Date.now();
-  const okChecks: Checks = { numbersOk: true, nonDirective: true, citesOk: true, oddsOk: true, personaOk: true, languageOk: true, framingOk: true };
+  const okChecks: Checks = { numbersOk: true, nonDirective: true, citesOk: true, oddsOk: true, personaOk: true, languageOk: true, framingOk: true, xlOk: true, strengthOk: true };
+  const say = (l: { en: string; ar: string; arF?: string }) => said(l, input.lang, input.sex);
   const reply = (intent: Exclude<Intent, 'other'>, route: 'guard' | 'intent'): AskOutput => ({
-    answer: REPLIES[intent][input.lang], cites: ['counsellor'], escalate: intent === 'crisis' || intent === 'termination', urgent: intent === 'crisis',
+    answer: say(REPLIES[intent]), cites: ['counsellor'], escalate: intent === 'crisis' || intent === 'termination', urgent: intent === 'crisis',
     route, intent, checks: okChecks, ms: Date.now() - t0,
   });
+  const worried = expressesWorry(input.question);
 
   if (!input.noGuards) {
     const g = guardIntent(input.question);
     if (g && g !== 'other') return reply(g, 'guard');
     const m = await classify(input.question, model);
+    // Fail closed: if the intent check can't run, nobody gets an unchecked answer; they get help instead.
+    if (m === 'unknown') return { answer: say(CHECK_FAILED), cites: ['counsellor'], escalate: true, urgent: true, route: 'fallback', checks: okChecks, model, ms: Date.now() - t0 };
     if (m !== 'other') return reply(m, 'intent');
   }
 
   let draft: { answer: string; cites: string[]; escalate: boolean } | null = null;
   let problem: string | undefined;
-  const ctx = { lang: input.lang, related: input.related, question: input.question };
+  const ctx = { lang: input.lang, related: input.related, question: input.question, xl: input.xl, strengths: input.strengths };
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       draft = await callModel(input, model, problem);
@@ -280,10 +328,11 @@ export async function ask(input: AskInput, model = ASK_MODEL()): Promise<AskOutp
     const checks = checkAnswer(draft.answer, draft.cites, [...input.genes, ...input.xl], ctx);
     if (draft.answer && (input.noGuards || allOk(checks))) {
       // Someone who says they are scared or worried hears that first, and is offered a person.
-      if (!input.noGuards && expressesWorry(input.question)) return { ...draft, answer: `${ACKNOWLEDGE[input.lang]} ${draft.answer}`, escalate: true, urgent: false, route: 'model', checks, model, ms: Date.now() - t0 };
+      if (!input.noGuards && worried) return { ...draft, answer: `${say(ACKNOWLEDGE)} ${draft.answer}`, escalate: true, urgent: false, route: 'model', checks, model, ms: Date.now() - t0 };
       return { ...draft, urgent: false, route: 'model', checks, model, ms: Date.now() - t0 };
     }
     problem = problems(checks);
   }
-  return { answer: SAFE_FALLBACK[input.lang], cites: ['counsellor'], escalate: true, urgent: false, route: 'fallback', checks: okChecks, model, ms: Date.now() - t0 };
+  // A worried person whose answer failed gets the help card too.
+  return { answer: say(SAFE_FALLBACK), cites: ['counsellor'], escalate: true, urgent: worried, route: 'fallback', checks: okChecks, model, ms: Date.now() - t0 };
 }

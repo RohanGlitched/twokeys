@@ -2,7 +2,8 @@
 // non-directive and avoids stigma ("carrier is not a disease"). Three reading levels per language.
 import type { Locale } from '@/i18n/locales';
 
-type L = { en: string; ar: string };
+/** `arF`: Arabic addressed to a woman, where it differs. */
+type L = { en: string; ar: string; arF?: string };
 export type Level = 'simple' | 'standard' | 'detailed';
 
 export interface Condition {
@@ -25,7 +26,7 @@ export const CONDITIONS: Record<string, Condition> = {
     what: {
       simple: {
         en: 'The body cannot make enough of some hormones from the adrenal glands. Babies are checked for it at birth.',
-        ar: 'لا يصنع الجسم ما يكفي من بعض الهرمونات التي تفرزها الغدة الكظرية. يُفحص المواليد له عند الولادة.',
+        ar: 'غدد صغيرة فوق الكليتين لا تصنع ما يكفي من بعض الهرمونات. يكشفها فحص بسيط عند الولادة، ويعالجها دواء يومي.',
       },
       standard: {
         en: 'An enzyme the adrenal glands need to make cortisol is missing or weak. Without treatment, salt-wasting crises can be dangerous in the first weeks of life. Lifelong hormone medicine works well.',
@@ -46,7 +47,7 @@ export const CONDITIONS: Record<string, Condition> = {
     what: {
       simple: {
         en: 'Red blood cells cannot carry oxygen well. Some children need regular blood transfusions.',
-        ar: 'لا تحمل خلايا الدم الحمراء الأكسجين جيداً. يحتاج بعض الأطفال إلى نقل دم منتظم.',
+        ar: 'لا ينقل الدم الأكسجين جيداً، فيتعب الطفل، ويحتاج بعض الأطفال إلى نقل دم كل بضعة أسابيع.',
       },
       standard: {
         en: 'HBB makes part of haemoglobin. Two changed copies can cause beta thalassaemia major (severe anaemia from early childhood) or sickle cell disease (pain crises, infections). Which one depends on the exact changes both parents carry.',
@@ -59,7 +60,11 @@ export const CONDITIONS: Record<string, Condition> = {
     },
     severity: 'severe',
     care: { en: 'Lifelong care; some cases curable by transplant or gene therapy.', ar: 'رعاية مدى الحياة، وبعض الحالات قابلة للشفاء بالزراعة أو العلاج الجيني.' },
-    carrierNote: { en: 'Carriers can have mild anaemia with small red cells. It is usually harmless, but tell your doctor you carry this before taking iron.', ar: 'قد يكون لدى من يحمل هذا التغيّر فقر دم خفيف مع صِغر حجم خلايا الدم الحمراء. وهو غير ضار عادة، لكن أخبر طبيبك بذلك قبل تناول الحديد.' },
+    carrierNote: {
+      en: 'Beta-thalassaemia carriers can have small red cells and a slightly low blood count, which is harmless; tell your doctor, so it isn’t mistaken for iron deficiency. Sickle-cell carriers should drink well and rest in heat or hard exercise, and mention it before an anaesthetic.',
+      ar: 'قد تكون خلايا الدم الحمراء أصغر لدى حامل تغيّر بيتا ثلاسيميا، مع انخفاض بسيط في الدم غير ضار؛ أخبر طبيبك كي لا يُظن أنه نقص حديد. وعلى حامل تغيّر فقر الدم المنجلي أن يشرب الماء جيداً ويرتاح في الحر أو الجهد الشديد، وأن يذكر ذلك قبل أي تخدير.',
+      arF: 'قد تكون خلايا الدم الحمراء أصغر لدى حاملة تغيّر بيتا ثلاسيميا، مع انخفاض بسيط في الدم غير ضار؛ أخبري طبيبك كي لا يُظن أنه نقص حديد. وعلى حاملة تغيّر فقر الدم المنجلي أن تشرب الماء جيداً وترتاح في الحر أو الجهد الشديد، وأن تذكر ذلك قبل أي تخدير.',
+    },
     source: { label: 'MedlinePlus Genetics: beta thalassemia', url: 'https://medlineplus.gov/genetics/condition/beta-thalassemia/' },
   },
   MEFV: {
@@ -89,7 +94,7 @@ export const CONDITIONS: Record<string, Condition> = {
     what: {
       simple: {
         en: 'Central vision slowly gets worse, usually from childhood or the teens. Side vision stays.',
-        ar: 'تضعف الرؤية المركزية تدريجياً، عادة منذ الطفولة أو المراهقة، وتبقى الرؤية الجانبية.',
+        ar: 'يضعف وسط النظر ببطء، عادة منذ الطفولة أو المراهقة، ويبقى النظر من الجانبين.',
       },
       standard: {
         en: 'Waste builds up in the retina and damages the macula, the part used for reading and faces. There is no cure yet; low-vision aids help, and trials are under way.',
@@ -118,7 +123,7 @@ export const CONDITIONS: Record<string, Condition> = {
       },
       detailed: {
         en: 'Usher syndrome 2A or non-syndromic autosomal recessive RP, depending on alleles. Hearing aids or cochlear implants; RNA and gene therapies are in trials.',
-        ar: 'متلازمة أشر 2A أو التنكس الشبكي الصباغي (التهاب الشبكية الصباغي) المتنحي غير المتلازمي بحسب المتغيرات. السماعات أو زراعة القوقعة، والعلاجات الجينية والـ RNA قيد التجارب.',
+        ar: 'متلازمة أشر 2A أو التنكس الشبكي الصباغي المتنحي غير المتلازمي بحسب المتغيرات. السماعات أو زراعة القوقعة، والعلاجات الجينية والـ RNA قيد التجارب.',
       },
     },
     severity: 'moderate',
@@ -131,7 +136,7 @@ export const CONDITIONS: Record<string, Condition> = {
     what: {
       simple: {
         en: 'Most changes in this gene cause no illness. A few combinations cause anaemia.',
-        ar: 'معظم التغيّرات في هذا الجين لا تسبب مرضاً، وبعض التركيبات تسبب فقر الدم.',
+        ar: 'غالباً لا يسبب هذا الجين مرضاً، لكن إذا ورث الطفل تغيّرات كثيرة فيه فقد يصاب بفقر الدم.',
       },
       standard: {
         en: 'There are four alpha-globin gene copies. Losing one or two is common in the UAE and usually silent. Losing three causes HbH disease; losing all four is very severe.',
@@ -144,7 +149,11 @@ export const CONDITIONS: Record<string, Condition> = {
     },
     severity: 'variable',
     care: { en: 'Often silent; severe forms need specialist care.', ar: 'غالباً بلا أعراض، والأشكال الشديدة تحتاج رعاية متخصصة.' },
-    carrierNote: { en: 'Carriers can have mild anaemia with small red cells. It is usually harmless, but tell your doctor you carry this before taking iron.', ar: 'قد يكون لدى من يحمل هذا التغيّر فقر دم خفيف مع صِغر حجم خلايا الدم الحمراء. وهو غير ضار عادة، لكن أخبر طبيبك بذلك قبل تناول الحديد.' },
+    carrierNote: {
+      en: 'Carriers can have small red cells and a slightly low blood count, which is harmless; tell your doctor, so it isn’t mistaken for iron deficiency.',
+      ar: 'قد تكون خلايا الدم الحمراء أصغر لدى حامل هذا التغيّر، مع انخفاض بسيط في الدم غير ضار؛ أخبر طبيبك كي لا يُظن أنه نقص حديد.',
+      arF: 'قد تكون خلايا الدم الحمراء أصغر لدى حاملة هذا التغيّر، مع انخفاض بسيط في الدم غير ضار؛ أخبري طبيبك كي لا يُظن أنه نقص حديد.',
+    },
     source: { label: 'MedlinePlus Genetics: alpha thalassemia', url: 'https://medlineplus.gov/genetics/condition/alpha-thalassemia/' },
   },
   GJB2: {
@@ -217,7 +226,7 @@ export const CONDITIONS: Record<string, Condition> = {
     what: {
       simple: {
         en: 'Nerves that move the muscles weaken. New medicines work best when started very early.',
-        ar: 'تضعف الأعصاب التي تحرك العضلات. وتعمل الأدوية الحديثة أفضل ما يكون عند البدء بها مبكراً جداً.',
+        ar: 'تضعف عضلات الطفل، وقد يصعب عليه التنفس والبلع. تساعد الأدوية الجديدة أكثر إذا بدأت قبل ظهور أي علامة.',
       },
       standard: {
         en: 'Motor neurons in the spinal cord are lost, causing weakness that can affect breathing and swallowing. Gene and drug therapies now change the outlook, especially when given before symptoms.',

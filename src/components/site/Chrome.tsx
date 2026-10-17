@@ -6,7 +6,7 @@ type L = { en: string; ar: string };
 const NAV: { href: string; label: L }[] = [
   { href: '/how', label: { en: 'How it works', ar: 'كيف يعمل' } },
   { href: '/demo', label: { en: 'Try it', ar: 'جرّبه' } },
-  { href: '/desk', label: { en: 'Counsellors', ar: 'المستشارون' } },
+  { href: '/desk', label: { en: 'Counsellors', ar: 'المرشدون' } },
   { href: '/programme', label: { en: 'Programme', ar: 'البرنامج' } },
   { href: '/proof', label: { en: 'Proof', ar: 'الإثبات' } },
   { href: '/governance', label: { en: 'Governance', ar: 'الحوكمة' } },
@@ -27,7 +27,16 @@ export function Nav({ lang, path = '' }: { lang: Locale; path?: string }) {
         ))}
         <Link href={`/${other}${path}`} lang={other} className="rounded-[2px] border border-rule px-2.5 py-1 hover:border-ink">{other === 'ar' ? 'العربية' : 'English'}</Link>
       </nav>
-      <Link href={`/${other}${path}`} lang={other} className="rounded-[2px] border border-rule px-2.5 py-1 text-[14px] md:hidden">{other === 'ar' ? 'العربية' : 'English'}</Link>
+      {/* Phones: the same links in a native disclosure, so every page is one tap from the top. */}
+      <details className="relative md:hidden">
+        <summary className="cursor-pointer list-none rounded-[2px] border border-ink-3 px-3 py-1.5 text-[14px]">{lang === 'ar' ? 'القائمة' : 'Menu'}</summary>
+        <nav className="absolute end-0 z-30 mt-2 flex w-56 flex-col rounded-[3px] border border-ink bg-paper p-2 text-[15px] shadow-sm">
+          {NAV.map((n) => (
+            <Link key={n.href} href={`/${lang}${n.href}`} aria-current={path === n.href ? 'page' : undefined} className="rounded-[2px] px-3 py-2.5 hover:bg-wool-2">{n.label[lang]}</Link>
+          ))}
+          <Link href={`/${other}${path}`} lang={other} className="mt-1 rounded-[2px] border-t border-rule px-3 py-2.5">{other === 'ar' ? 'العربية' : 'English'}</Link>
+        </nav>
+      </details>
     </header>
   );
 }
