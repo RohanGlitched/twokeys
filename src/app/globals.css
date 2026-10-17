@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
+/* Two Keys: colours from Al Sadu wool, the pedigree chart's ink, and one red reserved for "shared". */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --wool: #F1EEE8;      /* undyed wool: the ground */
+  --wool-2: #E7E2D8;    /* a shade down, for wells */
+  --paper: #FAF8F4;     /* raised surfaces */
+  --ink: #22201E;       /* carded charcoal: text and lines */
+  --ink-2: #55504A;     /* secondary text */
+  --ink-3: #7B746B;     /* tertiary, still 4.5:1 on wool */
+  --rule: #D3CCC0;
+  --madder: #9B2335;    /* shared, and nothing else */
+  --madder-2: #F3DDE0;
+  --indigo: #2E3A6E;    /* hers / yours */
+  --indigo-2: #DEE1EE;
+  --camel: #8C6A3F;     /* his / theirs (darkened for contrast) */
+  --camel-2: #EFE4D4;
+  --sage: #4F6F58;      /* clear */
+  --sage-2: #DEE8DF;
+  --focus: #2E3A6E;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-wool: var(--wool);
+  --color-wool-2: var(--wool-2);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-madder: var(--madder);
+  --color-madder-2: var(--madder-2);
+  --color-indigo: var(--indigo);
+  --color-indigo-2: var(--indigo-2);
+  --color-camel: var(--camel);
+  --color-camel-2: var(--camel-2);
+  --color-sage: var(--sage);
+  --color-sage-2: var(--sage-2);
+  --font-sans: var(--font-alexandria), system-ui, sans-serif;
+  --font-naskh: var(--font-naskh), var(--font-alexandria), serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html { background: var(--wool); color: var(--ink); }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--wool);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+/* Arabic body text reads best in naskh; headings stay in Alexandria. */
+html[lang="ar"] body { font-family: var(--font-naskh); font-weight: 400; }
+html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3, html[lang="ar"] .display { font-family: var(--font-sans); }
+
+:focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+::selection { background: var(--indigo-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
