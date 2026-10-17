@@ -266,7 +266,7 @@ function ReportProblem({ t }: { t: T }) {
 
 interface Made { relation: Relation; url: string; id: string; manage: string; read?: number; booked?: number; revoked?: boolean }
 
-export function Family({ lang, t, onBack, genes, headingId }: { lang: Locale; t: T; onBack: () => void; genes: { gene: string; inheritance: 'AR' | 'XL' }[]; headingId: string }) {
+export function Family({ lang, t, identity, onBack, genes, headingId }: { lang: Locale; t: T; identity: string; onBack: () => void; genes: { gene: string; inheritance: 'AR' | 'XL' }[]; headingId: string }) {
   const [gene, setGene] = useState(genes[0]?.gene ?? '');
   const [relation, setRelation] = useState<Relation>('sibling');
   const [made, setMade] = useState<Made[]>([]);
@@ -276,7 +276,7 @@ export function Family({ lang, t, onBack, genes, headingId }: { lang: Locale; t:
   const create = async () => {
     if (!gene) return;
     const { c, key } = await sealLetter(letterFor(gene, relation, lang, inheritance));
-    const r = await fetch('/api/family', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ c }) });
+    const r = await fetch('/api/family', { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ c }) });
     const j = await r.json();
     if (!r.ok) return;
     setMade((m) => [...m, { relation, id: j.id, manage: j.manage, url: `${window.location.origin}/${lang}/r/${j.id}#${key}` }]);

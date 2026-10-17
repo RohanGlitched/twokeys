@@ -147,7 +147,7 @@ export function Desk({ lang }: { lang: Locale }) {
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-ink-2">
                       {x.priority && x.priority !== 'routine' && !done(x) && <span className={`rounded-[2px] px-1.5 py-0.5 font-medium ${x.priority === 'urgent' ? 'bg-madder text-wool' : 'border border-indigo text-indigo'}`}>{t(PRIORITY[x.priority])}</span>}
-                      <span dir="ltr" className="font-mono">{x.sharedGenes.join(', ') || '—'}</span>
+                      <span>{(x as { sharedCount?: number }).sharedCount ? t({ en: `${(x as { sharedCount?: number }).sharedCount} shared gene${(x as { sharedCount?: number }).sharedCount === 1 ? '' : 's'}`, ar: `جينات مشتركة: ${(x as { sharedCount?: number }).sharedCount}` }) : '—'}</span>
                       <span>{t(STATUS[x.status])}</span>
                       <span>{x.language === 'ar' ? 'العربية' : 'English'}</span>
                       {x.pairing && (partnerOf.get(x.pairing) ?? 0) > 1 && <span className="text-indigo">{t({ en: 'partner also asked', ar: 'الشريك طلب أيضاً' })}</span>}

@@ -77,17 +77,38 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
     void ia;
   }, 60_000);
 
-  it('nothing is named until both people confirm each other', async () => {
+  it('no tokens, and no name for the joiner, until both people confirm each other', async () => {
+    const link = newLink();
+    const [ia, ib] = await Promise.all([as('mariam'), as('saeed')]);
+    const post = (path: string, identity: string, body: object) => fetch(`${BASE}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session: sessionId(link), ...body }) }).then((r) => r.json());
+    expect(await post('/api/lab/tokens', ia, { role: 'A' })).toEqual({ waiting: true });
+    expect(await post('/api/lab/tokens', ib, { role: 'B' })).toEqual({ waiting: true });
+    // Whoever holds the joiner's seat (perhaps someone who photographed the link) learns no name yet.
+    expect(await post('/api/lab/confirm', ib, { role: 'B' })).toEqual({ waiting: true });
+    // The link's creator sees the joiner and confirms.
+    expect((await post('/api/lab/confirm', ia, { role: 'A', ok: true })).partner.name.en).toBe('Saeed');
+    expect((await post('/api/lab/confirm', ib, { role: 'B' })).partner.name.en).toBe('Mariam');
+    // Still nothing issued until the joiner confirms too.
+    expect(await post('/api/lab/tokens', ia, { role: 'A' })).toEqual({ waiting: true });
+    await post('/api/lab/confirm', ib, { role: 'B', ok: true });
+    const t = await post('/api/lab/tokens', ib, { role: 'B' });
+    expect(t.tokens).toHaveLength(64);
+    // Asking again gives the identical list.
+    expect((await post('/api/lab/tokens', ib, { role: 'B' })).tokens).toEqual(t.tokens);
+  }, 60_000);
+
+  it('a phone that skips the comparison gets nothing named', async () => {
     const link = newLink();
     const [ia, ib] = await Promise.all([as('mariam'), as('saeed')]);
     const post = (path: string, identity: string, body: object) => fetch(`${BASE}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session: sessionId(link), ...body }) }).then((r) => r.json());
     await post('/api/lab/tokens', ia, { role: 'A' });
     await post('/api/lab/tokens', ib, { role: 'B' });
-    // A seated person asking straight away, before any confirmation, learns nothing.
-    expect(await post('/api/lab/reveal', ib, { role: 'B', matched: [] })).toEqual({ waiting: true });
-    const who = await post('/api/lab/confirm', ib, { role: 'B' });
-    expect(who.partner.name.en).toBe('Mariam');
-    expect(await post('/api/lab/reveal', ib, { role: 'B', matched: [] })).toEqual({ waiting: true });
+    await post('/api/lab/confirm', ia, { role: 'A', ok: true });
+    await post('/api/lab/confirm', ib, { role: 'B', ok: true });
+    await post('/api/lab/reveal', ia, { role: 'A', matched: [] });
+    const r = await post('/api/lab/reveal', ib, { role: 'B', matched: [] });
+    expect(r.agrees).toBe(false);
+    expect(r.genes).toEqual([]);
   }, 60_000);
 
   it('a person who doesn’t recognise who joined can stop', async () => {

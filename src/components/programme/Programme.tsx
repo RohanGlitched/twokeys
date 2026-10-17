@@ -13,7 +13,7 @@ interface Family { notes: Cell; readShared: Cell; booked: Cell }
 type Source = 'live' | 'seededSynthetic';
 interface M {
   week: number;
-  privacy: { epsilonPerCount: number; epsilonThisRelease: number; epsilonCumulative: number; releases: number; minimumCell: number; refreshed: string };
+  privacy: { epsilonPerCount: number; epsilonThisRelease: number; epsilonPerPersonLifetime: number; releases: number; minimumCell: number; letterCap: number; refreshed: string };
   counselling: Record<Source, Counselling>;
   understanding: Record<Source, Understanding>;
   family: Record<Source, Family>;
@@ -60,7 +60,7 @@ export function Programme({ lang }: { lang: Locale }) {
         {([['live', { en: 'Live demo traffic', ar: 'استخدام العرض الفعلي' }], ['seededSynthetic', { en: 'Synthetic month (illustration)', ar: 'شهر افتراضي (للتوضيح)' }]] as const).map(([k, l]) => (
           <button key={k} aria-pressed={src === k} onClick={() => setSrc(k)} className={`rounded-[2px] border px-3.5 py-2 text-[14px] ${src === k ? 'border-ink bg-ink text-wool' : 'border-ink-3 text-ink-2 hover:border-ink'}`}>{t(l)}</button>
         ))}
-        <span className="ms-auto text-[12px] text-ink-2">{t({ en: `This week’s release (${m.privacy.releases} so far), refreshed weekly`, ar: `إصدار هذا الأسبوع (${m.privacy.releases} حتى الآن)، يُحدَّث أسبوعياً` })}</span>
+        <span className="ms-auto text-[12px] text-ink-2">{t({ en: `Release for last week (${m.privacy.releases} so far), published weekly`, ar: `إصدار الأسبوع الماضي (${m.privacy.releases} حتى الآن)، يُنشر أسبوعياً` })}</span>
       </div>
       <p className={`mt-3 border-s-4 px-3 py-2 text-[13px] leading-relaxed ${synthetic ? 'border-camel bg-paper' : 'border-sage bg-paper'}`}>
         {synthetic
@@ -100,9 +100,9 @@ export function Programme({ lang }: { lang: Locale }) {
         <div>
           <h2 className="text-[22px] font-semibold tracking-tight">{t({ en: 'How these numbers protect people', ar: 'كيف تحمي هذه الأرقام الناس' })}</h2>
           <ul className="mt-3 list-disc space-y-2 ps-5 text-[14px] leading-relaxed text-ink-2">
-            <li>{t({ en: `Every count carries random noise (differential privacy, ε = ${m.privacy.epsilonPerCount} per count; this release spends ε = ${m.privacy.epsilonThisRelease} in total on live records), so no single person changes what you see.`, ar: `يحمل كل عدد ضجيجاً عشوائياً (الخصوصية التفاضلية، ε = ${m.privacy.epsilonPerCount} لكل عدد، ويستهلك هذا الإصدار ε = ${m.privacy.epsilonThisRelease} إجمالاً على السجلات الفعلية)، فلا يغيّر شخص واحد ما تراه.` })}</li>
+            <li>{t({ en: `Each person counts once: their first teach-back, their first booking, and at most ${m.privacy.letterCap} family notes ever. Every count carries exact random noise (differential privacy, ε = ${m.privacy.epsilonPerCount} per count; ε = ${m.privacy.epsilonThisRelease} in this release).`, ar: `يُحتسب كل شخص مرة واحدة: أول اختبار فهم، وأول حجز، و${m.privacy.letterCap} رسائل عائلية على الأكثر طوال الوقت. ويحمل كل عدد ضجيجاً عشوائياً دقيقاً (الخصوصية التفاضلية، ε = ${m.privacy.epsilonPerCount} لكل عدد؛ وε = ${m.privacy.epsilonThisRelease} في هذا الإصدار).` })}</li>
             <li>{t({ en: `Groups smaller than ${m.privacy.minimumCell} are hidden, and rates and medians appear only above that size.`, ar: `تُحجب المجموعات الأصغر من ${m.privacy.minimumCell}، ولا تظهر النسب والوسيطات إلا فوق هذا الحجم.` })}</li>
-            <li>{t({ en: `One release a week, cached: asking again returns the same numbers. The noise comes from a cryptographic source, so it can’t be recomputed or averaged away. Total spent so far across all releases: ε = ${m.privacy.epsilonCumulative}.`, ar: `إصدار واحد كل أسبوع، محفوظ: إعادة الطلب تعيد الأرقام نفسها. ويأتي الضجيج من مصدر تشفيري، فلا يمكن إعادة حسابه أو إلغاؤه بالمتوسط. المجموع المستهلك عبر كل الإصدارات حتى الآن: ε = ${m.privacy.epsilonCumulative}.` })}</li>
+            <li>{t({ en: `Each weekly release counts only that week’s records, so a person’s records appear in one release only and later releases can’t be averaged against it. Asking again returns the same numbers. So the guarantee for any one person is ε = ${m.privacy.epsilonPerPersonLifetime} for life, however many releases there are.`, ar: `يحتسب كل إصدار أسبوعي سجلات ذلك الأسبوع فقط، فتظهر سجلات الشخص في إصدار واحد ولا يمكن حساب متوسطها مع إصدارات لاحقة. وإعادة الطلب تعيد الأرقام نفسها. لذا فضمان أي شخص هو ε = ${m.privacy.epsilonPerPersonLifetime} مدى الحياة، مهما كثرت الإصدارات.` })}</li>
             <li>{t({ en: 'Medians are shown only for the synthetic month: they can’t be noised safely at this scale. Counsellors see their exact queue on the desk; only these published numbers are noised.', ar: 'تظهر الوسيطات للشهر الافتراضي فقط، إذ لا يمكن إضافة الضجيج إليها بأمان على هذا النطاق. ويرى المرشدون قائمتهم الدقيقة في المكتب، ولا يُضاف الضجيج إلا لهذه الأرقام المنشورة.' })}</li>
             <li>{t({ en: 'The service never learns which couples share a gene unless they book. The comparison happens on their phones; the lab names matches only to the two people paired.', ar: 'لا تعرف الخدمة أي زوجين يتشاركان جيناً إلا إذا حجزا. فالمقارنة تجري على هاتفيهما، ولا يسمّي المختبر التطابق إلا للشخصين المقترنين.' })}</li>
           </ul>

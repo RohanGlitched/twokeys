@@ -55,25 +55,20 @@ export function sessionTokens(labKey: Uint8Array, session: string, role: Role, f
 }
 
 /**
- * What a phone receives: exactly SET_SIZE opaque, indexed tokens with no gene names. Real tokens are
- * padded with lab-made decoys that match nothing, so even someone holding the phone can't tell
- * how many findings its owner has.
+ * What a phone receives: exactly SET_SIZE opaque tokens with no gene names. Real tokens are padded with
+ * lab-made decoys that match nothing, and the whole list is put in a lab-keyed order, so a token's
+ * position says nothing about which finding it stands for. Everything is derived from the lab key, the
+ * session and the seat, so asking again returns the identical list: comparing two answers reveals
+ * nothing, and the lab can rebuild the exact list later to check the phone's first lock.
  */
 export function issue(labKey: Uint8Array, session: string, role: Role, findings: Finding[]): Token[] {
-  const real = sessionTokens(labKey, session, role, findings).map(({ i, token }) => ({ i, token }));
-  const decoys: Token[] = [];
-  for (let i = real.length; i < SET_SIZE; i++) {
-    const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (x) => x.toString(16).padStart(2, '0')).join('');
-    decoys.push({ i, token: token(labKey, session, `pad:${role}`, nonce) });
-  }
-  // Shuffle so decoys aren't always at the end; indices travel with their tokens.
-  const all = [...real, ...decoys];
-  for (let k = all.length - 1; k > 0; k--) {
-    const j = crypto.getRandomValues(new Uint32Array(1))[0] % (k + 1);
-    [all[k], all[j]] = [all[j], all[k]];
-  }
-  return all;
+  const real = sessionTokens(labKey, session, role, findings).map(({ token }) => token);
+  const all = [...real];
+  for (let j = real.length; j < SET_SIZE; j++) all.push(token(labKey, session, `pad:${role}`, `${j}`));
+  const key = (t: string) => toHex0(hmac(sha256, labKey, enc.encode(`twokeys/v2|order|${session}|${role}|${t}`)));
+  return all.map((t) => ({ t, k: key(t) })).sort((x, y) => (x.k < y.k ? -1 : 1)).map(({ t }, i) => ({ i, token: t }));
 }
+const toHex0 = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 
 /** strength 2 = both carry a serious change; 1 = one of them carries a milder one; 0 = both milder (low concern). */
 export interface SharedGene { gene: string; inheritance: Inheritance; strength: 0 | 1 | 2 }

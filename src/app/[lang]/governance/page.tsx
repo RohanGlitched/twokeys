@@ -15,20 +15,23 @@ type L = { en: string; ar: string };
 
 /** DoH Responsible AI Standard (DoH/ST/DDGO/RAI/V1/2025, Oct 2025): clause, what Two Keys does, evidence, and the gap. */
 const CLAUSES: { c: string; req: string; does: string; evidence: [string, string][]; gap?: string }[] = [
-  { c: '3.1.1.1.1', req: 'Co-designed with clinicians and patients', does: 'Wording follows published counselling practice. 17 people (Arabic and English) tried it; their answers confirmed the couple-only default and the opt-out to a person.', evidence: [['/proof#study', 'User study']], gap: 'The sample is friends and family, not representative. A pilot recruits through screening centres.' },
+  { c: '3.1.1.1.1', req: 'Co-designed with clinicians and patients', does: 'Wording follows published counselling practice (NSGC non-directive counselling, ACMG reporting, Mackenzie’s Mission couple reports). 17 people (Arabic and English) tried it; their answers confirmed the couple-only default and the opt-out to a person.', evidence: [['/proof#study', 'User study']], gap: 'The sample is friends and family, not representative. Phase 0 runs co-design sessions with the operator’s counsellors and with couples recruited through screening centres.' },
   { c: '3.1.1.2.1–2', req: 'Human oversight and escalation protocols', does: 'Every clinical step goes through a named genetic counsellor. Distress in the explainer shows 999, 998 and the UAE Mental Support Line (800 4673) and offers a one-tap same-day call (4-hour clock); pregnancy gets 1 working day; routine 2.', evidence: [['/desk', 'Counsellor desk'], ['/demo', 'Crisis path in the phone']], gap: 'The person must tap to book: nobody is contacted without their consent. Clock targets need staffed counsellors in a pilot.' },
   { c: '3.1.2.1.2', req: 'Graceful degradation and fallback', does: 'If the model fails or an answer breaks a check twice, the person gets a safe fixed answer and a counsellor button. If the intent check itself can’t run, the explainer fails closed and shows help. The rest of the app works with the explainer off.', evidence: [['/proof', 'Route counts in the evaluation']] },
-  { c: '3.1.2.1.3', req: 'Safety testing before deployment', does: 'Ablation evaluation on 60 development and 39 frozen held-out questions, graded by three language-model judges; misses and their fixes published.', evidence: [['/proof', 'Evaluation'], ['https://github.com/RohanGlitched/twokeys/blob/main/data/eval-ask.json', 'Every answer']] },
+  { c: '3.1.2.1.3', req: 'Safety testing and failure-mode analysis before deployment', does: 'Ablation evaluation on 60 development and 39 frozen held-out questions, graded by three language-model judges, with a majority and a strict count; misses and their fixes published. A failure-mode table is below.', evidence: [['/proof', 'Evaluation'], ['#failure-modes', 'Failure modes'], ['https://github.com/RohanGlitched/twokeys/blob/main/data/eval-ask.json', 'Every answer']], gap: 'The held-out set is small (39) and now spent; the next version is scored on a new, larger set.' },
   { c: '3.1.2.1.4, 3.1.3.1.3', req: 'Post-deployment monitoring', does: 'Daily counts of how each answer was produced (guard, intent, model, fallback), escalations, language, model id and “report a problem” taps, without storing any question.', evidence: [['#monitoring', 'Live counts below']], gap: 'Automated alerts on drift are not built.' },
+  { c: '3.1.3.1.4', req: 'Performance decline triggers review', does: 'Monitoring counts fallbacks, urgent escalations and problem reports daily.', evidence: [['#monitoring', 'Monitoring']], gap: 'Review triggers are set in phase 0: fallback above 10% of answers in a week, any report on an urgent answer, or a new model version, each starts a re-run of the held-out evaluation.' },
   { c: '3.1.2.2.1', req: 'Feedback mechanisms', does: 'Every explainer answer has “report a problem”; reports are counted in monitoring and reviewed.', evidence: [['#monitoring', 'Monitoring']], gap: 'Reports carry no text yet, so review starts from counts.' },
-  { c: '3.1.3.1.2', req: 'Testing across diverse contexts', does: 'Held-out questions in English, Modern Standard Arabic, Gulf dialect and Arabizi, results reported per dialect.', evidence: [['/proof', 'By dialect']] },
+  { c: '3.1.3.1.1', req: 'Validation against established benchmarks', does: 'The risk engine is checked against every published UAE figure (Dubai, Abu Dhabi programme and genome study), all shown, including the one it misses.', evidence: [['/proof#calibration', 'Calibration']], gap: 'Gene-level fit is shown but not yet tuned; the CYP21A2 frequency is classic-only from this version.' },
+  { c: '3.1.3.1.2', req: 'Testing across diverse contexts', does: 'Held-out questions in English, Modern Standard Arabic, Gulf dialect and Arabizi, results reported per dialect.', evidence: [['/proof', 'By dialect']], gap: '8 to 13 questions per dialect is too few to show parity, and a few dialect labels in the set were wrong. The next set is hand-checked and larger.' },
   { c: '3.1.4.1.2', req: 'Threat modelling', does: 'Per-party threat model: partner, modified phone, relay, lab, counsellor, analyst, outsider.', evidence: [['/how#threats', 'Who could learn what']] },
-  { c: '3.1.4.2.1', req: 'Role-based access, least privilege', does: 'Signed identity for people; the lab issues tokens only to the two seated people, who must confirm each other; the desk queue shows summaries only and failed desk sign-ins are rate-limited.', evidence: [['/how#threats', 'Threat model']], gap: 'Demo: one shared desk passcode with a chosen name. Production: per-clinician sign-in with MFA (DoH identity provider, UAE PASS), and separate identity, audit and lab keys in a KMS or HSM.' },
+  { c: '3.1.4.2.1', req: 'Role-based access, least privilege', does: 'Signed identity for people; the lab issues tokens only after the two seated people confirm each other by name; the desk queue shows no genes or relationship; desk sign-in locks after 20 failures an hour per client and 300 overall.', evidence: [['/how#threats', 'Threat model']], gap: 'Demo: one shared desk passcode with a chosen name, so attribution is not individual. Production: per-clinician sign-in with MFA (DoH identity provider).' },
   { c: '3.1.4.3.1', req: 'Secure code review and vulnerability scanning', does: 'Open source, typed, tested (unit and end-to-end), input validation and rate limits on every route, strict security headers.', evidence: [['https://github.com/RohanGlitched/twokeys', 'Repository']], gap: 'Independent crypto audit and penetration test before any pilot.' },
-  { c: '3.1.4.4.1', req: 'Privacy by design, data minimisation', does: 'Couple-only by default; the service never learns which couples share a gene unless they book; a counsellor sees only what was ticked.', evidence: [['/how', 'How it works']] },
+  { c: '3.1.4.4.1', req: 'Privacy by design, data minimisation', does: 'Couple-only by default. The lab computes the match from results it already holds and keeps who paired with whom for one day only. A counsellor sees only what was ticked, and the queue shows no genes. Programme counts take each person once.', evidence: [['/how', 'How it works']] },
   { c: '3.1.4.4.2', req: 'Production data not used for training', does: 'Nothing is trained. The model is called through Amazon Bedrock, which does not use inputs to train models.', evidence: [] },
-  { c: '3.1.4.4.3', req: 'Secure multi-party computation, differential privacy', does: 'Private set intersection on the two phones; a weekly differentially private programme release with cryptographic noise and a published cumulative budget.', evidence: [['/how', 'Protocol'], ['/programme', 'Programme view']] },
+  { c: '3.1.4.4.3', req: 'Secure multi-party computation, differential privacy', does: 'Private set intersection on the two phones: the lab names genes only when both phones’ comparisons agree with its own records, and labs never need to exchange results. Programme counts use exact discrete Laplace noise with per-person caps, one release per week of records, ε = 3 per person for life.', evidence: [['/how', 'Protocol'], ['/programme', 'Programme view']], gap: 'In the single-lab setting the lab already holds both results, so the private comparison protects partners from each other; its cross-lab role starts in phase 2.' },
   { c: '3.1.4.5.1', req: 'Compute, storage and remote access inside the UAE', does: 'Designed for in-country hosting (AWS me-central-1 offers Nova Pro and DynamoDB).', evidence: [], gap: 'The demo runs in Sydney on synthetic data, and the developer is outside the UAE. Phase 0: move and re-test in the UAE; vendor access only through the operator’s UAE jump host; UAE-based support.' },
+  { c: '3.1.5.1.1', req: 'Diverse test data (age, gender, other factors)', does: 'Held-out questions are asked by women and men, in four language forms, at three reading levels.', evidence: [['/proof', 'Evaluation']], gap: 'Age and education are not yet varied on purpose; the pilot reports by both.' },
   { c: '3.1.5.1.2', req: 'Representativeness and subgroup gaps', does: 'Understanding (teach-back) and explainer safety are reported by language and reading level.', evidence: [['/programme', 'Understanding by language'], ['/proof', 'By dialect']] },
   { c: '3.1.6.1.1', req: 'Tell patients when AI contributes', does: 'The question screen says an AI writes the answers, that they are checked, and that they can be wrong.', evidence: [['/demo', 'Ask a question']] },
   { c: '3.1.6.1.3', req: 'Right to opt out of AI', does: '“I’d rather ask a person” on the question screen books a counsellor instead. Nothing else in the app uses AI.', evidence: [['/demo', 'Ask a question']] },
@@ -36,7 +39,7 @@ const CLAUSES: { c: string; req: string; does: string; evidence: [string, string
   { c: '3.1.6.3.3', req: 'Plain-language patient outputs', does: 'Simple, standard and detailed versions in Arabic and English; readability measured on every answer in the evaluation.', evidence: [['/proof', 'Readability']] },
   { c: '3.1.7.2.2–3', req: 'Clinicians keep final authority; override and audit', does: 'Options are unranked; no clinical step without a counsellor; withdrawal erases shared data and seals notes.', evidence: [['/desk', 'Desk']] },
   { c: '3.1.7.1.1–2', req: 'Named owners for monitoring, review and reporting', does: 'Interim owner for every risk and role: the founder.', evidence: [['#risks', 'Risk register']], gap: 'Clinical lead, operator and DoH reporting owners are named in phase 0.' },
-  { c: '3.2.3.1.1', req: 'Data clinically validated by domain experts', does: 'Every fact and condition card cites its source and is versioned, so the operator’s genetic counsellors sign off each version before it reaches patients (phase 0).', evidence: [['#data-card', 'Data card']] },
+  { c: '3.2.3.1.1', req: 'Data clinically validated by domain experts', does: 'Every fact and condition card cites its source and is versioned, ready for sign-off. In phase 0 the operator’s genetic counsellors sign off each version, and no version reaches patients without that sign-off.', evidence: [['#data-card', 'Data card']] },
   { c: '3.2.5.3', req: 'Datasheets or data cards', does: 'Data card below; sources and rights on the Proof page.', evidence: [['#data-card', 'Data card'], ['/proof#sources', 'Sources']] },
   { c: '3.2.4.1', req: 'Versioned, traceable datasets', does: 'Facts, condition cards and the gene panel are versioned in git; the evaluation’s held-out questions are frozen with a published SHA-256 before each run.', evidence: [['https://github.com/RohanGlitched/twokeys', 'Repository']] },
   { c: '3.3.1.1.2', req: 'Risk register with owners', does: 'Register below.', evidence: [['#risks', 'Risk register']] },
@@ -48,24 +51,38 @@ const CLAUSES: { c: string; req: string; does: string; evidence: [string, string
 const FLOWS: string[][] = [
   ['Carrier results', 'The screening lab, as today', 'Lab staff', 'Decree-Law 49/2023 Arts. 6, 7', 'Lab’s existing policy', 'Must stay in the UAE (Art. 7)'],
   ['One-time tokens', 'Phone memory, one pairing', 'Nobody can read them', 'Part of screening', 'Gone when the page closes', 'None'],
-  ['Locked lists (relay)', 'Relay, encrypted', 'Nobody: key never reaches a server', 'Part of screening', '10 minutes', 'Demo: Sydney. Production: UAE'],
-  ['Who paired, and that both confirmed', 'Lab store (in the demo, Two Keys’ own database)', 'Lab', 'Prevents reuse and impersonation', '30 days', 'Demo: Sydney. Production: UAE, lab-operated'],
+  ['Locked lists (relay)', 'Relay, encrypted', 'Nobody: key never reaches a server', 'Part of screening', 'Unreadable after 10 minutes; deleted within 48 hours', 'Demo: Sydney. Production: UAE'],
+  ['Who paired, and that both confirmed', 'Lab store (in the demo, Two Keys’ own database)', 'Lab', 'Prevents reuse and impersonation', '1 day; then only a used-link marker with no names, 30 days', 'Demo: Sydney. Production: UAE, lab-operated'],
   ['Choice to see everything', 'Lab store', 'Lab; partner’s results released only when both chose', 'Both partners’ explicit choice', '30 days', 'Demo: Sydney. Production: UAE'],
-  ['Booked case (ticked items only; own results only if ticked)', 'Desk store (operator’s system in production)', 'Named counsellors, every view logged', 'Explicit consent (Art. 6), withdrawable (Art. 8); consent ' + CONSENT_VERSION, 'Demo 60 days; production per health-records law', 'Demo: Sydney. Production: UAE'],
-  ['Family notes', 'Store, encrypted on the sender’s phone', 'Only someone with the link', 'Sender’s choice', '30 days', 'Demo: Sydney. Production: UAE'],
+  ['Booked case (ticked items only; own results only if ticked). A shared gene is the booker’s own result too; the partner is never named on the case', 'Desk store (operator’s system in production)', 'Named counsellors, every view logged', 'Explicit consent (Art. 6), withdrawable (Art. 8), for the booker’s own care; consent ' + CONSENT_VERSION, 'Demo 60 days; production per health-records law', 'Demo: Sydney. Production: UAE'],
+  ['Family notes', 'Store, encrypted on the sender’s phone; no sender stored (a per-person count caps senders at 5 notes)', 'Only someone with the link', 'Sender’s choice', '30 days', 'Demo: Sydney. Production: UAE'],
   ['Explainer question', 'Sent to the model, not stored', 'Model provider, processing only', 'Person’s request', 'Not stored', 'Demo: Amazon Bedrock APAC cross-region profile (may route within Asia-Pacific). Production: UAE region'],
-  ['Programme and monitoring counts', 'Store', 'Health authority (noisy weekly aggregates)', 'Programme oversight', '90 days', 'Demo: Sydney. Production: UAE'],
+  ['Programme and monitoring counts', 'Store', 'Health authority (noisy weekly aggregates)', 'Programme oversight', 'Counts only, 1 year', 'Demo: Sydney. Production: UAE'],
+  ['Desk queue reads', 'Desk store', 'Operator audit', 'Accountability', '60 days', 'Demo: Sydney. Production: UAE'],
 ];
 
 const RISKS: string[][] = [
-  ['Explainer gives a wrong or falsely reassuring answer', 'Grounded facts; number, odds, X-linked and milder-match checks; fallback; counsellor button; held-out evaluation', '3', '4', 'Medium', 'Founder (interim); clinical lead'],
-  ['Distress is missed', 'Keyword and model crisis checks in English, Arabic, Gulf and Arabizi; fails closed if the check can’t run; help line and same-day call offered', '2', '5', 'Medium', 'Founder (interim); clinical lead'],
-  ['Someone else joins a pairing', 'Atomic seats; each person confirms the other by name before anything is named', '2', '4', 'Low', 'Founder (interim)'],
+  ['Explainer gives a wrong or falsely reassuring answer', 'Grounded facts; number, odds, X-linked and milder-match checks; fallback; counsellor button; held-out evaluation', '3', '4', 'High (sets the tier)', 'Founder (interim); clinical lead'],
+  ['Distress is missed', 'Keyword and model crisis checks in English, Arabic, Gulf and Arabizi; fails closed if the check can’t run; help line and same-day call offered', '2', '5', 'High (sets the tier)', 'Founder (interim); clinical lead'],
+  ['Someone else joins a pairing', 'Atomic seats; the creator confirms the joiner by name first; no tokens until both confirm', '2', '4', 'Low', 'Founder (interim)'],
   ['Partner or family sees a result through the phone itself', 'Couple-only default; results sealed until opened; decoy-padded tokens; nothing in notifications', '3', '3', 'Medium', 'Product owner'],
   ['Health data leaves the UAE', 'Synthetic data only in the demo; in-country hosting and UAE-only access are a pilot gate', '5', '4', 'High until moved', 'Operator'],
-  ['Counsellor over-access', 'Consent per item; summaries-only queue; logged case views; erase and seal on withdrawal', '2', '3', 'Low', 'Operator'],
+  ['Counsellor over-access', 'Consent per item; queue without genes; logged case views and queue reads; compare-and-swap writes so a withdrawal can’t be undone', '2', '3', 'Low', 'Operator'],
+  ['Audit trail rolled back by an insider', 'Keyed, sealed chain detects edits and truncation by anyone without the audit key; production anchors the chain head outside the database (write-once storage)', '1', '4', 'Medium until anchored', 'Operator'],
   ['Server keys compromised', 'Demo: lab, identity and audit keys derive on one server. Production: separate keys in a KMS/HSM held by the lab and operator; rotation', '2', '5', 'Medium', 'Lab and operator'],
   ['Teach-back overstates understanding', 'Counted as first-try scores only; validated instrument in the pilot', '3', '2', 'Low', 'Evaluation lead'],
+];
+
+const FAILURES: string[][] = [
+  ['Model unavailable or slow', 'A fixed safe reply and the counsellor button; the rest of the app works', 'Fallback count in monitoring', 'Retries with backoff; operator alert above 10% fallbacks a week'],
+  ['Intent check can’t run', 'Help numbers and the counsellor button, never an unchecked answer', 'Counted as a check failure', 'Fails closed by design'],
+  ['Answer breaks a check twice', 'A fixed safe reply', 'Fallback count; over-refusal in each evaluation', 'Review the check or the facts; re-run the evaluation'],
+  ['Wrong odds pass every check', 'A wrong number on screen', 'Held-out evaluation; “report a problem”', 'Fix the fact or check, add a regression test, re-run on a new set'],
+  ['Distress phrase not recognised', 'No crisis card; the counsellor button is still on every answer', 'Held-out misses; reports; counsellor feedback', 'Add the phrase and a regression test the same day'],
+  ['A phone tampers with the comparison', 'Nothing is named; both are asked to pair again', 'The lab refuses and logs the mismatch', 'Investigate repeated failures for one person'],
+  ['Partner never confirms', 'Nothing issued or named; the pairing expires', 'Timeout on the phone', 'Start a new pairing'],
+  ['Desk store write conflict', 'Retried automatically; a 409 asks to try again', 'Conflict responses', 'None needed unless frequent'],
+  ['Counsellor misses a clock', 'The case turns overdue on the desk', 'Overdue count in the programme view', 'Operator escalation rota'],
 ];
 
 export default async function GovernancePage({ params }: PageProps<'/[lang]/governance'>) {
@@ -144,8 +161,8 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
             <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]" dir="ltr">
               <dt className="text-ink-2">Contents</dt><dd>{FACTS.length} bilingual facts; {Object.keys(CONDITIONS).length} condition cards at three reading levels; a {genes}-gene panel with carrier frequencies.</dd>
               <dt className="text-ink-2">Sources</dt><dd>NSGC, ACMG, MedlinePlus Genetics, Decree-Law 49/2023, Thiqa ART guideline v3.5, Jain et al. 2025, gnomAD v4.1. Each item cites its own.</dd>
-              <dt className="text-ink-2">Version</dt><dd>2026-10-17, in git; every change is a reviewed commit.</dd>
-              <dt className="text-ink-2">Clinical review</dt><dd>By the operator’s genetic counsellors, for each version, before it reaches patients.</dd>
+              <dt className="text-ink-2">Version</dt><dd>2026-10-17, in git; every change is a commit with its tests. Independent code review starts in phase 0.</dd>
+              <dt className="text-ink-2">Clinical review</dt><dd>A phase-0 gate: the operator’s genetic counsellors sign off each version before any version reaches patients.</dd>
               <dt className="text-ink-2">Personal data</dt><dd>None. All people in the demo are synthetic.</dd>
               <dt className="text-ink-2">Known gaps</dt><dd>Gene-level and severity-level, not exact variants.</dd>
             </dl>
@@ -172,6 +189,19 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
                 {['Risk', 'Controls', 'Likelihood (1–5)', 'Impact (1–5)', 'Residual', 'Owner'].map((h) => <th key={h} scope="col" className="py-2.5 pr-4 font-semibold">{h}</th>)}
               </tr></thead>
               <tbody>{RISKS.map((r) => <tr key={r[0]} className="border-b border-rule align-top"><th scope="row" className="py-3 pr-4 text-left font-medium">{r[0]}</th><td className="py-3 pr-4 leading-relaxed text-ink-2">{r[1]}</td><td className="py-3 pr-4 text-ink-2">{r[2]}</td><td className="py-3 pr-4 text-ink-2">{r[3]}</td><td className={`py-3 pr-4 ${r[4].startsWith('High') ? 'font-medium text-madder' : 'text-ink-2'}`}>{r[4]}</td><td className="py-3 text-ink-2">{r[5]}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="failure-modes" className="mt-16">
+          <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Failure modes', ar: 'أنماط الإخفاق' })}</h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'What can fail, what the person sees when it does, and how we would know.', ar: 'ما الذي قد يخفق، وما يراه الشخص عندها، وكيف نعرف.' })}</p>
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full min-w-[800px] border-collapse text-[14px]" dir="ltr">
+              <thead><tr className="border-b-[1.5px] border-ink text-left">
+                {['Failure', 'Effect on the person', 'Detection', 'Response'].map((h) => <th key={h} scope="col" className="py-2.5 pr-4 font-semibold">{h}</th>)}
+              </tr></thead>
+              <tbody>{FAILURES.map((r) => <tr key={r[0]} className="border-b border-rule align-top"><th scope="row" className="py-3 pr-4 text-left font-medium">{r[0]}</th>{r.slice(1).map((c, i) => <td key={i} className="py-3 pr-4 leading-relaxed text-ink-2">{c}</td>)}</tr>)}</tbody>
             </table>
           </div>
         </section>

@@ -125,3 +125,34 @@ describe('session-bound authorised PSI with proofs', () => {
     }
   });
 });
+
+describe('round-3 protocol hardening', () => {
+  it('asking the lab twice returns the identical list, so diffing reveals nothing', () => {
+    const f = [ar('HBB'), ar('GJB2', 'mild'), xl('G6PD')];
+    expect(issue(labKey, S, 'B', f)).toEqual(issue(labKey, S, 'B', f));
+  });
+
+  it('a token’s index says nothing about which finding it is', () => {
+    const f = [ar('HBB'), ar('CFTR'), ar('CYP21A2')];
+    const real = new Set(sessionTokens(labKey, S, 'A', f).map((t) => t.token));
+    const at = issue(labKey, S, 'A', f).filter((t) => real.has(t.token)).map((t) => t.i);
+    expect(at).not.toEqual([...at.keys()]); // not simply the first positions in findings order
+  });
+
+  it('the first lock is proved against the issued tokens, and a second secret is caught', () => {
+    const ia = issue(labKey, S, 'A', [ar('HBB')]);
+    const me = new Initiator(ia);
+    const issued = ia.map((t) => t.token);
+    expect(verifyDleq(me.firstLock.y, issued, me.firstLock.locked, me.firstLock.proof, 'first-lock')).toBe(true);
+    // A phone that locks its list with one secret but claims another key fails the lab's check.
+    const other = new Initiator(ia);
+    expect(verifyDleq(other.firstLock.y, issued, me.firstLock.locked, me.firstLock.proof, 'first-lock')).toBe(false);
+  });
+
+  it('a phone without a valid lab attestation is refused by its partner', () => {
+    const ia = issue(labKey, S, 'A', [ar('HBB')]), ib = issue(labKey, S, 'B', [ar('HBB')]);
+    const a = new Initiator(ia), b = new Responder(ib);
+    const reject = () => false;
+    expect(() => b.step2(a.step1('00'), undefined, reject)).toThrow(/didn’t attest/);
+  });
+});

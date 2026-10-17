@@ -110,7 +110,24 @@ export function deskView(c: DeskCase): DeskCase {
   return c.sealed ? { ...c, notes: [] } : c;
 }
 
-export async function saveCase(c: DeskCase) { await store().put(`case:${c.id}`, c, TTL); }
+/** A new case only: never overwrites. */
+export async function saveCase(c: DeskCase) { await store().putNew(`case:${c.id}`, c, TTL); }
+/**
+ * Read-modify-write with compare-and-swap, retried on conflict: two counsellors viewing at once both
+ * get their audit entry, and a view or note racing a withdrawal can't write the erased data back.
+ * `change` edits the case in place, or returns a Response to stop without writing.
+ */
+export async function updateCase(id: string, change: (c: DeskCase) => Response | void): Promise<DeskCase | Response | null> {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const old = await getCase(id);
+    if (!old) return null;
+    const c = structuredClone(old);
+    const stop = change(c);
+    if (stop) return stop;
+    if (await store().replace(`case:${id}`, old, c, TTL)) return c;
+  }
+  return Response.json({ error: 'The case is busy. Try again.' }, { status: 409 });
+}
 export async function getCase(id: string) { return store().get<DeskCase>(`case:${id}`); }
 export async function listCases() {
   const all = await store().list<DeskCase>('case:');

@@ -14,6 +14,8 @@ export interface Store {
   list<T>(prefix: string): Promise<{ key: string; value: T }[]>;
   /** Atomically add 1 and return the new value (rate limits, counters). */
   incr(key: string, ttlSeconds: number): Promise<number>;
+  /** Write only if the stored value is still exactly `old` (compare-and-swap). Returns false if it changed or is gone. */
+  replace<T>(key: string, old: T, value: T, ttlSeconds: number): Promise<boolean>;
 }
 
 class MemoryStore implements Store {
@@ -32,6 +34,12 @@ class MemoryStore implements Store {
     return true;
   }
   async del(key: string) { this.m.delete(key); }
+  async replace<T>(key: string, old: T, value: T, ttl: number) {
+    const e = this.live(key);
+    if (!e || e.v !== JSON.stringify(old)) return false;
+    this.m.set(key, { v: JSON.stringify(value), exp: Date.now() + ttl * 1000 });
+    return true;
+  }
   async incr(key: string, ttl: number) {
     const e = this.live(key);
     const n = (e ? Number(JSON.parse(e.v)) : 0) + 1;
@@ -84,6 +92,19 @@ class DynamoStore implements Store {
         TableName: this.table, Item: { ...this.split(key), v: JSON.stringify(value), exp: now + ttl },
         // Allow overwriting an item that has expired but not yet been swept.
         ConditionExpression: 'attribute_not_exists(pk) OR #e < :now', ExpressionAttributeNames: { '#e': 'exp' }, ExpressionAttributeValues: { ':now': now },
+      }));
+      return true;
+    } catch (e) {
+      if ((e as { name?: string }).name === 'ConditionalCheckFailedException') return false;
+      throw e;
+    }
+  }
+  async replace<T>(key: string, old: T, value: T, ttl: number) {
+    const { PutCommand } = await import('@aws-sdk/lib-dynamodb');
+    try {
+      await (await this.client()).send(new PutCommand({
+        TableName: this.table, Item: { ...this.split(key), v: JSON.stringify(value), exp: Math.floor(Date.now() / 1000) + ttl },
+        ConditionExpression: 'v = :old', ExpressionAttributeValues: { ':old': JSON.stringify(old) },
       }));
       return true;
     } catch (e) {

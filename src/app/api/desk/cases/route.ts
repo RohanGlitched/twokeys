@@ -9,6 +9,7 @@ import { needIdentity, personFrom } from '@/lib/identity';
 import { readJson } from '@/lib/http';
 import { coupleOf, personById } from '@/lib/people';
 import { limited } from '@/lib/ratelimit';
+import { seats } from '@/lib/seats';
 import { seedDesk } from '@/lib/seed';
 
 interface Body {
@@ -26,10 +27,9 @@ export async function POST(req: Request) {
   let genes: string[] = [];
   const session = typeof b.pairing === 'string' && /^[0-9a-f]{64}$/.test(b.pairing) ? b.pairing : null;
   if (session && (b.role === 'A' || b.role === 'B')) {
-    const db = store();
-    const [a, bb, okA, okB] = await Promise.all([db.get<string>(`seat:${session}:A`), db.get<string>(`seat:${session}:B`), db.get<string>(`ok:${session}:A`), db.get<string>(`ok:${session}:B`)]);
-    const pa = a ? personById(a) : null, pb = bb ? personById(bb) : null;
-    if ((b.role === 'A' ? a : bb) === p.id && okA && okB && pa && pb) genes = intersection(labKey(), session, pa.findings, pb.findings).genes.map((g) => g.gene);
+    const s = await seats(session);
+    const pa = s.A ? personById(s.A) : null, pb = s.B ? personById(s.B) : null;
+    if ((b.role === 'A' ? s.A : s.B) === p.id && s.confirmed && pa && pb) genes = intersection(labKey(), session, pa.findings, pb.findings).genes.map((g) => g.gene);
   }
   const priority = b.priority === 'urgent' || b.priority === 'pregnant' ? b.priority : 'routine';
   const now = Date.now();
@@ -64,7 +64,12 @@ export async function GET(req: Request) {
   const gate = await deskGate(req);
   if (gate) return gate;
   await seedDesk();
-  // The queue holds summaries only; a case's details are read one at a time, and each read is logged.
-  const cases = (await listCases()).map(deskView).map(({ ownFindings, question, notes, audit: trail, ...summary }) => ({ ...summary, ownFindings: null, question: null, notes: [], audit: [], hasOwnResults: !!ownFindings, hasQuestion: !!question, notesCount: notes.length, auditCount: trail.length }));
+  // The queue holds summaries only: no gene names, relationship, results or question. A case's details
+  // are read one at a time, and each read is logged on the case; each queue read is logged here.
+  const cases = (await listCases()).map(deskView).map(({ ownFindings, question, notes, audit: trail, sharedGenes, relationship, ...summary }) => ({
+    ...summary, sharedGenes: [], relationship: null, ownFindings: null, question: null, notes: [], audit: [],
+    sharedCount: sharedGenes.length, hasRelationship: !!relationship, hasOwnResults: !!ownFindings, hasQuestion: !!question, notesCount: notes.length, auditCount: trail.length,
+  }));
+  await store().put(`deskaudit:${new Date().toISOString().slice(0, 10)}:${crypto.randomUUID()}`, { at: Date.now(), actor: deskUser(req), action: `read the queue (${cases.length} summaries)` }, 60 * 60 * 24 * 60);
   return Response.json({ cases, user: deskUser(req) }, { headers: { 'cache-control': 'no-store' } });
 }

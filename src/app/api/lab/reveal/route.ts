@@ -1,17 +1,15 @@
-// After the phones compare, each asks the lab to name what matched. The lab names nothing until
-// both seated people have confirmed each other and both phones have reported what they found. It
-// then recomputes the true intersection from its own records for those two people, names only
-// that, and says whether each phone's own claim agreed (a tampered or broken comparison shows up).
+// After the phones compare, each reports which of its tokens matched. The lab names a gene only when
+// both phones' comparisons found it and its own records for those two people agree. If either phone's
+// report differs from the truth (a broken or tampered comparison), the lab names nothing at all, so
+// the result depends on the private comparison, not on the lab alone.
 import { intersection, type Role } from '@/lib/lab';
 import { labKey } from '@/lib/labkey';
 import { needIdentity, personFrom } from '@/lib/identity';
 import { readJson } from '@/lib/http';
 import { personById } from '@/lib/people';
 import { limited } from '@/lib/ratelimit';
+import { hex64, otherRole, PAIR_TTL, seats } from '@/lib/seats';
 import { store } from '@/lib/store';
-
-const TTL = 30 * 24 * 3600;
-const hex64 = /^[0-9a-f]{64}$/;
 
 export async function POST(req: Request) {
   const p = personFrom(req);
@@ -25,18 +23,21 @@ export async function POST(req: Request) {
   }
   if (await limited(req, 'reveal', 300, p.id)) return Response.json({ error: 'Too many requests.' }, { status: 429 });
   const db = store();
-  const other: Role = b.role === 'A' ? 'B' : 'A';
-  const [a, bb] = await Promise.all([db.get<string>(`seat:${b.session}:A`), db.get<string>(`seat:${b.session}:B`)]);
-  if ((b.role === 'A' ? a : bb) !== p.id) return Response.json({ error: 'You are not in this pairing.' }, { status: 403 });
+  const s = await seats(b.session);
+  if ((b.role === 'A' ? s.A : s.B) !== p.id) return Response.json({ error: 'You are not in this pairing.' }, { status: 403 });
+  if (!s.confirmed) return Response.json({ error: 'Both of you need to confirm each other first.' }, { status: 409 });
   // Record this phone's claim once; it can't be changed after seeing anything.
-  await db.putNew(`claim:${b.session}:${b.role}`, b.matched, TTL);
-  const [okA, okB, theirClaim] = await Promise.all([db.get<string>(`ok:${b.session}:A`), db.get<string>(`ok:${b.session}:B`), db.get<string[]>(`claim:${b.session}:${other}`)]);
-  if (!okA || !okB || !theirClaim) return Response.json({ waiting: true }, { headers: { 'cache-control': 'no-store' } });
-  const pa = a ? personById(a) : null, pb = bb ? personById(bb) : null;
+  await db.putNew(`claim:${b.session}:${b.role}`, b.matched, PAIR_TTL);
+  const [claimA, claimB] = await Promise.all([db.get<string[]>(`claim:${b.session}:A`), db.get<string[]>(`claim:${b.session}:B`)]);
+  if (!claimA || !claimB) return Response.json({ waiting: true }, { headers: { 'cache-control': 'no-store' } });
+  const pa = s.A ? personById(s.A) : null, pb = s.B ? personById(s.B) : null;
   if (!pa || !pb) return Response.json({ error: 'This pairing is incomplete.' }, { status: 409 });
   const truth = intersection(labKey(), b.session, pa.findings, pb.findings);
-  const mine = truth[b.role];
-  const claimed = new Set((await db.get<string[]>(`claim:${b.session}:${b.role}`)) ?? []);
-  const agrees = claimed.size === mine.size && [...claimed].every((x) => mine.has(x));
-  return Response.json({ waiting: false, genes: truth.genes, agrees }, { headers: { 'cache-control': 'no-store' } });
+  const same = (claim: string[], real: Set<string>) => claim.length === real.size && claim.every((x) => real.has(x));
+  const agrees = same(claimA, truth.A) && same(claimB, truth.B);
+  if (!agrees) {
+    const who = same(b.role === 'A' ? claimA : claimB, truth[b.role]) ? otherRole(b.role) : b.role;
+    return Response.json({ waiting: false, genes: [], agrees: false, failed: who === b.role ? 'yours' : 'theirs' }, { headers: { 'cache-control': 'no-store' } });
+  }
+  return Response.json({ waiting: false, genes: truth.genes, agrees: true }, { headers: { 'cache-control': 'no-store' } });
 }

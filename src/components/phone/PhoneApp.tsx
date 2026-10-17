@@ -287,11 +287,6 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
               <p className="text-[13px] text-ink-2">{t({ en: 'Your result together', ar: 'نتيجتكما معاً' })}</p>
               <LevelPicker lang={lang} level={level} setLevel={setLevel} />
             </div>
-            {!result.agrees && (
-              <p role="status" className="mt-3 border-s-4 border-camel bg-paper px-3 py-2 text-[13px]">
-                {t({ en: 'The lab’s own check didn’t match this phone’s comparison, so you are seeing the lab-confirmed result. If this happens again, pair again.', ar: 'لم يتطابق فحص المختبر مع مقارنة هذا الهاتف، لذا تُعرض النتيجة التي أكدها المختبر. إن تكرر ذلك فأعيدا الاقتران.' })}
-              </p>
-            )}
 
             {genes.length === 0 ? (
               <>
@@ -340,10 +335,8 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
               <ul className="mt-2 list-disc space-y-1.5 ps-5">
                 <li>{t({ en: 'Encrypted messages of random-looking numbers, through a relay that could not read them.', ar: 'رسائل مشفّرة من أرقام عشوائية المظهر، عبر وسيط لا يستطيع قراءتها.' })}</li>
                 <li>{t({ en: 'Your partner’s phone proved, mathematically, that it locked the lists honestly. A tampered list would have stopped the comparison.', ar: 'أثبت هاتف شريكتك رياضياً أنه أقفل القوائم بأمانة، ولو عُبث بقائمة لتوقفت المقارنة.', arF: 'أثبت هاتف شريكك رياضياً أنه أقفل القوائم بأمانة، ولو عُبث بقائمة لتوقفت المقارنة.' })}</li>
-                <li>{t({ en: 'You both confirmed who you were comparing with before anything was named.', ar: 'أكّد كلاكما هوية الآخر قبل أن يُسمّى أي شيء.' })}</li>
-                <li>{result.agrees
-                  ? t({ en: 'The lab named only the genes that matched, and confirmed the same result from its own records.', ar: 'سمّى المختبر الجينات المتطابقة فقط، وأكد النتيجة نفسها من سجلاته.' })
-                  : t({ en: 'The lab’s check differed from this phone’s, so the lab-confirmed result is shown.', ar: 'اختلف فحص المختبر عن فحص هذا الهاتف، لذا تُعرض النتيجة التي أكدها المختبر.' })}</li>
+                <li>{t({ en: 'You both confirmed who you were comparing with before the lab issued anything.', ar: 'أكّد كلاكما هوية الآخر قبل أن يصدر المختبر أي شيء.' })}</li>
+                <li>{t({ en: 'The lab named a gene only because both phones’ comparisons found it and its own records agreed. Had either phone reported something else, nothing would have been named.', ar: 'سمّى المختبر الجين فقط لأن مقارنتي الهاتفين وجدتاه ووافقت سجلاته على ذلك. ولو أبلغ أي هاتف بغير ذلك لما سُمّي شيء.' })}</li>
               </ul>
               {sent && <code dir="ltr" className="mt-2 block break-all bg-wool-2 p-2 font-mono text-[11px]">{sent.cipher}…</code>}
             </details>
@@ -361,7 +354,7 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
             onCounsellor={() => book(false)} onUrgent={() => book(true)} headingId={vid} />
         )}
         {view === 'family' && (
-          <Family lang={lang} t={t} onBack={() => setView(home)} headingId={vid}
+          <Family lang={lang} t={t} identity={identity ?? ''} onBack={() => setView(home)} headingId={vid}
             genes={[...new Map([...genes.map((g) => [g.gene, g.inheritance] as const), ...(mine ?? []).map((f) => [f.gene, f.inheritance] as const)]).entries()].map(([gene, inheritance]) => ({ gene, inheritance }))} />
         )}
       </div>
@@ -462,13 +455,15 @@ function DiamondKey({ lang }: { lang: Locale }) {
 function StepLine({ s, t, lang }: { s: Step; t: T; lang: Locale }) {
   const n = (x: number) => x.toLocaleString(lang === 'ar' ? 'ar-AE' : 'en-GB');
   switch (s.kind) {
-    case 'tokens': return <span>{t({ en: `The lab gave this phone ${s.count} one-time tokens for this pairing only, with no gene names.`, ar: `أعطى المختبرُ هذا الهاتفَ ${n(s.count)} رمزاً لمرة واحدة لهذا الاقتران فقط، دون أسماء جينات.` })}</span>;
+    case 'tokens': return <span>{t({ en: `Once you both confirmed, the lab gave this phone ${s.count} tokens for this pairing only, with no gene names.`, ar: `بعد أن أكّد كلاكما، أعطى المختبرُ هذا الهاتفَ ${n(s.count)} رمزاً لهذا الاقتران فقط، دون أسماء جينات.` })}</span>;
     case 'sent': return <span>{t({ en: `Sent this phone’s locked list to the relay, encrypted (${n(s.bytes)} characters).`, ar: `أُرسلت القائمة المقفلة إلى الوسيط مشفّرة (${n(s.bytes)} حرفاً).` })}</span>;
     case 'received': return <span>{t({ en: 'Received your partner’s locked list.', ar: 'وصلت قائمة شريكتك المقفلة.', arF: 'وصلت قائمة شريكك المقفلة.' })}</span>;
     case 'waiting': return <span className="text-ink-2">{s.for === 'partner-confirm'
       ? t({ en: 'Waiting for your partner to confirm…', ar: 'بانتظار أن تؤكد شريكتك…', arF: 'بانتظار أن يؤكد شريكك…' })
+      : s.for === 'partner-join' ? t({ en: 'Waiting for your partner to open the link…', ar: 'بانتظار أن تفتح شريكتك الرابط…', arF: 'بانتظار أن يفتح شريكك الرابط…' })
+      : s.for === 'creator-confirm' ? t({ en: 'Waiting for the person who shared the link to confirm you…', ar: 'بانتظار أن يؤكدك من شارك الرابط…' })
       : t({ en: 'Waiting for your partner’s phone…', ar: 'بانتظار هاتف شريكتك…', arF: 'بانتظار هاتف شريكك…' })}</span>;
-    case 'proof': return <span>{t({ en: 'Checked the proof that the lists were locked honestly.', ar: 'تحقق الهاتف من الإثبات أن القوائم أُقفلت بأمانة.' })}</span>;
+    case 'proof': return <span>{t({ en: 'Checked the lab’s signature on your partner’s first lock, and the proof that the lists were re-locked honestly.', ar: 'تحقق الهاتف من توقيع المختبر على القفل الأول لقائمة الشريك، ومن الإثبات أن القوائم أُعيد قفلها بأمانة.' })}</span>;
     case 'confirmed': return <span>{t({ en: 'You confirmed who you are comparing with.', ar: 'أكّدت هوية من تقارن معه.', arF: 'أكّدتِ هوية من تقارنين معه.' })}</span>;
     case 'done': return <span>{t({ en: `Compared, and confirmed by the lab, in ${(s.result.ms / 1000).toFixed(1)} s.`, ar: `تمت المقارنة وأكدها المختبر في ${n(Number((s.result.ms / 1000).toFixed(1)))} ث.` })}</span>;
   }

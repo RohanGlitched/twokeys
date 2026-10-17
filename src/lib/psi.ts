@@ -11,6 +11,9 @@
 //      A → relay:  (u·b)·a, proof that it = B's list · a
 //    The proofs are batched Chaum–Pedersen DLEQ proofs (as in RFC 9497's VOPRF), so a modified
 //    phone cannot, for example, echo the other side's list back and make every gene look shared.
+//    Each phone's own first lock is proved to the lab, which rebuilds the tokens it issued, checks
+//    the proof and signs the locked set with Y. The partner checks that signature, so a phone can't
+//    lock its own list with one secret and re-lock with another to hide a match.
 // 3. Padding. Every list is padded to SET_SIZE with random elements, so nobody learns how many
 //    findings the other person has. The relay sees only random-looking group elements.
 import { ristretto255, ristretto255_hasher } from '@noble/curves/ed25519.js';
@@ -127,8 +130,22 @@ export function verifyDleq(Yhex: string, ins: string[], outs: string[], proof: D
 
 // ---------------------------------------------------------------- the two phones
 
-export interface Msg1 { a: string[]; ya: string }
-export interface Msg2 { ab: string[]; b: string[]; yb: string; proof: Dleq }
+export interface Msg1 { a: string[]; ya: string; att?: string }
+export interface Msg2 { ab: string[]; b: string[]; yb: string; proof: Dleq; att?: string }
+/** What a phone sends the lab to have its first lock attested: tokens·k in the order issued, and a proof. */
+export interface FirstLock { locked: string[]; y: string; proof: Dleq }
+/** Checks the lab's signature on the partner's first lock (list in any order). */
+export type AttCheck = (list: string[], y: string, att: string | undefined) => boolean;
+
+/** The bytes the lab signs for a first lock: order-independent, bound to session, seat and Y. */
+export function attestMessage(session: string, role: 'A' | 'B', y: string, list: string[]): Uint8Array {
+  return enc.encode(`twokeys/v2|first-lock|${session}|${role}|${y}|${[...list].sort().join('')}`);
+}
+function lockFirst(k: bigint, pts: Pt[], tokens: Token[]): FirstLock {
+  const ins = tokens.map((t) => t.token);
+  const locked = pts.slice(0, tokens.length).map((p) => toHex(p.multiply(k)));
+  return { locked, y: toHex(Point.BASE.multiply(k)), proof: proveDleq(k, ins, locked, 'first-lock') };
+}
 export interface Msg3 { ba: string[]; proof: Dleq }
 /** Indices (as issued by the lab) of this phone's tokens that the other phone also holds. */
 export interface Outcome { matched: number[] }
@@ -143,16 +160,19 @@ export class Initiator {
   private index: (number | null)[];
   private pos: number[];
   private sent: string[];
+  readonly firstLock: FirstLock;
   constructor(tokens: Token[]) {
     const { pts, index } = padded(tokens);
     this.index = index;
+    this.firstLock = lockFirst(this.a, pts, tokens);
     const { out, at } = shuffle(pts.map((p) => p.multiply(this.a)));
     this.pos = at;
     this.sent = out.map(toHex);
   }
-  step1(): Msg1 { return { a: this.sent, ya: toHex(Point.BASE.multiply(this.a)) }; }
-  step3(m: Msg2): { msg: Msg3; outcome: Outcome } {
+  step1(att?: string): Msg1 { return { a: this.sent, ya: toHex(Point.BASE.multiply(this.a)), att }; }
+  step3(m: Msg2, check?: AttCheck): { msg: Msg3; outcome: Outcome } {
     checkList(m.ab); checkList(m.b);
+    if (check && !check(m.b, m.yb, m.att)) throw new Error('Your partner’s phone sent a list the lab didn’t attest. Nothing was revealed.');
     if (!verifyDleq(m.yb, this.sent, m.ab, m.proof, 'B-locks-A')) throw new Error('Your partner’s phone sent a list that fails its proof. Nothing was revealed.');
     const ba = m.b.map((h) => toHex(fromHex(h).multiply(this.a)));
     const proof = proveDleq(this.a, m.b, ba, 'A-locks-B');
@@ -170,19 +190,22 @@ export class Responder {
   private sentB: string[];
   private ab: string[] = [];
   private ya = '';
+  readonly firstLock: FirstLock;
   constructor(tokens: Token[]) {
     const { pts, index } = padded(tokens);
     this.index = index;
+    this.firstLock = lockFirst(this.b, pts, tokens);
     const { out, at } = shuffle(pts.map((p) => p.multiply(this.b)));
     this.pos = at;
     this.sentB = out.map(toHex);
   }
-  step2(m: Msg1): Msg2 {
+  step2(m: Msg1, att?: string, check?: AttCheck): Msg2 {
     checkList(m.a);
     fromHex(m.ya);
+    if (check && !check(m.a, m.ya, m.att)) throw new Error('Your partner’s phone sent a list the lab didn’t attest. Nothing was revealed.');
     this.ya = m.ya;
     this.ab = m.a.map((h) => toHex(fromHex(h).multiply(this.b)));
-    return { ab: this.ab, b: this.sentB, yb: toHex(Point.BASE.multiply(this.b)), proof: proveDleq(this.b, m.a, this.ab, 'B-locks-A') };
+    return { ab: this.ab, b: this.sentB, yb: toHex(Point.BASE.multiply(this.b)), proof: proveDleq(this.b, m.a, this.ab, 'B-locks-A'), att };
   }
   step4(m: Msg3): Outcome {
     checkList(m.ba);

@@ -1,5 +1,5 @@
 import 'server-only';
-import { limited } from './ratelimit';
+import { countAll, limited, over } from './ratelimit';
 
 /**
  * Role check for the counsellor desk. The demo has named counsellor accounts (x-desk-user) behind
@@ -10,14 +10,21 @@ export const COUNSELLORS = ['Dr. Fatima Al Hammadi (synthetic)', 'Dr. Yousef Al 
 
 /** The signed-in counsellor's name, from the x-desk-user header, if it is a known account. */
 export function deskUser(req: Request): string | null {
-  const u = decodeURIComponent(req.headers.get('x-desk-user') ?? '');
+  let u = '';
+  try { u = decodeURIComponent(req.headers.get('x-desk-user') ?? ''); } catch { return null; }
   return (COUNSELLORS as readonly string[]).includes(u) ? u : null;
 }
 
-/** Checks the desk sign-in; failed attempts are limited to 20 an hour, so the passcode can't be guessed online. */
+/**
+ * Checks the desk sign-in. The limit is checked first, so once a client has failed 20 times in an hour
+ * even the right passcode is refused until the hour ends; and failures from all clients together are
+ * capped at 300 an hour, so spreading guesses across addresses doesn't help either.
+ */
 export async function deskGate(req: Request): Promise<Response | null> {
+  const busy = Response.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+  if ((await over(req, 'desk-fail', 20)) || (await over(null, 'desk-fail', 300))) return busy;
   if (deskAuthorised(req)) return null;
-  if (await limited(req, 'desk-fail', 20)) return Response.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+  await Promise.all([limited(req, 'desk-fail', 20), countAll('desk-fail')]);
   return Response.json({ error: 'Counsellors only.' }, { status: 401 });
 }
 

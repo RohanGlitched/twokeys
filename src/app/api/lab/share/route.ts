@@ -6,9 +6,8 @@ import { needIdentity, personFrom } from '@/lib/identity';
 import { readJson } from '@/lib/http';
 import { personById } from '@/lib/people';
 import { limited } from '@/lib/ratelimit';
+import { PAIR_TTL, seats } from '@/lib/seats';
 import { store } from '@/lib/store';
-
-const TTL = 30 * 24 * 3600;
 
 export async function POST(req: Request) {
   const p = personFrom(req);
@@ -23,9 +22,8 @@ export async function POST(req: Request) {
   const [mine, theirs] = await Promise.all([db.get<string>(`seat:${b.session}:${b.role}`), db.get<string>(`seat:${b.session}:${other}`)]);
   if (mine !== p.id) return Response.json({ error: 'You are not in this pairing.' }, { status: 403 });
   if (!theirs) return Response.json({ error: 'Your partner hasn’t joined yet.' }, { status: 409 });
-  const [okA, okB] = await Promise.all([db.get<string>(`ok:${b.session}:A`), db.get<string>(`ok:${b.session}:B`)]);
-  if (!okA || !okB) return Response.json({ error: 'Both of you need to confirm each other first.' }, { status: 409 });
-  await db.putNew(`share:${b.session}:${b.role}`, true, TTL);
+  if (!(await seats(b.session)).confirmed) return Response.json({ error: 'Both of you need to confirm each other first.' }, { status: 409 });
+  await db.putNew(`share:${b.session}:${b.role}`, true, PAIR_TTL);
   if (!(await db.get<boolean>(`share:${b.session}:${other}`))) return Response.json({ waiting: true }, { headers: { 'cache-control': 'no-store' } });
   const partner = personById(theirs);
   return Response.json({ waiting: false, findings: partner?.findings ?? [], sex: partner?.sex }, { headers: { 'cache-control': 'no-store' } });

@@ -5,7 +5,8 @@
 //   - three words both people read aloud, so a swapped link would be noticed.
 import { hkdf } from '@noble/hashes/hkdf.js';
 import { sha256 } from '@noble/hashes/sha2.js';
-import { Initiator, Responder, type Msg1, type Msg2, type Msg3, type Token } from './psi';
+import { ed25519 } from '@noble/curves/ed25519.js';
+import { attestMessage, Initiator, Responder, type AttCheck, type FirstLock, type Msg1, type Msg2, type Msg3, type Token } from './psi';
 import type { SharedGene } from './lab';
 
 const enc = new TextEncoder();
@@ -96,35 +97,73 @@ async function api<T>(base: string, path: string, init?: RequestInit, identity?:
   return json as T;
 }
 
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+/** Polls a lab route until it stops answering { waiting: true }. */
+async function poll<T extends { waiting?: boolean }>(o: RunOptions, path: string, body: unknown, waitingFor: string, timeoutMsg: string): Promise<T> {
+  const until = Date.now() + (o.timeoutMs ?? 10 * 60_000);
+  let told = false;
+  for (let wait = 500; Date.now() < until; wait = Math.min(wait * 1.25, 2000)) {
+    if (o.signal?.aborted) throw new Error('Cancelled.');
+    const r = await api<T>(o.base ?? '', path, { method: 'POST', body: JSON.stringify(body) }, o.identity);
+    if (!r.waiting) return r;
+    if (!told) { o.onStep?.({ kind: 'waiting', for: waitingFor }); told = true; }
+    await sleep(wait);
+  }
+  throw new Error(timeoutMsg);
+}
+
+/** Takes this phone's seat; the lab hands out nothing yet. */
+async function sit(o: RunOptions, role: 'A' | 'B') {
+  await api(o.base ?? '', '/api/lab/tokens', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role }) }, o.identity);
+}
+
+/**
+ * Shows the person who joined; nothing is issued until both confirm each other. The link's creator
+ * sees the joiner first; the joiner sees the creator only after being confirmed.
+ */
+async function confirm(o: RunOptions, role: 'A' | 'B') {
+  const body = (ok?: boolean) => ({ session: sessionId(o.link), role, ok });
+  const { partner } = await poll<{ waiting?: boolean; partner?: Partner | null }>(o, '/api/lab/confirm', body(), role === 'A' ? 'partner-join' : 'creator-confirm',
+    role === 'A' ? 'Your partner hasn’t joined yet. Share the link again or start over.' : 'The person who shared the link hasn’t confirmed you yet.');
+  if (!partner) throw new Error('This pairing is incomplete.');
+  const yes = o.confirmPartner ? await o.confirmPartner(partner) : true;
+  if (!yes) throw new Error('Stopped: you didn’t recognise the person who joined. Start a new pairing.');
+  await api(o.base ?? '', '/api/lab/confirm', { method: 'POST', body: JSON.stringify(body(true)) }, o.identity);
+  o.onStep?.({ kind: 'confirmed', partner: partner.name.en });
+}
+
+/** Once both have confirmed, the lab issues this phone's 64 opaque tokens. */
 async function tokens(o: RunOptions, role: 'A' | 'B'): Promise<{ tokens: Token[]; personal: number }> {
-  const r = await api<{ tokens: Token[]; personal: number }>(o.base ?? '', '/api/lab/tokens', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role }) }, o.identity);
+  const r = await poll<{ waiting?: boolean; tokens: Token[]; personal: number }>(o, '/api/lab/tokens', { session: sessionId(o.link), role }, 'partner-confirm',
+    'Your partner hasn’t confirmed yet. Ask them to check their screen, or start over.');
   o.onStep?.({ kind: 'tokens', count: r.tokens.length });
   return r;
 }
 
-/** Shows the person who joined; nothing is named until both people confirm each other. */
-async function confirm(o: RunOptions, role: 'A' | 'B') {
-  const path = '/api/lab/confirm';
-  const body = (ok?: boolean) => ({ method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, ok }) });
-  const { partner } = await api<{ partner: Partner | null }>(o.base ?? '', path, body(), o.identity);
-  if (!partner) throw new Error('This pairing is incomplete.');
-  const yes = o.confirmPartner ? await o.confirmPartner(partner) : true;
-  if (!yes) throw new Error('Stopped: you didn’t recognise the person who joined. Start a new pairing.');
-  await api(o.base ?? '', path, body(true), o.identity);
-  o.onStep?.({ kind: 'confirmed', partner: partner.name.en });
+/** The lab checks this phone's first lock against the tokens it issued and signs it. */
+async function attest(o: RunOptions, role: 'A' | 'B', lock: FirstLock): Promise<string> {
+  const r = await api<{ att: string }>(o.base ?? '', '/api/lab/attest', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, ...lock }) }, o.identity);
+  return r.att;
 }
 
-/** Reports what this phone matched, then waits until the partner has confirmed and reported too. */
+/** Checks the lab's signature on the partner's first lock. */
+async function partnerCheck(o: RunOptions, partnerRole: 'A' | 'B'): Promise<AttCheck> {
+  const { publicKey } = await fetch(`${o.base ?? ''}/api/lab/key`).then((r) => r.json() as Promise<{ publicKey: string }>);
+  const session = sessionId(o.link);
+  return (list, y, att) => {
+    if (!att || !/^[0-9a-f]{128}$/.test(att)) return false;
+    try { return ed25519.verify(unhex(att), attestMessage(session, partnerRole, y, list), unhex(publicKey)); } catch { return false; }
+  };
+}
+const unhex = (h: string) => Uint8Array.from(h.match(/../g)!.map((b) => parseInt(b, 16)));
+
+/** Reports what this phone matched, then waits until the partner has reported too. */
 async function reveal(o: RunOptions, role: 'A' | 'B', matched: string[]) {
-  const until = Date.now() + (o.timeoutMs ?? 10 * 60_000);
-  for (let wait = 500; Date.now() < until; wait = Math.min(wait * 1.25, 2000)) {
-    if (o.signal?.aborted) throw new Error('Cancelled.');
-    const r = await api<{ waiting: boolean; genes?: SharedGene[]; agrees?: boolean }>(o.base ?? '', '/api/lab/reveal', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, matched }) }, o.identity);
-    if (!r.waiting) return { genes: r.genes ?? [], agrees: !!r.agrees };
-    o.onStep?.({ kind: 'waiting', for: 'partner-confirm' });
-    await new Promise((res) => setTimeout(res, wait));
-  }
-  throw new Error('Your partner hasn’t confirmed yet. Ask them to check their screen, or start over.');
+  const r = await poll<{ waiting?: boolean; genes?: SharedGene[]; agrees?: boolean; failed?: 'yours' | 'theirs' }>(o, '/api/lab/reveal', { session: sessionId(o.link), role, matched }, 'partner-report',
+    'Your partner’s phone hasn’t finished comparing. Ask them to check their screen, or start over.');
+  if (!r.agrees) throw new Error(r.failed === 'theirs' ? 'Your partner’s phone reported a comparison the lab couldn’t confirm, so nothing was named. Start a new pairing.' : 'This phone’s comparison didn’t match the lab’s records, so nothing was named. Start a new pairing.');
+  return { genes: r.genes ?? [], agrees: true };
 }
 const tokensAt = (all: Token[], idx: number[]) => idx.map((i) => all.find((t) => t.i === i)!.token);
 
@@ -152,15 +191,17 @@ async function receive<T>(o: RunOptions, slot: string): Promise<T> {
 /** The person who created the link. */
 export async function runInitiator(o: RunOptions): Promise<PairResult> {
   const t0 = performance.now();
+  await sit(o, 'A');
+  await confirm(o, 'A');
   const t = await tokens(o, 'A');
   const me = new Initiator(t.tokens);
-  const m1 = me.step1();
+  const [att, check] = await Promise.all([attest(o, 'A', me.firstLock), partnerCheck(o, 'B')]);
+  const m1 = me.step1(att);
   await send(o, 'm1', m1, m1.a);
   const m2 = await receive<Msg2>(o, 'm2');
-  const { msg: m3, outcome } = me.step3(m2);
+  const { msg: m3, outcome } = me.step3(m2, check);
   o.onStep?.({ kind: 'proof', ok: true });
   await send(o, 'm3', m3, m3.ba);
-  await confirm(o, 'A');
   const r = await reveal(o, 'A', tokensAt(t.tokens, outcome.matched));
   const result: PairResult = { ...r, personal: t.personal, ms: performance.now() - t0 };
   o.onStep?.({ kind: 'done', result });
@@ -170,15 +211,17 @@ export async function runInitiator(o: RunOptions): Promise<PairResult> {
 /** The person who opened the link. */
 export async function runResponder(o: RunOptions): Promise<PairResult> {
   const t0 = performance.now();
+  await sit(o, 'B');
+  await confirm(o, 'B');
   const t = await tokens(o, 'B');
   const me = new Responder(t.tokens);
+  const [att, check] = await Promise.all([attest(o, 'B', me.firstLock), partnerCheck(o, 'A')]);
   const m1 = await receive<Msg1>(o, 'm1');
-  const m2 = me.step2(m1);
+  const m2 = me.step2(m1, att, check);
   await send(o, 'm2', m2, m2.b);
   const m3 = await receive<Msg3>(o, 'm3');
   const outcome = me.step4(m3);
   o.onStep?.({ kind: 'proof', ok: true });
-  await confirm(o, 'B');
   const r = await reveal(o, 'B', tokensAt(t.tokens, outcome.matched));
   const result: PairResult = { ...r, personal: t.personal, ms: performance.now() - t0 };
   o.onStep?.({ kind: 'done', result });
