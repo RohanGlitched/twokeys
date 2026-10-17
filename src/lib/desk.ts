@@ -44,8 +44,7 @@ function chain(prev: string, at: number, actor: string, action: string) {
   return Array.from(h, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-export function audit(c: DeskCase, actor: string, action: string) {
-  const at = Date.now();
+export function audit(c: DeskCase, actor: string, action: string, at = Date.now()) {
   const prev = c.audit.at(-1)?.hash ?? '0'.repeat(64);
   c.audit.push({ at, actor, action, hash: chain(prev, at, actor, action) });
 }

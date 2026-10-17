@@ -2,6 +2,7 @@
 import { audit, listCases, saveCase, twoWorkingDaysFrom, type DeskCase } from '@/lib/desk';
 import { coupleOf, personById } from '@/lib/people';
 import { deskAuthorised } from '@/lib/deskauth';
+import { seedDesk } from '@/lib/seed';
 
 export async function POST(req: Request) {
   let b: { person?: string; pairing?: string; sharedGenes?: string[]; consent?: { ownResults?: boolean; relationship?: boolean }; language?: string; readingLevel?: string };
@@ -35,5 +36,6 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   if (!deskAuthorised(req)) return Response.json({ error: 'Counsellors only.' }, { status: 401 });
+  await seedDesk();
   return Response.json({ cases: await listCases() }, { headers: { 'cache-control': 'no-store' } });
 }
