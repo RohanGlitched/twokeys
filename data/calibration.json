@@ -1,5 +1,5 @@
 {
- "built": "2026-10-17T11:34:02.321Z",
+ "built": "2026-10-17T13:12:23.564Z",
  "couplesPerType": 60000,
  "genesModelled": 128,
  "genesFromLiterature": 89,
@@ -61,6 +61,47 @@
   }
  },
  "mixedPopulationAtRisk": 0.05426540066006601,
+ "sensitivity570": [
+  {
+   "tailGenes": 442,
+   "tailCarrierFreq": 0.001,
+   "cumulativeTailCarrierFreq": 0.442,
+   "couplesPerType": 20000,
+   "mixed": 0.06360476831683169,
+   "byType": {
+    "unrelated": 0.0328,
+    "first-cousins": 0.17575,
+    "double-first-cousins": 0.3011,
+    "second-cousins": 0.0747
+   }
+  },
+  {
+   "tailGenes": 442,
+   "tailCarrierFreq": 0.002,
+   "cumulativeTailCarrierFreq": 0.884,
+   "couplesPerType": 20000,
+   "mixed": 0.0737550495049505,
+   "byType": {
+    "unrelated": 0.03395,
+    "first-cousins": 0.2194,
+    "double-first-cousins": 0.3748,
+    "second-cousins": 0.08815
+   }
+  },
+  {
+   "tailGenes": 442,
+   "tailCarrierFreq": 0.003,
+   "cumulativeTailCarrierFreq": 1.326,
+   "couplesPerType": 20000,
+   "mixed": 0.08493905346534654,
+   "byType": {
+    "unrelated": 0.03675,
+    "first-cousins": 0.26235,
+    "double-first-cousins": 0.43955,
+    "second-cousins": 0.10265
+   }
+  }
+ ],
  "targets": [
   {
    "label": "Dubai, 1,000 couples, 782 genes: at-risk couples excluding alpha-thalassaemia (58 of 1,000)",
@@ -79,6 +120,15 @@
     0.097
    ],
    "source": "Alblooshi et al., Nature Medicine 2026"
+  },
+  {
+   "label": "Abu Dhabi programme, 11,748 couples tested 2022 to July 2026, 570 genes: incompatible couples (565)",
+   "value": 0.04809329247531495,
+   "ci": [
+    0.044369698678699825,
+    0.05211233695391116
+   ],
+   "source": "DoH, reported by Gulf News, 3 Oct 2026"
   },
   {
    "label": "Abu Dhabi, 1,118 couples, 570 genes, WGS: positive couples",
@@ -171,6 +221,8 @@
  "notes": [
   "Carrier frequencies: Emirati exomes (Jain et al. 2025) where published, otherwise gnomAD v4.1 Middle Eastern.",
   "CYP21A2 frequency includes non-classic and duplicated-haplotype alleles, so it is an overestimate for classic CAH.",
-  "Genes are treated as independent and every pathogenic allele as reportable; real reporting rules (mild alleles, variant classification) lower the rate."
+  "Genes are treated as independent and every pathogenic allele as reportable; real reporting rules (mild alleles, variant classification) lower the rate.",
+  "The marriage mix uses Dubai 2025 (28% related); Abu Dhabi’s mix is not published and may be higher.",
+  "The 11% poster figure and the 4.8% programme figure come from the same programme with different definitions and periods; the poster’s definition of positive is not published."
  ]
 }

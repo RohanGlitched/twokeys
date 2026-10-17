@@ -1,0 +1,181 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { hasLocale } from '@/i18n/locales';
+import { Footer, Nav } from '@/components/site/Chrome';
+import { titled } from '@/i18n/meta';
+import { FACTS } from '@/lib/knowledge';
+import { CONDITIONS } from '@/lib/conditions';
+import { CONSENT_VERSION } from '@/lib/desk';
+import evalAsk from '../../../../data/eval-ask.json';
+import panel from '../../../../data/panel.json';
+import { Monitor } from '@/components/governance/Monitor';
+
+export const generateMetadata = titled('Governance', 'الحوكمة');
+type L = { en: string; ar: string };
+
+/** DoH Responsible AI Standard (DoH/ST/DDGO/RAI/V1/2025, Oct 2025): clause, what Two Keys does, evidence, and the gap. */
+const CLAUSES: { c: string; req: string; does: string; evidence: [string, string][]; gap?: string }[] = [
+  { c: '3.1.1.1.1', req: 'Co-designed with clinicians and patients', does: 'Wording follows published counselling practice (non-directive, risk not diagnosis, three reading levels).', evidence: [], gap: 'No clinician or patient has co-designed it yet. Next: a named UAE genetic counsellor reviews every card, and a 10 to 20 person comprehension sample in Arabic and English.' },
+  { c: '3.1.1.2.1–2', req: 'Human oversight and escalation protocols', does: 'Every clinical step goes through a named counsellor. Distress in the explainer creates a same-day case (4-hour clock); pregnancy gets 1 working day; routine 2.', evidence: [['/desk', 'Counsellor desk'], ['/demo', 'Crisis path in the phone']], gap: 'Clock targets need staffed counsellors in a pilot.' },
+  { c: '3.1.2.1.2', req: 'Graceful degradation and fallback', does: 'If the model fails or an answer breaks a check twice, the person gets a safe fixed answer and a counsellor button. The rest of the app works with the explainer off.', evidence: [['/proof', 'Route counts in the evaluation']] },
+  { c: '3.1.2.1.3', req: 'Safety testing before deployment', does: 'Ablation evaluation on 60 development and 48 held-out questions, graded by three judges from other model families; misses published.', evidence: [['/proof', 'Evaluation'], ['https://github.com/RohanGlitched/twokeys/blob/main/data/eval-ask.json', 'Every answer']] },
+  { c: '3.1.2.1.4, 3.1.3.1.3', req: 'Post-deployment monitoring', does: 'Daily counts of how each answer was produced (guard, intent, model, fallback), escalations and language, without storing any question.', evidence: [['#monitoring', 'Live counts below']], gap: 'Automated alerts on drift are not built.' },
+  { c: '3.1.3.1.2', req: 'Testing across diverse contexts', does: 'Held-out questions in English, Modern Standard Arabic, Gulf dialect and Arabizi, results reported per dialect.', evidence: [['/proof', 'By dialect']] },
+  { c: '3.1.4.1.2', req: 'Threat modelling', does: 'Per-party threat model: partner, modified phone, relay, lab, counsellor, analyst, outsider.', evidence: [['/how#threats', 'Who could learn what']] },
+  { c: '3.1.4.2.1', req: 'Role-based access, least privilege', does: 'Signed identity for people; named counsellor accounts for the desk; the lab issues tokens only to the two seated people.', evidence: [['/how#threats', 'Threat model']], gap: 'Multi-factor sign-in comes from UAE PASS and the DoH identity provider in production.' },
+  { c: '3.1.4.3.1', req: 'Secure code review and vulnerability scanning', does: 'Open source, typed, tested (unit and end-to-end), input validation and rate limits on every route, strict security headers.', evidence: [['https://github.com/RohanGlitched/twokeys', 'Repository']], gap: 'Independent crypto audit and penetration test before any pilot.' },
+  { c: '3.1.4.4.1', req: 'Privacy by design, data minimisation', does: 'Couple-only by default; the service never learns which couples share a gene unless they book; a counsellor sees only what was ticked.', evidence: [['/how', 'How it works']] },
+  { c: '3.1.4.4.2', req: 'Production data not used for training', does: 'Nothing is trained. The model is called through Amazon Bedrock, which does not use inputs to train models.', evidence: [] },
+  { c: '3.1.4.4.3', req: 'Secure multi-party computation, differential privacy', does: 'Private set intersection on the two phones; differentially private programme counts with a cached hourly release.', evidence: [['/how', 'Protocol'], ['/programme', 'Programme view']] },
+  { c: '3.1.4.5.1', req: 'Compute and storage inside the UAE', does: 'Designed for in-country hosting (AWS me-central-1 offers Nova Pro and DynamoDB).', evidence: [], gap: 'The demo runs in Sydney on synthetic data. Moving and re-testing in the UAE is phase 0.' },
+  { c: '3.1.5.1.2', req: 'Representativeness and subgroup gaps', does: 'Understanding (teach-back) and explainer safety are reported by language and reading level.', evidence: [['/programme', 'Understanding by language'], ['/proof', 'By dialect']] },
+  { c: '3.1.6.1.1', req: 'Tell patients when AI contributes', does: 'The question screen says an AI writes the answers, that they are checked, and that they can be wrong.', evidence: [['/demo', 'Ask a question']] },
+  { c: '3.1.6.1.3', req: 'Right to opt out of AI', does: '“I’d rather ask a person” on the question screen books a counsellor instead. Nothing else in the app uses AI.', evidence: [['/demo', 'Ask a question']] },
+  { c: '3.1.6.2.3', req: 'Traceability of inputs, outputs and versions', does: 'Model version is pinned and recorded; every desk action is in an HMAC-keyed audit chain.', evidence: [['/desk', 'Audit trail']], gap: 'Question text is deliberately not logged, for privacy. A pilot needs consented, access-controlled logging; this trade-off goes to the DoH conformity assessment.' },
+  { c: '3.1.6.3.3', req: 'Plain-language patient outputs', does: 'Simple, standard and detailed versions in Arabic and English; readability measured on every model answer.', evidence: [['/proof', 'Readability']] },
+  { c: '3.1.7.2.2–3', req: 'Clinicians keep final authority; override and audit', does: 'Options are unranked; no clinical step without a counsellor; withdrawal erases shared data and seals notes.', evidence: [['/desk', 'Desk']] },
+  { c: '3.2.3.1.1', req: 'Data clinically validated by domain experts', does: 'Every fact and condition card cites its source.', evidence: [['#data-card', 'Data card']], gap: 'Not yet signed off by a licensed genetic counsellor.' },
+  { c: '3.2.5.3', req: 'Datasheets or data cards', does: 'Data card below; sources and rights on the Proof page.', evidence: [['#data-card', 'Data card'], ['/proof#sources', 'Sources']] },
+  { c: '3.3.1.1.2', req: 'Risk register with owners', does: 'Register below.', evidence: [['#risks', 'Risk register']] },
+  { c: '3.3.1.2.2.2', req: 'High risk: conformity assessment before and after deployment', does: 'We classify the explainer as high risk and plan the assessment with the DoH Data and Digital Governance Office.', evidence: [['#tier', 'Risk tier']], gap: 'Assessment not yet done; it is a gate before the pilot.' },
+];
+
+const FLOWS: string[][] = [
+  ['Carrier results', 'The screening lab, as today', 'Lab staff', 'Decree-Law 49/2023 Arts. 6, 7', 'Lab’s existing policy', 'Must stay in the UAE (Art. 7)'],
+  ['One-time tokens', 'Phone memory, one pairing', 'Nobody can read them', 'Part of screening', 'Gone when the page closes', 'None'],
+  ['Locked lists (relay)', 'Relay, encrypted', 'Nobody: key never reaches a server', 'Part of screening', '10 minutes', 'Demo: Sydney. Production: UAE'],
+  ['Who paired (seats)', 'Lab store', 'Lab', 'Prevents reuse and impersonation', '30 days', 'Demo: Sydney. Production: UAE'],
+  ['Choice to see everything', 'Lab store', 'Lab; partner’s results released only when both chose', 'Both partners’ explicit choice', '30 days', 'Demo: Sydney. Production: UAE'],
+  ['Booked case (ticked items only)', 'Desk store', 'Named counsellors, every view logged', 'Explicit consent (Art. 6), withdrawable (Art. 8); consent ' + CONSENT_VERSION, 'Demo 60 days; production per health-records law', 'Demo: Sydney. Production: UAE'],
+  ['Family notes', 'Store, encrypted on the sender’s phone', 'Only someone with the link', 'Sender’s choice', '30 days', 'Demo: Sydney. Production: UAE'],
+  ['Explainer question', 'Sent to the model, not stored', 'Model provider, processing only', 'Person’s request', 'Not stored', 'Demo: Sydney. Production: UAE region'],
+  ['Programme and monitoring counts', 'Store', 'Health authority (noisy aggregates)', 'Programme oversight', '90 days', 'Demo: Sydney. Production: UAE'],
+];
+
+const RISKS: string[][] = [
+  ['Explainer gives a wrong or falsely reassuring answer', 'Grounded facts, number and odds checks, fallback, counsellor button; held-out evaluation', 'Medium', 'Clinical lead'],
+  ['Distress is missed', 'Keyword and model crisis checks in English, Arabic, Gulf and Arabizi; same-day case', 'Medium', 'Clinical lead'],
+  ['Partner or family sees a result through the phone itself', 'Couple-only default, results sealed until opened, nothing in notifications', 'Medium', 'Product owner'],
+  ['Health data leaves the UAE', 'Synthetic data only in the demo; in-country hosting is a pilot gate', 'High until moved', 'Operator'],
+  ['Counsellor over-access', 'Consent per item, named accounts, logged views, erase and seal on withdrawal', 'Low', 'Operator'],
+  ['Lab token key compromised', 'Key held by the lab; sessions expire; rotation and HSM in production', 'Medium', 'Lab'],
+  ['Teach-back overstates understanding', 'Counted as first-try scores only; validated instrument in the pilot', 'Medium', 'Evaluation lead'],
+];
+
+export default async function GovernancePage({ params }: PageProps<'/[lang]/governance'>) {
+  const { lang } = await params;
+  if (!hasLocale(lang)) notFound();
+  const t = (l: L) => l[lang];
+  const ev = evalAsk as unknown as {
+    version?: number; built: string; models: { product: string; judges?: Record<string, string> };
+    summary: Record<string, Record<string, { cases: number; safe: number; helpful: number }>>;
+    cost?: { usdPerAnswer: number; inputTokensPerAnswer: number; outputTokensPerAnswer: number };
+    misses?: { id: string; flags: string[] }[];
+  };
+  const tk = ev.summary?.heldout?.twokeys;
+  const href = (h: string) => (h.startsWith('http') || h.startsWith('#') ? h : `/${lang}${h}`);
+  const genes = (panel as { genes: unknown[] }).genes.length;
+
+  return (
+    <>
+      <Nav lang={lang} path="/governance" />
+      <main className="mx-auto max-w-[1240px] px-6 pt-6 md:px-8">
+        <h1 className="max-w-3xl text-[clamp(32px,3.6vw,48px)] font-semibold leading-tight tracking-tight">{t({ en: 'Governance pack', ar: 'ملف الحوكمة' })}</h1>
+        <p className="mt-4 max-w-3xl text-[17px] leading-relaxed text-ink-2">{t({ en: 'What a Department of Health reviewer would ask for, mapped to the Abu Dhabi Responsible AI Standard (DoH/ST/DDGO/RAI/V1/2025, October 2025). Where we fall short, the gap is written down next to the clause.', ar: 'ما قد يطلبه مراجع في دائرة الصحة، مرتبطاً بمعيار الذكاء الاصطناعي المسؤول في أبوظبي (DoH/ST/DDGO/RAI/V1/2025، أكتوبر 2025). وحيث نقصّر، تُكتب الفجوة بجانب البند.' })}</p>
+        {lang === 'ar' && <p className="mt-2 max-w-3xl text-[14px] text-ink-2">جداول هذا الملف بالإنجليزية، لغة المعيار المنشور.</p>}
+
+        <section id="tier" className="mt-12 grid gap-6 border-t-[1.5px] border-ink pt-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+          <div>
+            <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Risk tier: high', ar: 'فئة المخاطر: عالية' })}</h2>
+            <p className="mt-2 text-[14px] text-ink-2">{t({ en: 'Clause 3.3.1.2.2.2', ar: 'البند 3.3.1.2.2.2' })}</p>
+          </div>
+          <div className="space-y-3 text-[16px] leading-relaxed text-ink-2">
+            <p>{t({ en: 'The explainer talks directly to patients about results that can shape reproductive decisions, in two languages, and could cause harm if it reassured wrongly or missed distress. We treat it as high risk, which means a conformity assessment with the DoH Data and Digital Governance Office before the pilot and again after it.', ar: 'يتحدث الشارح مباشرة مع المرضى عن نتائج قد تؤثر في قرارات الإنجاب، بلغتين، وقد يسبب ضرراً إن طمأن خطأً أو فاته ضيق. لذلك نعدّه عالي المخاطر، أي تقييم مطابقة مع مكتب حوكمة البيانات والرقمنة في الدائرة قبل التجربة وبعدها.' })}</p>
+            <p>{t({ en: 'The private matching and the counsellor desk are not AI. They fall under the health-data and genetic-testing laws (Decree-Law 49/2023, Federal Law 2/2019) and ADHICS, and are covered by the same DPIA.', ar: 'المطابقة الخاصة ومكتب المستشار ليسا ذكاءً اصطناعياً، ويخضعان لقوانين البيانات الصحية والفحص الجيني (المرسوم بقانون 49/2023 والقانون الاتحادي 2/2019) ولمعيار ADHICS، ويشملهما تقييم الأثر نفسه.' })}</p>
+          </div>
+        </section>
+
+        <section className="mt-16">
+          <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Clause by clause', ar: 'بنداً بنداً' })}</h2>
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full min-w-[900px] border-collapse text-[14px]" dir="ltr">
+              <thead><tr className="border-b-[1.5px] border-ink text-left">
+                <th scope="col" className="py-2.5 pr-4 font-semibold">Clause</th><th scope="col" className="py-2.5 pr-4 font-semibold">Requirement</th>
+                <th scope="col" className="py-2.5 pr-4 font-semibold">What Two Keys does</th><th scope="col" className="py-2.5 pr-4 font-semibold">Evidence</th><th scope="col" className="py-2.5 font-semibold">Gap</th>
+              </tr></thead>
+              <tbody>
+                {CLAUSES.map((r) => (
+                  <tr key={r.c} className="border-b border-rule align-top">
+                    <th scope="row" className="whitespace-nowrap py-3 pr-4 text-left font-mono text-[13px] font-medium">{r.c}</th>
+                    <td className="py-3 pr-4 font-medium">{r.req}</td>
+                    <td className="py-3 pr-4 leading-relaxed text-ink-2">{r.does}</td>
+                    <td className="py-3 pr-4">{r.evidence.length ? r.evidence.map(([h, l]) => <Link key={h + l} href={href(h)} className="block text-indigo underline underline-offset-2">{l}</Link>) : <span className="text-ink-2">—</span>}</td>
+                    <td className={`py-3 leading-relaxed ${r.gap ? 'text-madder' : 'text-ink-2'}`}>{r.gap ?? 'None known'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section className="mt-16 grid gap-10 md:grid-cols-2">
+          <div className="rounded-[3px] border border-ink bg-paper p-6">
+            <h2 className="text-[22px] font-semibold tracking-tight">{t({ en: 'Model card: the explainer', ar: 'بطاقة النموذج: الشارح' })}</h2>
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]" dir="ltr">
+              <dt className="text-ink-2">Intended use</dt><dd>Answer a couple’s questions about genes they both carry, from vetted facts, in English or Arabic, at three reading levels.</dd>
+              <dt className="text-ink-2">Out of scope</dt><dd>Diagnosis, recommending a decision, religious rulings, anything about a partner beyond shared genes, emergencies (handed to people).</dd>
+              <dt className="text-ink-2">Model</dt><dd className="font-mono text-[13px]">{ev.models.product}, pinned; temperature 0.1</dd>
+              <dt className="text-ink-2">Safety layers</dt><dd>Keyword guards (EN, MSA, Gulf), model intent check, grounded prompt with {FACTS.length} facts, code checks on numbers, odds, persona, language and framing, fixed fallback.</dd>
+              <dt className="text-ink-2">Held-out result</dt><dd>{tk ? `${tk.safe} of ${tk.cases} judged safe; ${tk.helpful} helpful` : 'see Proof'}{ev.misses ? `; ${ev.misses.length} misses published` : ''}</dd>
+              <dt className="text-ink-2">Judges</dt><dd className="font-mono text-[12px]">{ev.models.judges ? Object.values(ev.models.judges).join(', ') : '—'}</dd>
+              {ev.cost && <><dt className="text-ink-2">Cost</dt><dd>about {Math.round(ev.cost.inputTokensPerAnswer)} input and {Math.round(ev.cost.outputTokensPerAnswer)} output tokens, ≈ ${ev.cost.usdPerAnswer.toFixed(4)} per answer at list price</dd></>}
+              <dt className="text-ink-2">Known limits</dt><dd>Graded by models, not yet by a clinician; matches genes, not exact variants; demo hosted outside the UAE.</dd>
+            </dl>
+          </div>
+          <div id="data-card" className="rounded-[3px] border border-ink bg-paper p-6">
+            <h2 className="text-[22px] font-semibold tracking-tight">{t({ en: 'Data card: what the explainer and result screens say', ar: 'بطاقة البيانات: ما تقوله شاشات الشارح والنتيجة' })}</h2>
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]" dir="ltr">
+              <dt className="text-ink-2">Contents</dt><dd>{FACTS.length} bilingual facts; {Object.keys(CONDITIONS).length} condition cards at three reading levels; a {genes}-gene panel with carrier frequencies.</dd>
+              <dt className="text-ink-2">Sources</dt><dd>NSGC, ACMG, MedlinePlus Genetics, Decree-Law 49/2023, Thiqa ART guideline v3.5, Jain et al. 2025, gnomAD v4.1. Each item cites its own.</dd>
+              <dt className="text-ink-2">Version</dt><dd>2026-10-17, in git; every change is a reviewed commit.</dd>
+              <dt className="text-ink-2">Clinical review</dt><dd className="text-madder">Pending: a licensed UAE genetic counsellor signs off before any pilot.</dd>
+              <dt className="text-ink-2">Personal data</dt><dd>None. All people in the demo are synthetic.</dd>
+              <dt className="text-ink-2">Known gaps</dt><dd>Gene-level, not variant-level; Arabic reviewed by us, not yet by a native clinical reviewer.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <section className="mt-16">
+          <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Data protection impact, in one table', ar: 'أثر حماية البيانات في جدول واحد' })}</h2>
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full min-w-[900px] border-collapse text-[14px]" dir="ltr">
+              <thead><tr className="border-b-[1.5px] border-ink text-left">
+                {['Data', 'Where', 'Who can read it', 'Basis', 'Kept for', 'Location'].map((h) => <th key={h} scope="col" className="py-2.5 pr-4 font-semibold">{h}</th>)}
+              </tr></thead>
+              <tbody>{FLOWS.map((r) => <tr key={r[0]} className="border-b border-rule align-top">{r.map((x, i) => i === 0 ? <th key={i} scope="row" className="py-3 pr-4 text-left font-medium">{x}</th> : <td key={i} className="py-3 pr-4 leading-relaxed text-ink-2">{x}</td>)}</tr>)}</tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="risks" className="mt-16">
+          <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Risk register', ar: 'سجل المخاطر' })}</h2>
+          <div className="mt-6 overflow-x-auto">
+            <table className="w-full min-w-[800px] border-collapse text-[14px]" dir="ltr">
+              <thead><tr className="border-b-[1.5px] border-ink text-left">
+                {['Risk', 'Controls', 'Residual', 'Owner'].map((h) => <th key={h} scope="col" className="py-2.5 pr-4 font-semibold">{h}</th>)}
+              </tr></thead>
+              <tbody>{RISKS.map((r) => <tr key={r[0]} className="border-b border-rule align-top"><th scope="row" className="py-3 pr-4 text-left font-medium">{r[0]}</th><td className="py-3 pr-4 leading-relaxed text-ink-2">{r[1]}</td><td className={`py-3 pr-4 ${r[2].startsWith('High') ? 'font-medium text-madder' : 'text-ink-2'}`}>{r[2]}</td><td className="py-3 text-ink-2">{r[3]}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="monitoring" className="mt-16 border-t-[1.5px] border-ink pt-8">
+          <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Monitoring, live', ar: 'المراقبة، مباشرة' })}</h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'How explainer answers were produced over the last 30 days on this demo. Only counts are kept: never a question, an answer or a person.', ar: 'كيف أُنتجت إجابات الشارح خلال آخر 30 يوماً في هذا العرض. تُحفظ الأعداد فقط، لا سؤال ولا إجابة ولا شخص.' })}</p>
+          <Monitor lang={lang} />
+        </section>
+      </main>
+      <Footer lang={lang} />
+    </>
+  );
+}

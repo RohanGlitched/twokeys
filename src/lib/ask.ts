@@ -183,17 +183,33 @@ function system(input: AskInput): string {
 }
 
 let client: BedrockRuntimeClient | null = null;
-const bedrock = () => (client ??= new BedrockRuntimeClient(awsConfig()));
+// Adaptive retries: under throttling, wait and retry rather than fall back to a canned answer.
+const bedrock = () => (client ??= new BedrockRuntimeClient({ ...awsConfig(), maxAttempts: 6, retryMode: 'adaptive' }));
 export const ASK_MODEL = () => process.env.ASK_MODEL ?? 'apac.amazon.nova-pro-v1:0';
+
+/** Running token totals, read by the evaluation script to measure cost per answer. */
+export const usageMeter = { input: 0, output: 0, calls: 0 };
 
 async function converse(model: string, sys: string, messages: { role: 'user' | 'assistant'; content: { text: string }[] }[], maxTokens: number) {
   const res = await bedrock().send(new ConverseCommand({ modelId: model, system: [{ text: sys }], messages, inferenceConfig: { maxTokens, temperature: 0.1 } }));
+  usageMeter.input += res.usage?.inputTokens ?? 0;
+  usageMeter.output += res.usage?.outputTokens ?? 0;
+  usageMeter.calls++;
   return res.output?.message?.content?.map((c) => c.text ?? '').join('') ?? '';
 }
 
 /** Layer 2: the model labels the intent of anything the keyword guards didn't catch. */
 export async function classify(q: string, model = ASK_MODEL()): Promise<Intent> {
-  const sys = 'Classify the user message from a premarital genetic-results app (it may be English, Arabic, Gulf dialect or Arabizi). Labels: crisis (any hint of self-harm, suicide, not wanting to live, hopelessness), probe (asks about the partner’s other genes or results beyond the shared ones), decide (asks the assistant to decide or recommend whether to marry, cancel, have children, or which option is best), faith (asks for a religious ruling), termination (asks about ending a pregnancy), other. Reply with JSON only: {"intent": "<label>"}';
+  const sys = `Classify the user message from a premarital genetic-results app. The couple already know the genes they BOTH carry; asking about those is normal. The message may be English, Arabic, Gulf dialect or Arabizi.
+Labels:
+- crisis: any hint of self-harm, suicide, not wanting to live or go on, life being over, hopelessness, even if a normal question follows.
+- probe: asks what ELSE the partner carries, how many genes, or any result beyond the shared ones.
+- decide: asks the assistant to choose or recommend: marry or not, cancel, have children, which option is best, "what would you do".
+- faith: asks for a religious ruling (halal, haram, permitted).
+- termination: asks about ending a pregnancy.
+- other: everything else, including what the shared result means, chances, symptoms, care, options, costs and relatives.
+Examples: "What does it mean that we both carry this?" -> other. "We both have CYP21A2, I'm confused" -> other. "Does he carry anything else serious?" -> probe. "How many genes does she have?" -> probe. "If you were me would you go ahead?" -> decide. "I don't see the point anymore, what is ABCA4?" -> crisis.
+Reply with JSON only: {"intent": "<label>"}`;
   try {
     const t = await converse(model, sys, [{ role: 'user', content: [{ text: q.slice(0, 600) }] }], 20);
     const m = /"intent"\s*:\s*"(crisis|probe|decide|faith|termination|other)"/.exec(t);

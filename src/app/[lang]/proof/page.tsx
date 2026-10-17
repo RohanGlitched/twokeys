@@ -27,14 +27,15 @@ const SOURCES: { what: L; owner: string; rights: L; personal: L; href: string }[
 
 const LIMITS: L[] = [
   { en: 'All people and results are synthetic. No patient data was used or needed.', ar: 'كل الأشخاص والنتائج افتراضية. لم تُستخدم بيانات مرضى ولم تكن ضرورية.' },
-  { en: 'The protocol is semi-honest and unaudited. A phone can drop its own genes or stop early; it cannot learn more than the match.', ar: 'البروتوكول شبه أمين وغير مُدقّق. قد يُسقط هاتف جيناته أو يتوقف مبكراً، لكنه لا يعرف أكثر من التطابق.' },
+  { en: 'The protocol has not been independently audited. Locks are proved and the lab confirms every match, so a modified phone can’t fake or hide one, but it can refuse to finish. In the single-lab setting the lab is trusted, as it is today.', ar: 'لم يُدقَّق البروتوكول بشكل مستقل. الأقفال مُثبتة والمختبر يؤكد كل تطابق، فلا يستطيع هاتف معدَّل تزوير تطابق أو إخفاءه، لكنه قد يرفض الإكمال. وفي حالة المختبر الواحد يكون المختبر موثوقاً، كما هو اليوم.' },
   { en: 'Gene-level matching needs clinical curation for exceptions (alpha-globin cis/trans, HbS/HbC, hypomorphic alleles). We flag these for counsellors rather than resolve them.', ar: 'المطابقة على مستوى الجين تحتاج تنقيحاً سريرياً للاستثناءات (ألفا غلوبين، HbS/HbC، المتغيرات الضعيفة). نُبرزها للمستشار بدلاً من حسمها.' },
   { en: 'The demo runs outside the UAE on synthetic data. A real deployment needs UAE hosting, DoH licensing (Decree-Law 49/2023 Art. 28) and a National Genomic Database feed (Art. 26).', ar: 'يعمل العرض خارج الإمارات على بيانات افتراضية. ويحتاج النشر الحقيقي استضافة في الإمارات وترخيص الدائرة (المادة 28) وربطاً بقاعدة البيانات الجينومية الوطنية (المادة 26).' },
   { en: 'Teach-back questions are a proxy for understanding, not a validated instrument; a pilot would use a validated comprehension measure.', ar: 'أسئلة إعادة الشرح مؤشر تقريبي للفهم وليست أداة معتمدة؛ وستستخدم التجربة أداة فهم معتمدة.' },
-  { en: 'Explainer answers are graded by another model; judges should read the examples. A licensed counsellor reviews every case before any clinical step.', ar: 'تُقيَّم إجابات الشارح بنموذج آخر؛ وننصح بقراءة الأمثلة. ويراجع مستشار مرخّص كل حالة قبل أي خطوة سريرية.' },
+  { en: 'Explainer answers are graded by three models from other families, not yet by a clinician. A licensed counsellor reviews every case before any clinical step, and clinician adjudication of the evaluation comes before a pilot.', ar: 'تُقيَّم إجابات الشارح بثلاثة نماذج من عائلات أخرى، لا بطبيب بعد. ويراجع مستشار مرخّص كل حالة قبل أي خطوة سريرية، ويسبق التجربةَ تحكيمُ طبيبٍ للتقييم.' },
 ];
 
-interface Summary { cases: number; safe: number; helpful: number; directive: number; partner_leak: number; invented: number; wrong: number; stigmatising: number; religious_ruling: number }
+interface Summary { cases: number; safe: number; helpful: number; directive: number; partner_leak: number; invented: number; wrong: number; stigmatising: number; religious_ruling: number; missed_distress: number }
+interface Miss { set: string; id: string; cat: string; q: string; answer: string; route: string; flags: string[]; notes: Record<string, string> }
 
 export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) {
   const { lang } = await params;
@@ -45,11 +46,17 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
     genesModelled: number; genesFromLiterature: number; genesFromGnomad: number; couplesPerType: number; mixedPopulationAtRisk: number;
     byType: Record<string, { rate: number; ci: [number, number] }>; targets: { label: string; value: number; ci?: number[]; source: string }[];
     geneShare: { gene: string; shareOfMatches: number; observedM42: number | null }[]; mix: Record<string, number>;
+    sensitivity570: { tailGenes: number; tailCarrierFreq: number; mixed: number }[];
   };
-  const ev = evalAsk as unknown as { models: { product: string; comparison: string; judge: string }; summary: Record<string, Summary> };
-  const configs: [string, L][] = [['twokeys', { en: 'Two Keys (Nova Pro + guardrails)', ar: 'مفتاحان (Nova Pro مع الضوابط)' }], ['raw-nova', { en: 'Same model, no guardrails', ar: 'النموذج نفسه دون ضوابط' }], ['raw-claude', { en: 'Claude Sonnet 4.5, no guardrails', ar: 'Claude Sonnet 4.5 دون ضوابط' }]];
-  const failKeys: [keyof Summary, L][] = [['directive', { en: 'Told the couple what to do', ar: 'أملى على الزوجين القرار' }], ['partner_leak', { en: 'Leaked or guessed partner data', ar: 'كشف بيانات الشريك أو خمّنها' }], ['invented', { en: 'Invented a fact or number', ar: 'اختلق حقيقة أو رقماً' }], ['wrong', { en: 'Contradicted the facts', ar: 'ناقض الحقائق' }], ['stigmatising', { en: 'Stigmatising wording', ar: 'صياغة واصمة' }], ['religious_ruling', { en: 'Gave a religious ruling', ar: 'أصدر حكماً شرعياً' }]];
-  const max = Math.max(cal.mixedPopulationAtRisk, ...cal.targets.map((x) => x.value), ...Object.values(cal.byType).map((b) => b.rate));
+  const ev = evalAsk as unknown as {
+    built: string; method: string; models: { product: string; judges: Record<string, string> };
+    summary: Record<'dev' | 'heldout', Record<string, Summary>>; byDialect: Record<string, Summary>; routes: Record<string, number>;
+    readability: { enFlesch: number; enWordsPerSentence: number; arWordsPerSentence: number }; cost: { usdPerAnswer: number }; misses: Miss[]; splits: unknown[];
+  };
+  const configs: [string, L][] = [['twokeys', { en: 'Two Keys (all safety layers)', ar: 'مفتاحان (كل طبقات الأمان)' }], ['ablation', { en: 'Same model and facts, safety layers off', ar: 'النموذج والحقائق نفسها دون طبقات الأمان' }], ['baseline', { en: 'Plain prompt given the same facts', ar: 'تعليمات بسيطة مع الحقائق نفسها' }]];
+  const failKeys: [keyof Summary, L][] = [['directive', { en: 'Told the couple what to do', ar: 'أملى على الزوجين القرار' }], ['partner_leak', { en: 'Leaked or guessed partner data', ar: 'كشف بيانات الشريك أو خمّنها' }], ['invented', { en: 'Invented a fact or number', ar: 'اختلق حقيقة أو رقماً' }], ['wrong', { en: 'Contradicted the facts', ar: 'ناقض الحقائق' }], ['stigmatising', { en: 'Stigmatising wording', ar: 'صياغة واصمة' }], ['religious_ruling', { en: 'Gave a religious ruling', ar: 'أصدر حكماً شرعياً' }], ['missed_distress', { en: 'Missed distress', ar: 'فاته الضيق' }]];
+  const DIALECT: Record<string, L> = { en: { en: 'English', ar: 'الإنجليزية' }, msa: { en: 'Modern Standard Arabic', ar: 'العربية الفصحى' }, gulf: { en: 'Gulf dialect', ar: 'اللهجة الخليجية' }, arabizi: { en: 'Arabizi', ar: 'العربيزي' } };
+  const max = Math.max(cal.mixedPopulationAtRisk, ...cal.targets.map((x) => x.ci?.[1] ?? x.value), ...cal.sensitivity570.map((x) => x.mixed));
 
   return (
     <>
@@ -85,23 +92,18 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
           <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">
             {t({ en: `We built ${cal.couplesPerType.toLocaleString()} synthetic couples per family type from published Emirati carrier frequencies (${cal.genesFromLiterature} genes) and gnomAD (${cal.genesFromGnomad} genes), with real pedigrees: first cousins share grandparents, and so on. The marriage mix follows Dubai’s 2025 finding that 28% of couples were related. Then we asked how many couples carry the same gene.`, ar: `بنينا ${cal.couplesPerType.toLocaleString()} زوجين افتراضيين لكل نوع عائلة من ترددات الحمل الإماراتية المنشورة (${cal.genesFromLiterature} جيناً) وgnomAD (${cal.genesFromGnomad} جيناً)، بأشجار عائلة حقيقية: أبناء العم يتشاركون الأجداد، وهكذا. ويتبع مزيج الزيجات ما وجدته دبي في 2025 أن 28% من الأزواج أقارب. ثم سألنا: كم زوجاً يحمل الجين نفسه؟` })}
           </p>
-          <div className="mt-8 grid gap-3">
-            {[{ label: { en: 'Model: mixed population', ar: 'النموذج: مجتمع مختلط' }, value: cal.mixedPopulationAtRisk, ci: undefined as number[] | undefined, model: true },
-              ...Object.entries(cal.byType).map(([k, v]) => ({ label: { en: `Model: ${REL[k]?.en ?? k}`, ar: `النموذج: ${REL[k]?.ar ?? k}` }, value: v.rate, ci: v.ci, model: true })),
-              ...cal.targets.map((x) => ({ label: { en: `Observed: ${x.label}`, ar: `المرصود: ${x.label}` }, value: x.value, ci: x.ci, model: false }))].map((row, i) => (
-              <div key={i} className="grid grid-cols-1 items-center gap-2 text-[14px] md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_70px]">
-                <span className={row.model ? '' : 'text-ink-2'}>{t(row.label)}</span>
-                <div className="relative h-4 bg-wool-2">
-                  <div className={`h-4 ${row.model ? 'bg-ink' : 'bg-camel'}`} style={{ width: `${(row.value / max) * 100}%` }} />
-                  {row.ci && <div className="absolute top-1/2 h-px bg-ink-2" style={{ insetInlineStart: `${(row.ci[0] / max) * 100}%`, width: `${((row.ci[1] - row.ci[0]) / max) * 100}%` }} />}
-                </div>
-                <span className="text-end font-medium">{pct(row.value)}</span>
-              </div>
-            ))}
+          <Bars lang={lang} max={max} rows={[
+            { label: { en: `Model, ${cal.genesModelled} genes: mixed population`, ar: `النموذج، ${cal.genesModelled} جيناً: مجتمع مختلط` }, value: cal.mixedPopulationAtRisk, tone: 'model' },
+            ...cal.sensitivity570.map((x) => ({ label: { en: `Model + ${x.tailGenes} unmodelled genes at 1 in ${Math.round(1 / x.tailCarrierFreq)} carriers each (scenario)`, ar: `النموذج + ${x.tailGenes} جيناً غير منمذج بنسبة حاملين 1 من ${Math.round(1 / x.tailCarrierFreq)} لكل جين (سيناريو)` }, value: x.mixed, tone: 'scenario' as const })),
+            ...cal.targets.map((x) => ({ label: { en: `Observed: ${x.label}`, ar: `المرصود: ${x.label}` }, value: x.value, ci: x.ci, tone: 'observed' as const, source: x.source })),
+          ]} />
+          <div className="mt-6 grid max-w-4xl gap-4 text-[14px] leading-relaxed text-ink-2 md:grid-cols-2">
+            <p>{t({ en: 'The fair comparison for this demo panel is Dubai’s 5.8%, which leaves out alpha-thalassaemia as we do (alpha-globin deletions are invisible to exome data and mostly silent, so we don’t model them). Abu Dhabi’s programme-wide figure, 4.8% across 11,748 couples, is also close.', ar: 'المقارنة العادلة لهذه اللوحة هي نسبة دبي 5.8% التي تستبعد ألفا ثلاسيميا كما نفعل (حذوفات ألفا غلوبين لا تظهر في بيانات الإكسوم وأغلبها صامت، فلا ننمذجها). ونسبة برنامج أبوظبي كله، 4.8% من 11,748 زوجين، قريبة أيضاً.' })}</p>
+            <p>{t({ en: 'We miss the 11% from Abu Dhabi’s 1,118-couple genome study by about half. Three reasons: we model about 128 of its 570 genes, our marriage mix is Dubai’s, and that study’s definition of a positive couple isn’t published. The scenarios show the unmodelled genes alone could add 1 to 3 points.', ar: 'نخطئ نسبة 11% من دراسة أبوظبي على 1,118 زوجين بنحو النصف. لثلاثة أسباب: ننمذج نحو 128 من 570 جيناً، ومزيج الزيجات لدينا من دبي، وتعريف تلك الدراسة للزوجين الإيجابيين غير منشور. وتبيّن السيناريوهات أن الجينات غير المنمذجة وحدها قد تضيف 1 إلى 3 نقاط.' })}</p>
           </div>
-          <p className="mt-4 max-w-3xl text-[14px] leading-relaxed text-ink-2">
-            {t({ en: 'Read the mixed-population bar against Dubai’s couples outside alpha-thalassaemia (alpha-globin deletions are invisible to exome data, so we model them separately). The cousin bars show why consanguinity matters: the same genes, several times the chance.', ar: 'قارن شريط المجتمع المختلط بأزواج دبي خارج الثلاسيميا ألفا (حذوفات ألفا غلوبين لا تظهر في بيانات الإكسوم، فنمذجها منفصلة). وتبيّن أشرطة الأقارب لماذا تهم القرابة: الجينات نفسها، واحتمال أضعاف.' })}
-          </p>
+          <h3 className="mt-10 text-[18px] font-semibold">{t({ en: 'By family type', ar: 'بحسب نوع القرابة' })}</h3>
+          <Bars lang={lang} max={max} rows={Object.entries(cal.byType).map(([k, v]) => ({ label: { en: `Model: ${REL[k]?.en ?? k}`, ar: `النموذج: ${REL[k]?.ar ?? k}` }, value: v.rate, ci: v.ci, tone: 'model' as const }))} />
+          <p className="mt-4 max-w-3xl text-[14px] leading-relaxed text-ink-2">{t({ en: 'The same genes, several times the chance: this is why consanguinity matters, and why the result screen words it per relationship.', ar: 'الجينات نفسها، واحتمال أضعاف: لهذا تهم القرابة، ولهذا تصوغ شاشة النتيجة الكلام بحسب نوع القرابة.' })}</p>
           <h3 className="mt-10 text-[18px] font-semibold">{t({ en: 'Which genes the model says couples will share, against Abu Dhabi’s observed list', ar: 'الجينات التي يتوقع النموذج أن يتشاركها الأزواج، مقابل القائمة المرصودة في أبوظبي' })}</h3>
           <table className="mt-3 w-full max-w-2xl text-[14px]">
             <thead><tr className="border-b border-ink text-[12px] text-ink-3"><th className="py-2 text-start font-normal">{t({ en: 'Gene', ar: 'الجين' })}</th><th className="py-2 text-end font-normal">{t({ en: 'Model share of matches', ar: 'حصة النموذج من التطابقات' })}</th><th className="py-2 text-end font-normal">{t({ en: 'Observed (M42/DoH)', ar: 'المرصود (M42/الدائرة)' })}</th></tr></thead>
@@ -114,27 +116,63 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
 
         {/* explainer eval */}
         <section className="mt-20 border-t-[1.5px] border-ink pt-8">
-          <h2 className="max-w-3xl text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Is the explainer safe? 60 hard questions, in Arabic and English', ar: 'هل الشارح آمن؟ 60 سؤالاً صعباً بالعربية والإنجليزية' })}</h2>
-          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'Comprehension questions, but also attempts to learn a partner’s results, requests to decide for the couple, religious and termination questions, prompt injections, number traps and a crisis message. Each answer was graded by an independent model against the vetted facts.', ar: 'أسئلة فهم، ومحاولات لمعرفة نتائج الشريك، وطلبات للقرار عن الزوجين، وأسئلة شرعية وعن إنهاء الحمل، وحقن أوامر، وأفخاخ أرقام، ورسالة أزمة. وقيّم نموذج مستقل كل إجابة مقابل الحقائق الموثوقة.' })}</p>
-          <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[720px] text-[14px]">
-              <thead><tr className="border-b border-ink text-[12px] text-ink-3">
-                <th className="py-2 text-start font-normal" />
-                {configs.map(([k, l]) => <th key={k} className={`py-2 text-end font-normal ${k === 'twokeys' ? 'text-ink' : ''}`}>{t(l)}</th>)}
-              </tr></thead>
-              <tbody>
-                <tr className="border-b border-rule"><td className="py-2.5 font-medium">{t({ en: 'Safe answers', ar: 'إجابات آمنة' })}</td>
-                  {configs.map(([k]) => <td key={k} className={`py-2.5 text-end text-[18px] font-semibold ${k === 'twokeys' ? 'text-sage' : ''}`}>{ev.summary[k]?.safe ?? '—'} / {ev.summary[k]?.cases ?? '—'}</td>)}</tr>
-                {failKeys.map(([fk, l]) => (
-                  <tr key={fk} className="border-b border-rule"><td className="py-2 text-ink-2">{t(l)}</td>
-                    {configs.map(([k]) => <td key={k} className={`py-2 text-end ${(ev.summary[k]?.[fk] ?? 0) > 0 ? 'text-madder' : 'text-ink-3'}`}>{ev.summary[k]?.[fk] ?? '—'}</td>)}</tr>
+          <h2 className="max-w-3xl text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Is the explainer safe? Same model, safety layers on and off', ar: 'هل الشارح آمن؟ النموذج نفسه مع طبقات الأمان ودونها' })}</h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'Every arm uses the same model and the same vetted facts, so the difference is the safety layers alone. 60 development questions were used while building; 48 held-out questions were written by a different model family (English, Modern Standard Arabic, Gulf dialect, Arabizi, indirect distress, injections, multi-turn pushes) and frozen before this run. Three judges from other model families grade every answer; a flag counts when two agree.', ar: 'يستخدم كل مسار النموذج نفسه والحقائق الموثوقة نفسها، فيكون الفرق هو طبقات الأمان وحدها. استُخدم 60 سؤالاً أثناء البناء، وكتب 48 سؤالاً محجوزاً نموذجٌ من عائلة مختلفة (إنجليزية وفصحى ولهجة خليجية وعربيزي وضيق غير مباشر وحقن أوامر ومحادثات متعددة) وجُمّدت قبل هذا التشغيل. ويقيّم كل إجابة ثلاثة حكّام من عائلات نماذج أخرى، ويُحتسب التنبيه إذا اتفق اثنان.' })}</p>
+          {(['heldout', 'dev'] as const).map((set) => (
+            <div key={set} className="mt-8">
+              <h3 className="text-[18px] font-semibold">{set === 'heldout' ? t({ en: `Held-out questions (${ev.summary.heldout.twokeys.cases})`, ar: `الأسئلة المحجوزة (${ev.summary.heldout.twokeys.cases})` }) : t({ en: `Development questions (${ev.summary.dev.twokeys.cases})`, ar: `أسئلة التطوير (${ev.summary.dev.twokeys.cases})` })}</h3>
+              <div className="mt-3 overflow-x-auto">
+                <table className="w-full min-w-[720px] text-[14px]">
+                  <thead><tr className="border-b border-ink text-[12px] text-ink-2">
+                    <th className="py-2 text-start font-normal" />
+                    {configs.map(([k, l]) => <th key={k} className={`py-2 text-end font-normal ${k === 'twokeys' ? 'text-ink' : ''}`}>{t(l)}</th>)}
+                  </tr></thead>
+                  <tbody>
+                    <tr className="border-b border-rule"><td className="py-2.5 font-medium">{t({ en: 'Safe answers', ar: 'إجابات آمنة' })}</td>
+                      {configs.map(([k]) => <td key={k} className={`py-2.5 text-end text-[18px] font-semibold ${k === 'twokeys' ? 'text-sage' : ''}`}>{ev.summary[set][k]?.safe ?? '—'} / {ev.summary[set][k]?.cases ?? '—'}</td>)}</tr>
+                    {failKeys.map(([fk, l]) => (
+                      <tr key={fk} className="border-b border-rule"><td className="py-2 text-ink-2">{t(l)}</td>
+                        {configs.map(([k]) => <td key={k} className={`py-2 text-end ${(ev.summary[set][k]?.[fk] ?? 0) > 0 ? 'text-madder' : 'text-ink-2'}`}>{ev.summary[set][k]?.[fk] ?? '—'}</td>)}</tr>
+                    ))}
+                    <tr><td className="py-2 text-ink-2">{t({ en: 'Helpful (answered or redirected sensibly)', ar: 'مفيدة (أجابت أو أحالت بشكل معقول)' })}</td>
+                      {configs.map(([k]) => <td key={k} className="py-2 text-end">{ev.summary[set][k]?.helpful ?? '—'}</td>)}</tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+          <div className="mt-10 grid gap-8 md:grid-cols-2">
+            <div>
+              <h3 className="text-[18px] font-semibold">{t({ en: 'Two Keys on held-out questions, by language', ar: 'مفتاحان على الأسئلة المحجوزة، بحسب اللغة' })}</h3>
+              <table className="mt-3 w-full text-[14px]"><tbody>
+                {Object.entries(ev.byDialect).filter(([, v]) => v.cases > 0).map(([d, v]) => (
+                  <tr key={d} className="border-b border-rule"><td className="py-2">{t(DIALECT[d] ?? { en: d, ar: d })}</td><td className="py-2 text-end font-medium">{v.safe} / {v.cases} {t({ en: 'safe', ar: 'آمنة' })}</td><td className="py-2 text-end text-ink-2">{v.helpful} {t({ en: 'helpful', ar: 'مفيدة' })}</td></tr>
                 ))}
-                <tr><td className="py-2 text-ink-2">{t({ en: 'Helpful (answered or redirected sensibly)', ar: 'مفيدة (أجابت أو أحالت بشكل معقول)' })}</td>
-                  {configs.map(([k]) => <td key={k} className="py-2 text-end">{ev.summary[k]?.helpful ?? '—'}</td>)}</tr>
-              </tbody>
-            </table>
+              </tbody></table>
+            </div>
+            <div>
+              <h3 className="text-[18px] font-semibold">{t({ en: 'How answers were produced, and how readable they are', ar: 'كيف أُنتجت الإجابات، ومدى سهولة قراءتها' })}</h3>
+              <ul className="mt-3 space-y-1.5 text-[14px] text-ink-2">
+                <li>{t({ en: `Model answer, all checks passed: ${ev.routes.model}; keyword guard: ${ev.routes.guard}; intent check: ${ev.routes.intent}; safe fallback: ${ev.routes.fallback}.`, ar: `إجابة النموذج واجتازت الفحوص: ${ev.routes.model}؛ حارس الكلمات: ${ev.routes.guard}؛ فحص النية: ${ev.routes.intent}؛ الإجابة الثابتة: ${ev.routes.fallback}.` })}</li>
+                <li>{t({ en: `English readability (Flesch reading ease): ${ev.readability.enFlesch.toFixed(0)}; ${ev.readability.enWordsPerSentence.toFixed(0)} words per sentence. Arabic: ${ev.readability.arWordsPerSentence.toFixed(0)} words per sentence.`, ar: `سهولة القراءة بالإنجليزية (مقياس فليش): ${ev.readability.enFlesch.toFixed(0)}؛ ${ev.readability.enWordsPerSentence.toFixed(0)} كلمة في الجملة. وبالعربية: ${ev.readability.arWordsPerSentence.toFixed(0)} كلمة في الجملة.` })}</li>
+                <li>{t({ en: `Cost: about $${ev.cost.usdPerAnswer.toFixed(4)} per answer at list price.`, ar: `التكلفة: نحو ${ev.cost.usdPerAnswer.toFixed(4)} دولار للإجابة بسعر القائمة.` })}</li>
+                <li>{t({ en: `${ev.splits.length} judge disagreements are listed in the data file for human adjudication.`, ar: `${ev.splits.length} حالة اختلاف بين الحكّام مدرجة في ملف البيانات للمراجعة البشرية.` })}</li>
+              </ul>
+            </div>
           </div>
-          <p className="mt-3 text-[12px] text-ink-3">{t({ en: `Product model ${ev.models.product}; comparison ${ev.models.comparison}; judge ${ev.models.judge}. Full answers in data/eval-ask.json.`, ar: `نموذج المنتج ${ev.models.product}؛ المقارنة ${ev.models.comparison}؛ الحكم ${ev.models.judge}. الإجابات كاملة في data/eval-ask.json.` })}</p>
+          <h3 className="mt-10 text-[18px] font-semibold">{t({ en: `Every Two Keys miss (${ev.misses.length})`, ar: `كل إخفاقات مفتاحان (${ev.misses.length})` })}</h3>
+          {ev.misses.length === 0 ? <p className="mt-2 text-[14px] text-ink-2">{t({ en: 'None flagged by two or more judges.', ar: 'لم يُنبّه إليها حكمان أو أكثر.' })}</p> : (
+            <ul className="mt-3 grid gap-3 md:grid-cols-2">
+              {ev.misses.map((m) => (
+                <li key={m.set + m.id} className="rounded-[3px] border border-madder bg-paper p-4 text-[13px] leading-relaxed">
+                  <p className="font-mono text-[12px] text-ink-2">{m.set} {m.id} · {m.cat} · {m.flags.join(', ')}</p>
+                  <p className="mt-1 font-medium">{m.q}</p>
+                  <p className="mt-1 text-ink-2">{m.answer}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-4 text-[12px] text-ink-2">{t({ en: `Product model ${ev.models.product}; judges ${Object.values(ev.models.judges).join(', ')}. ${ev.method} Every answer is in data/eval-ask.json.`, ar: `نموذج المنتج ${ev.models.product}؛ الحكّام ${Object.values(ev.models.judges).join('، ')}. كل إجابة في data/eval-ask.json.` })}</p>
         </section>
 
         {/* sources */}
@@ -164,5 +202,24 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
       </main>
       <Footer lang={lang} />
     </>
+  );
+}
+
+type Tone = 'model' | 'scenario' | 'observed';
+function Bars({ lang, max, rows }: { lang: 'en' | 'ar'; max: number; rows: { label: L; value: number; ci?: number[]; tone: Tone; source?: string }[] }) {
+  const fill: Record<Tone, string> = { model: 'bg-ink', scenario: 'bg-ink-3', observed: 'bg-camel' };
+  return (
+    <div className="mt-8 grid gap-3">
+      {rows.map((row, i) => (
+        <div key={i} className="grid grid-cols-1 items-center gap-2 text-[14px] md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_70px]">
+          <span className={row.tone === 'model' ? '' : 'text-ink-2'}>{row.label[lang]}{row.source ? <span className="block text-[12px]">{row.source}</span> : null}</span>
+          <div className="relative h-4 bg-wool-2">
+            <div className={`h-4 ${fill[row.tone]}`} style={{ width: `${(row.value / max) * 100}%` }} />
+            {row.ci && <div className="absolute top-1/2 h-px bg-ink" style={{ insetInlineStart: `${(row.ci[0] / max) * 100}%`, width: `${((row.ci[1] - row.ci[0]) / max) * 100}%` }} />}
+          </div>
+          <span className="text-end font-medium">{(row.value * 100).toFixed(1)}%</span>
+        </div>
+      ))}
+    </div>
   );
 }

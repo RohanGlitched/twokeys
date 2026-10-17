@@ -69,6 +69,7 @@ class DynamoStore implements Store {
     const { GetCommand } = await import('@aws-sdk/lib-dynamodb');
     const r = await (await this.client()).send(new GetCommand({ TableName: this.table, Key: this.split(key), ConsistentRead: true }));
     if (!r.Item || (r.Item.exp as number) * 1000 < Date.now()) return null;
+    if (r.Item.v === undefined && typeof r.Item.n === 'number') return r.Item.n as T; // a counter written by incr
     return JSON.parse(r.Item.v as string) as T;
   }
   async put<T>(key: string, value: T, ttl: number) {

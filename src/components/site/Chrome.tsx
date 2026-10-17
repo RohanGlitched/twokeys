@@ -9,6 +9,7 @@ const NAV: { href: string; label: L }[] = [
   { href: '/desk', label: { en: 'Counsellors', ar: 'المستشارون' } },
   { href: '/programme', label: { en: 'Programme', ar: 'البرنامج' } },
   { href: '/proof', label: { en: 'Proof', ar: 'الإثبات' } },
+  { href: '/governance', label: { en: 'Governance', ar: 'الحوكمة' } },
 ];
 
 export function Nav({ lang, path = '' }: { lang: Locale; path?: string }) {
@@ -44,7 +45,8 @@ export function Footer({ lang }: { lang: Locale }) {
     { title: { en: 'Evidence', ar: 'الأدلة' }, links: [
       { href: `/${lang}/proof`, label: { en: 'Proof and evaluations', ar: 'الإثبات والتقييمات' } },
       { href: `/${lang}/proof#sources`, label: { en: 'Sources and data rights', ar: 'المصادر وحقوق البيانات' } },
-      { href: `/${lang}/how#learns`, label: { en: 'Who learns what', ar: 'من يعرف ماذا' } },
+      { href: `/${lang}/how#threats`, label: { en: 'Who could learn what', ar: 'من قد يعرف ماذا' } },
+      { href: `/${lang}/governance`, label: { en: 'Governance pack', ar: 'ملف الحوكمة' } },
     ] },
     { title: { en: 'Built on', ar: 'مبني على' }, links: [
       { href: 'https://github.com/paulmillr/noble-curves', label: { en: 'noble-curves (ristretto255)', ar: 'noble-curves (ristretto255)' }, ext: true },

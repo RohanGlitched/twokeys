@@ -2,6 +2,7 @@ import { ask, type AskInput } from '@/lib/ask';
 import { CONDITIONS } from '@/lib/conditions';
 import { readJson } from '@/lib/http';
 import { limited } from '@/lib/ratelimit';
+import { store } from '@/lib/store';
 
 export async function POST(req: Request) {
   const b = await readJson<Partial<AskInput>>(req);
@@ -22,5 +23,15 @@ export async function POST(req: Request) {
     question,
     history: Array.isArray(b.history) ? b.history.filter((h) => h && (h.role === 'user' || h.role === 'assistant') && typeof h.text === 'string').slice(-6) : [],
   });
+  // Monitoring without content: daily counts of how each answer was produced, never the question.
+  const day = new Date().toISOString().slice(0, 10);
+  const db = store();
+  const ttl = 60 * 60 * 24 * 90;
+  await Promise.all([
+    db.incr(`mon:${day}:route:${out.route}`, ttl),
+    db.incr(`mon:${day}:lang:${b.lang === 'ar' ? 'ar' : 'en'}`, ttl),
+    out.escalate ? db.incr(`mon:${day}:escalate`, ttl) : null,
+    out.urgent ? db.incr(`mon:${day}:urgent`, ttl) : null,
+  ]).catch(() => {});
   return Response.json(out, { headers: { 'cache-control': 'no-store' } });
 }

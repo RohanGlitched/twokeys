@@ -1,7 +1,7 @@
 // End-to-end over HTTP: two "phones" sign in and pair through the real lab and relay routes.
 // Runs only when BASE is set (e.g. BASE=http://localhost:3410 npx vitest run tests/pairing.int.test.ts).
 import { describe, expect, it } from 'vitest';
-import { checkWords, demoSignIn, linkFragment, newLink, parseFragment, runInitiator, runResponder, type Step } from '../src/lib/pairing';
+import { checkWords, demoSignIn, linkFragment, newLink, parseFragment, runInitiator, runResponder, sessionId, type Step } from '../src/lib/pairing';
 
 const BASE = process.env.BASE;
 const as = (person: string) => demoSignIn(person, BASE);
@@ -54,6 +54,18 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
       runResponder({ identity: ib, link, base: BASE }),
     ]);
     await expect(runResponder({ identity: ic, link, base: BASE, timeoutMs: 2000 })).rejects.toThrow(/seat/);
+  }, 60_000);
+
+  it('full disclosure only when both partners choose it', async () => {
+    const link = newLink();
+    const [ia, ib] = await Promise.all([as('noura'), as('khalid')]);
+    await Promise.all([runInitiator({ identity: ia, link, base: BASE }), runResponder({ identity: ib, link, base: BASE })]);
+    const share = (identity: string, role: 'A' | 'B') => fetch(`${BASE}/api/lab/share`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session: sessionId(link), role }) }).then((r) => r.json());
+    expect(await share(ia, 'A')).toEqual({ waiting: true });
+    const b = await share(ib, 'B');
+    expect(b.waiting).toBe(false);
+    expect(b.findings.map((f: { gene: string }) => f.gene)).toEqual(['ABCA4']);
+    expect((await share(ia, 'A')).findings.map((f: { gene: string }) => f.gene)).toEqual(['USH2A', 'HBA2']);
   }, 60_000);
 
   it('the lab refuses tokens without a signed identity', async () => {

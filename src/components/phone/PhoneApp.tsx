@@ -36,6 +36,16 @@ export const REL: Record<Relationship, { en: string; ar: string }> = {
   'double-first-cousins': { en: 'double first cousins', ar: 'أبناء عمومة وخؤولة معاً' },
 };
 
+/** Genes where the exact pair of changes decides the chance (non-classic CAH, alpha-globin cis or trans, HbS with HbC,
+ * SMN1 copy number), so a counsellor confirms with a dedicated test before anyone acts on it. */
+const CONFIRM: Record<string, L> = {
+  CYP21A2: { en: 'For this gene the exact changes matter: many carry a mild (non-classic) change, and a mild with a classic change rarely causes the classic form. A counsellor will confirm with a dedicated test before you act on this.', ar: 'في هذا الجين تهم التغيّرات الدقيقة: كثيرون يحملون تغيّراً خفيفاً (غير تقليدي)، ونادراً ما يسبب التغيّر الخفيف مع التقليدي الشكلَ التقليدي. وسيؤكد المستشار ذلك بفحص مخصص قبل أي قرار.' },
+  HBB: { en: 'For this gene the exact changes matter (for example, sickle with beta thalassaemia, or HbC). A counsellor will confirm with a blood test before you act on this.', ar: 'في هذا الجين تهم التغيّرات الدقيقة (مثل المنجلي مع بيتا ثلاسيميا، أو HbC). وسيؤكد المستشار ذلك بفحص دم قبل أي قرار.' },
+  HBA1: { en: 'For alpha-globin, how the changes sit on each chromosome decides the chance. A counsellor will confirm with a dedicated test before you act on this.', ar: 'في ألفا غلوبين يحدد موضع التغيّرات على كل كروموسوم الاحتمال. وسيؤكد المستشار ذلك بفحص مخصص قبل أي قرار.' },
+  HBA2: { en: 'For alpha-globin, how the changes sit on each chromosome decides the chance. A counsellor will confirm with a dedicated test before you act on this.', ar: 'في ألفا غلوبين يحدد موضع التغيّرات على كل كروموسوم الاحتمال. وسيؤكد المستشار ذلك بفحص مخصص قبل أي قرار.' },
+  SMN1: { en: 'For this gene the number of copies matters, and some carriers are missed by standard tests. A counsellor will confirm with a dedicated test.', ar: 'في هذا الجين يهم عدد النسخ، وقد لا تكشف الفحوص المعتادة بعض الحاملين. وسيؤكد المستشار ذلك بفحص مخصص.' },
+};
+
 /** What relatedness adds for conditions this panel did not test, for the actual relationship (Bennett et al. 2002). */
 const KIN: Partial<Record<Relationship, { en: string; ar: string }>> = {
   'first-cousins': { en: 'For first cousins that is about 2 to 3 more in every 100 pregnancies than for unrelated parents.', ar: 'لأبناء العمومة من الدرجة الأولى يقارب ذلك 2 إلى 3 حالات إضافية في كل 100 حمل مقارنة بغير الأقارب.' },
@@ -284,6 +294,8 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
 
             {personal > 0 && <PersonalCallout t={t} onOpen={() => openResults('personal')} />}
 
+            {link && role && identity && <SeeEverything t={t} lang={lang} level={level} identity={identity} session={sessionId(link)} role={role} />}
+
             {related && (
               <div className="mt-6 border-s-2 border-ink ps-4 text-[14px] leading-relaxed text-ink-2">
                 {t({
@@ -424,7 +436,7 @@ function PersonalCallout({ t, onOpen }: { t: T; onOpen: () => void }) {
   );
 }
 
-function FindingCard({ f, t, sex, level }: { f: Finding; t: T; sex: 'F' | 'M'; level: Level }) {
+function FindingCard({ f, t, sex, level, partner }: { f: Finding; t: T; sex: 'F' | 'M'; level: Level; partner?: boolean }) {
   const c = conditionFor(f.gene);
   return (
     <li className="rounded-[3px] border border-rule bg-paper px-4 py-3">
@@ -433,10 +445,13 @@ function FindingCard({ f, t, sex, level }: { f: Finding; t: T; sex: 'F' | 'M'; l
         <span dir="ltr" className="font-mono text-[12px] text-ink-2">{f.gene}</span>
       </div>
       {c && <p className="mt-1 text-[13px] leading-relaxed text-ink-2">{t(c.what[level])}</p>}
-      {f.inheritance === 'XL' && sex === 'F' && (
+      {f.inheritance === 'XL' && partner && (
+        <p className="mt-2 text-[14px] leading-relaxed">{t({ en: 'This gene is on the X chromosome, so it matters for this person’s own children whoever their partner is. A counsellor can explain what it means for you both.', ar: 'يقع هذا الجين على الكروموسوم X، لذا يهم أطفال هذا الشخص أياً كان شريكه. ويمكن للمستشار شرح ما يعنيه لكما.' })}</p>
+      )}
+      {f.inheritance === 'XL' && sex === 'F' && !partner && (
         <p className="mt-2 text-[14px] leading-relaxed">{t({ en: 'This gene is on the X chromosome. For each son: a 1 in 2 chance of having the condition. For each daughter: a 1 in 2 chance of carrying it, as you do. This does not depend on your partner.', ar: 'يقع هذا الجين على الكروموسوم X. لكل ابن: احتمال 1 من 2 أن يصاب بالحالة. ولكل ابنة: احتمال 1 من 2 أن تحمل التغيّر مثلك. ولا يعتمد ذلك على شريكك.' })}</p>
       )}
-      {f.inheritance === 'XL' && sex === 'M' && (
+      {f.inheritance === 'XL' && sex === 'M' && !partner && (
         <p className="mt-2 text-[14px] leading-relaxed">{t({ en: 'This gene is on the X chromosome, and men have one X, so this result is about your own health. Your daughters would carry it; your sons would not inherit it from you.', ar: 'يقع هذا الجين على الكروموسوم X، وللرجل نسخة واحدة منه، لذا تخص هذه النتيجة صحتك أنت. ستحمله بناتك، ولن يرثه أبناؤك الذكور منك.' })}</p>
       )}
       {f.severity === 'mild' && <p className="mt-1 text-[13px] text-ink-2">{t({ en: 'A milder change: it matters only alongside a more serious change in the same gene from a partner.', ar: 'تغيّر أخف: لا يهم إلا مع تغيّر أشد في الجين نفسه لدى الشريك.' })}</p>}
@@ -471,6 +486,7 @@ function SharedGeneCard({ g, lang, t, level }: { g: SharedGene; lang: Locale; t:
             <p className="mt-4 text-[15px] leading-relaxed text-ink">{t(c.what[level])}</p>
             <p className="mt-2 text-[13px] text-ink-2"><span className="font-medium text-ink">{t({ en: 'Care today: ', ar: 'الرعاية اليوم: ' })}</span>{t(c.care)}</p>
             {c.carrierNote && <p className="mt-1.5 text-[13px] text-ink-2"><span className="font-medium text-ink">{t({ en: 'For you as carriers: ', ar: 'لكما كحاملين للتغيّر: ' })}</span>{t(c.carrierNote)}</p>}
+            {CONFIRM[g.gene] && <p className="mt-3 border-s-2 border-camel ps-3 text-[13px] leading-relaxed text-ink">{t(CONFIRM[g.gene])}</p>}
             <a className="mt-2 inline-block text-[12px] text-indigo underline underline-offset-2" href={c.source.url} target="_blank" rel="noreferrer">{c.source.label}</a>
           </>
         )}
@@ -499,5 +515,48 @@ function XlCoupleCard({ g, t, level }: { g: SharedGene; t: T; level: Level }) {
         {c && <a className="mt-2 inline-block text-[12px] text-indigo underline underline-offset-2" href={c.source.url} target="_blank" rel="noreferrer">{c.source.label}</a>}
       </div>
     </article>
+  );
+}
+
+/** Full mutual disclosure, as a choice: the lab shows each partner's full results only once both ask. */
+function SeeEverything({ t, lang, level, identity, session, role }: { t: T; lang: Locale; level: Level; identity: string; session: string; role: 'A' | 'B' }) {
+  const [state, setState] = useState<'idle' | 'confirm' | 'waiting' | 'done' | 'error'>('idle');
+  const [theirs, setTheirs] = useState<{ findings: Finding[]; sex: 'F' | 'M' } | null>(null);
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  // Ask once, then keep asking every few seconds until the partner has chosen too (up to 10 minutes).
+  const ask = async () => {
+    for (let i = 0; i < 200 && alive.current; i++) {
+      const r = await fetch('/api/lab/share', { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session, role }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { setState('error'); return; }
+      if (!j.waiting) { setTheirs({ findings: j.findings, sex: j.sex }); setState('done'); return; }
+      setState('waiting');
+      await new Promise((res) => setTimeout(res, 3000));
+    }
+  };
+  return (
+    <section className="mt-6 rounded-[3px] border border-rule bg-paper px-4 py-4">
+      <h3 className="text-[16px] font-semibold">{t({ en: 'Would you rather see everything, together?', ar: 'هل تفضّلان رؤية كل شيء معاً؟', arF: 'هل تفضّلان رؤية كل شيء معاً؟' })}</h3>
+      <p className="mt-1 text-[13px] leading-relaxed text-ink-2">{t({ en: 'Some couples prefer full openness. If you both choose it, each of you sees all of the other’s results. Nothing is shown until both have chosen, and choosing can’t be undone.', ar: 'يفضّل بعض الأزواج الانفتاح الكامل. إن اخترتما ذلك معاً يرى كل منكما كل نتائج الآخر. ولا يُعرض شيء حتى يختار الاثنان، ولا يمكن التراجع عن الاختيار.' })}</p>
+      {state === 'idle' && <button onClick={() => setState('confirm')} className="mt-3 rounded-[2px] border border-ink px-4 py-2.5 text-[14px] font-medium">{t({ en: 'I’d like us to see everything', ar: 'أودّ أن نرى كل شيء', arF: 'أودّ أن نرى كل شيء' })}</button>}
+      {state === 'confirm' && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button onClick={() => setState('idle')} className="rounded-[2px] border border-ink px-4 py-2.5 text-[14px]">{t({ en: 'Not now', ar: 'ليس الآن' })}</button>
+          <button onClick={() => { void ask(); }} className="rounded-[2px] bg-ink px-4 py-2.5 text-[14px] font-medium text-wool">{t({ en: 'Yes, if my partner chooses it too', ar: 'نعم، إن اختار شريكي ذلك أيضاً' })}</button>
+        </div>
+      )}
+      {state === 'waiting' && <p role="status" className="mt-3 text-[14px]">{t({ en: 'You chose this. Waiting for your partner to choose the same; until then, nothing is shown to either of you.', ar: 'اخترت ذلك. بانتظار أن يختار شريكك الأمر نفسه، ولا يُعرض شيء لأي منكما حتى ذلك الحين.', arF: 'اخترتِ ذلك. بانتظار أن يختار شريكك الأمر نفسه، ولا يُعرض شيء لأي منكما حتى ذلك الحين.' })}</p>}
+      {state === 'error' && <p role="alert" className="mt-3 text-[14px] text-madder">{t({ en: 'This isn’t available for this pairing. Pair again to try.', ar: 'هذا غير متاح لهذا الاقتران. أعيدا الاقتران للمحاولة.' })}</p>}
+      {state === 'done' && theirs && (
+        <div className="mt-3">
+          <p className="text-[14px] font-medium">{t({ en: 'You both chose this. Your partner’s full results:', ar: 'اخترتما ذلك معاً. نتائج شريكك الكاملة:' })}</p>
+          {theirs.findings.length === 0 ? <p className="mt-2 text-[14px]">{t({ en: 'No changes found on this panel.', ar: 'لم تُكتشف أي تغيّرات في هذه اللوحة.' })}</p> : (
+            <ul className="mt-2 space-y-3">{theirs.findings.map((f) => <FindingCard key={f.gene} f={f} t={t} sex={theirs.sex} level={level} partner />)}</ul>
+          )}
+          <p className="mt-2 text-[12px] text-ink-2">{lang === 'ar' ? 'أكّد المختبر هذه النتائج من سجلاته.' : 'The lab released these from its own records.'}</p>
+        </div>
+      )}
+    </section>
   );
 }
