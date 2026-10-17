@@ -1,55 +1,16 @@
 {
- "built": "2026-10-17T11:14:07.860Z",
- "couplesPerType": 20000,
- "genesModelled": 89,
+ "built": "2026-10-17T11:34:02.321Z",
+ "couplesPerType": 60000,
+ "genesModelled": 128,
  "genesFromLiterature": 89,
- "genesFromGnomad": 0,
+ "genesFromGnomad": 39,
  "genesWithoutData": [
-  "ABCA3",
-  "ACAT1",
   "AGA",
-  "ASPA",
-  "BBS1",
-  "BBS2",
-  "BCKDHB",
-  "CC2D2A",
-  "CCDC88C",
-  "CLCN1",
-  "CLRN1",
-  "CPT2",
-  "CYP11A1",
-  "CYP27B1",
-  "DHCR7",
   "DHDDS",
-  "DLD",
-  "FKRP",
-  "FKTN",
-  "FMO3",
   "FXN",
-  "GALT",
   "GRIP1",
-  "HPS1",
   "LRP2",
-  "MCCC2",
-  "MCOLN1",
-  "MCPH1",
-  "MLC1",
-  "NAGA",
-  "NEB",
-  "OCA2",
-  "PRF1",
-  "SCO2",
-  "SLC26A2",
-  "TF",
-  "TMEM216",
-  "TNXB",
-  "XPC",
-  "MERTK",
-  "MAN2B1",
-  "ETFDH",
-  "SLC26A3",
-  "MYO7A",
-  "RPE65"
+  "TF"
  ],
  "excluded": [
   "HBA1",
@@ -63,43 +24,43 @@
  },
  "byType": {
   "unrelated": {
-   "couples": 20000,
-   "atRisk": 635,
-   "rate": 0.03175,
+   "couples": 60000,
+   "atRisk": 1996,
+   "rate": 0.03326666666666667,
    "ci": [
-    0.029408491745997963,
-    0.03427135662872621
+    0.031861327457027855,
+    0.034731768808995214
    ]
   },
   "first-cousins": {
-   "couples": 20000,
-   "atRisk": 2341,
-   "rate": 0.11705,
+   "couples": 60000,
+   "atRisk": 7951,
+   "rate": 0.13251666666666667,
    "ci": [
-    0.11266788029791912,
-    0.12157920552183667
+    0.12982720075204673,
+    0.1352531870343246
    ]
   },
   "double-first-cousins": {
-   "couples": 20000,
-   "atRisk": 4015,
-   "rate": 0.20075,
+   "couples": 60000,
+   "atRisk": 13423,
+   "rate": 0.22371666666666667,
    "ci": [
-    0.19525620670000227,
-    0.2063587311027446
+    0.22039984556811004,
+    0.22706886450194652
    ]
   },
   "second-cousins": {
-   "couples": 20000,
-   "atRisk": 1107,
-   "rate": 0.05535,
+   "couples": 60000,
+   "atRisk": 3497,
+   "rate": 0.05828333333333333,
    "ci": [
-    0.052265450257890846,
-    0.05860533368193
+    0.056436841948454185,
+    0.06018638438844088
    ]
   }
  },
- "mixedPopulationAtRisk": 0.05014261782178218,
+ "mixedPopulationAtRisk": 0.05426540066006601,
  "targets": [
   {
    "label": "Dubai, 1,000 couples, 782 genes: at-risk couples excluding alpha-thalassaemia (58 of 1,000)",
@@ -133,77 +94,77 @@
  "geneShare": [
   {
    "gene": "CYP21A2",
-   "shareOfMatches": 0.2651623493727962,
+   "shareOfMatches": 0.246419045610629,
    "observedM42": 0.14
   },
   {
    "gene": "HBB",
-   "shareOfMatches": 0.21832281974385692,
+   "shareOfMatches": 0.20559045938297435,
    "observedM42": null
   },
   {
    "gene": "MEFV",
-   "shareOfMatches": 0.09536216604324996,
+   "shareOfMatches": 0.08603240732507537,
    "observedM42": 0.12
   },
   {
    "gene": "ABCA4",
-   "shareOfMatches": 0.05879661189633423,
+   "shareOfMatches": 0.044118291604872927,
    "observedM42": 0.09
   },
   {
+   "gene": "MCCC2",
+   "shareOfMatches": 0.033970214021055795,
+   "observedM42": null
+  },
+  {
    "gene": "PAH",
-   "shareOfMatches": 0.03629758391897365,
+   "shareOfMatches": 0.033373152962688224,
    "observedM42": null
   },
   {
    "gene": "SGCG",
-   "shareOfMatches": 0.0243562466221879,
+   "shareOfMatches": 0.025301964744668223,
    "observedM42": null
   },
   {
    "gene": "GJB2",
-   "shareOfMatches": 0.01994536189471003,
+   "shareOfMatches": 0.022186175601158063,
    "observedM42": null
   },
   {
    "gene": "CYP1B1",
-   "shareOfMatches": 0.019197705086458624,
+   "shareOfMatches": 0.01806222308355722,
    "observedM42": 0.04
   },
   {
    "gene": "DONSON",
-   "shareOfMatches": 0.019086802405128344,
+   "shareOfMatches": 0.01236989714437105,
    "observedM42": null
   },
   {
    "gene": "F7",
-   "shareOfMatches": 0.015191756544844167,
-   "observedM42": null
-  },
-  {
-   "gene": "SLC26A4",
-   "shareOfMatches": 0.014355133009460824,
-   "observedM42": null
-  },
-  {
-   "gene": "ITGB3",
-   "shareOfMatches": 0.012149232054344919,
-   "observedM42": null
-  },
-  {
-   "gene": "PKLR",
-   "shareOfMatches": 0.01107482889000327,
-   "observedM42": null
-  },
-  {
-   "gene": "TPO",
-   "shareOfMatches": 0.009782289094016816,
+   "shareOfMatches": 0.012192036755604322,
    "observedM42": null
   },
   {
    "gene": "ABCA12",
-   "shareOfMatches": 0.009573859313184514,
+   "shareOfMatches": 0.010966944853290727,
+   "observedM42": null
+  },
+  {
+   "gene": "SLC26A4",
+   "shareOfMatches": 0.010854944852543905,
+   "observedM42": null
+  },
+  {
+   "gene": "ITGB3",
+   "shareOfMatches": 0.010302763144340152,
+   "observedM42": null
+  },
+  {
+   "gene": "PKLR",
+   "shareOfMatches": 0.009997709589482534,
    "observedM42": null
   }
  ],

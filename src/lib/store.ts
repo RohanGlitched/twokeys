@@ -40,12 +40,74 @@ class MemoryStore implements Store {
   }
 }
 
+/**
+ * DynamoDB: one table, partition key `pk` (the part of the key before the first ':'), sort key
+ * `sk` (the rest), item TTL in `exp`. TTL deletion is lazy, so reads also check `exp`.
+ */
+class DynamoStore implements Store {
+  constructor(private table: string) {}
+  private doc?: import('@aws-sdk/lib-dynamodb').DynamoDBDocumentClient;
+  private async client() {
+    if (!this.doc) {
+      const { DynamoDBClient } = await import('@aws-sdk/client-dynamodb');
+      const { DynamoDBDocumentClient } = await import('@aws-sdk/lib-dynamodb');
+      this.doc = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.STORE_REGION ?? process.env.AWS_REGION ?? 'ap-southeast-2' }));
+    }
+    return this.doc;
+  }
+  private split(key: string) { const i = key.indexOf(':'); return i < 0 ? { pk: key, sk: '-' } : { pk: key.slice(0, i), sk: key.slice(i + 1) || '-' }; }
+  async get<T>(key: string) {
+    const { GetCommand } = await import('@aws-sdk/lib-dynamodb');
+    const r = await (await this.client()).send(new GetCommand({ TableName: this.table, Key: this.split(key), ConsistentRead: true }));
+    if (!r.Item || (r.Item.exp as number) * 1000 < Date.now()) return null;
+    return JSON.parse(r.Item.v as string) as T;
+  }
+  async put<T>(key: string, value: T, ttl: number) {
+    const { PutCommand } = await import('@aws-sdk/lib-dynamodb');
+    await (await this.client()).send(new PutCommand({ TableName: this.table, Item: { ...this.split(key), v: JSON.stringify(value), exp: Math.floor(Date.now() / 1000) + ttl } }));
+  }
+  async putNew<T>(key: string, value: T, ttl: number) {
+    const { PutCommand } = await import('@aws-sdk/lib-dynamodb');
+    const now = Math.floor(Date.now() / 1000);
+    try {
+      await (await this.client()).send(new PutCommand({
+        TableName: this.table, Item: { ...this.split(key), v: JSON.stringify(value), exp: now + ttl },
+        // Allow overwriting an item that has expired but not yet been swept.
+        ConditionExpression: 'attribute_not_exists(pk) OR #e < :now', ExpressionAttributeNames: { '#e': 'exp' }, ExpressionAttributeValues: { ':now': now },
+      }));
+      return true;
+    } catch (e) {
+      if ((e as { name?: string }).name === 'ConditionalCheckFailedException') return false;
+      throw e;
+    }
+  }
+  async del(key: string) {
+    const { DeleteCommand } = await import('@aws-sdk/lib-dynamodb');
+    await (await this.client()).send(new DeleteCommand({ TableName: this.table, Key: this.split(key) }));
+  }
+  async list<T>(prefix: string) {
+    const { QueryCommand } = await import('@aws-sdk/lib-dynamodb');
+    const { pk, sk } = this.split(prefix);
+    const out: { key: string; value: T }[] = [];
+    let start: Record<string, unknown> | undefined;
+    const now = Math.floor(Date.now() / 1000);
+    do {
+      const r = await (await this.client()).send(new QueryCommand({
+        TableName: this.table, ExclusiveStartKey: start,
+        KeyConditionExpression: sk === '-' ? 'pk = :pk' : 'pk = :pk AND begins_with(sk, :sk)',
+        ExpressionAttributeValues: sk === '-' ? { ':pk': pk } : { ':pk': pk, ':sk': sk },
+      }));
+      for (const it of r.Items ?? []) if ((it.exp as number) >= now) out.push({ key: `${it.pk}:${it.sk}`, value: JSON.parse(it.v as string) as T });
+      start = r.LastEvaluatedKey;
+    } while (start && out.length < 2000);
+    return out;
+  }
+}
+
 const g = globalThis as unknown as { __twokeysStore?: Store };
 
+/** DynamoDB when STORE_TABLE is set (production); process memory otherwise (development, tests). */
 export function store(): Store {
-  if (!g.__twokeysStore) {
-    // The DynamoDB adapter is wired in once the table exists; until then memory keeps dev and tests working.
-    g.__twokeysStore = new MemoryStore();
-  }
+  if (!g.__twokeysStore) g.__twokeysStore = process.env.STORE_TABLE ? new DynamoStore(process.env.STORE_TABLE) : new MemoryStore();
   return g.__twokeysStore;
 }

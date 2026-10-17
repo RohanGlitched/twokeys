@@ -1,7 +1,2402 @@
 {
  "source": "gnomAD v4.1 (gnomad_r4), population \"mid\" (Middle Eastern), exome+genome; ClinVar P/LP with ≥1 star, non-conflicting. CC0; no re-identification.",
- "built": "2026-10-17T10:46:38.136Z",
+ "built": "2026-10-17T11:31:21.802Z",
  "genes": [
+  {
+   "gene": "ABCA12",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 209,
+   "q": 0.0001763668430335097,
+   "carrierFreq": 0.00035270258080355443,
+   "top": [
+    {
+     "id": "2-215049778-G-A",
+     "hgvsp": "p.Arg181Ter",
+     "hgvsc": "c.541C>T",
+     "ac": 1,
+     "an": 5670,
+     "af": 0.0001763668430335097,
+     "sig": "Pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "ABCA3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 183,
+   "q": 0.0006770843807965616,
+   "carrierFreq": 0.0013537103183345334,
+   "top": [
+    {
+     "id": "16-2278041-G-A",
+     "hgvsp": "p.Arg1583Trp",
+     "hgvsc": "c.4747C>T",
+     "ac": 1,
+     "an": 5758,
+     "af": 0.0001736714136853074,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "16-2295725-A-C",
+     "hgvsp": "p.Met760Arg",
+     "hgvsc": "c.2279T>G",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-2317763-T-A",
+     "hgvsp": "p.Glu292Val",
+     "hgvsc": "c.875A>T",
+     "ac": 1,
+     "an": 6040,
+     "af": 0.00016556291390728477,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-2284870-CAAG-C",
+     "hgvsp": "p.Phe1203del",
+     "hgvsc": "c.3609_3611del",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ABCA4",
+   "inheritance": "AR",
+   "plpWithMidCounts": 27,
+   "clinvarPLP": 1441,
+   "q": 0.033022867924056946,
+   "carrierFreq": 0.06495522604218418,
+   "top": [
+    {
+     "id": "1-94008251-C-T",
+     "hgvsp": "p.Gly1961Glu",
+     "hgvsc": "c.5882G>A",
+     "ac": 125,
+     "an": 6062,
+     "af": 0.020620257340811615,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "1-94030953-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.4253+43G>A",
+     "ac": 31,
+     "an": 5674,
+     "af": 0.005463517800493479,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "1-94010872-G-A",
+     "hgvsp": "p.Ala1881Val",
+     "hgvsc": "c.5642C>T",
+     "ac": 7,
+     "an": 6084,
+     "af": 0.0011505588428665351,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-94029446-T-TG",
+     "hgvsp": "p.Gln1513ProfsTer42",
+     "hgvsc": "c.4537dup",
+     "ac": 3,
+     "an": 4704,
+     "af": 0.0006377551020408163,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "1-94001068-C-T",
+     "hgvsp": "p.Arg2107His",
+     "hgvsc": "c.6320G>A",
+     "ac": 3,
+     "an": 6058,
+     "af": 0.0004952129415648729,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "1-94001072-G-A",
+     "hgvsp": "p.Arg2106Cys",
+     "hgvsc": "c.6316C>T",
+     "ac": 3,
+     "an": 6060,
+     "af": 0.0004950495049504951,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-94021695-G-T",
+     "hgvsp": "p.Ala1598Asp",
+     "hgvsc": "c.4793C>A",
+     "ac": 3,
+     "an": 6070,
+     "af": 0.0004942339373970346,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-94030452-C-T",
+     "hgvsp": "p.Arg1443His",
+     "hgvsc": "c.4328G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-94042797-G-A",
+     "hgvsp": "p.Arg1098Cys",
+     "hgvsc": "c.3292C>T",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-94011334-G-C",
+     "hgvsp": "p.His1838Asp",
+     "hgvsc": "c.5512C>G",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-94014652-A-C",
+     "hgvsp": "p.Leu1784Arg",
+     "hgvsc": "c.5351T>G",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-94021378-A-G",
+     "hgvsp": "p.Leu1627Pro",
+     "hgvsc": "c.4880T>C",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "ABCC6",
+   "inheritance": "AR",
+   "plpWithMidCounts": 12,
+   "clinvarPLP": 231,
+   "q": 0.0036812127039042115,
+   "carrierFreq": 0.0073488740808370645,
+   "top": [
+    {
+     "id": "16-16190246-C-T",
+     "hgvsp": "p.Arg518Gln",
+     "hgvsc": "c.1553G>A",
+     "ac": 4,
+     "an": 6062,
+     "af": 0.0006598482349059716,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16163078-G-A",
+     "hgvsp": "p.Arg1141Ter",
+     "hgvsc": "c.3421C>T",
+     "ac": 3,
+     "an": 6062,
+     "af": 0.0004948861761794787,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16198103-C-T",
+     "hgvsp": "p.Arg419Gln",
+     "hgvsc": "c.1256G>A",
+     "ac": 3,
+     "an": 6082,
+     "af": 0.0004932587964485367,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16178935-G-A",
+     "hgvsp": "p.Arg760Trp",
+     "hgvsc": "c.2278C>T",
+     "ac": 2,
+     "an": 5772,
+     "af": 0.0003465003465003465,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16159495-C-T",
+     "hgvsp": "p.Trp1241Ter",
+     "hgvsc": "c.3722G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16163008-C-T",
+     "hgvsp": "p.Arg1164Gln",
+     "hgvsc": "c.3491G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16154638-C-T",
+     "hgvsp": "p.Glu1400Lys",
+     "hgvsc": "c.4198G>A",
+     "ac": 1,
+     "an": 4938,
+     "af": 0.0002025111381125962,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16155010-C-T",
+     "hgvsp": "p.Gly1302Arg",
+     "hgvsc": "c.3904G>A",
+     "ac": 1,
+     "an": 5998,
+     "af": 0.00016672224074691563,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16154974-G-A",
+     "hgvsp": "p.Arg1314Trp",
+     "hgvsc": "c.3940C>T",
+     "ac": 1,
+     "an": 6018,
+     "af": 0.00016616816218012627,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16163159-G-A",
+     "hgvsp": "p.Arg1114Cys",
+     "hgvsc": "c.3340C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16221671-G-GA",
+     "hgvsp": "p.Ser66PhefsTer35",
+     "hgvsc": "c.196dup",
+     "ac": 1,
+     "an": 6078,
+     "af": 0.00016452780519907864,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-16163110-G-A",
+     "hgvsp": "p.Thr1130Met",
+     "hgvsc": "c.3389C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ABCC8",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 537,
+   "q": 0.0008411680360283776,
+   "carrierFreq": 0.0016816285083919302,
+   "top": [
+    {
+     "id": "11-17463454-T-C",
+     "hgvsp": "p.Asn188Ser",
+     "hgvsc": "c.563A>G",
+     "ac": 1,
+     "an": 5758,
+     "af": 0.0001736714136853074,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-17474885-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.290+1G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "11-17397055-C-T",
+     "hgvsp": "p.Arg191Gln",
+     "hgvsc": "c.572G>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-17463515-G-A",
+     "hgvsp": "p.Arg168Cys",
+     "hgvsc": "c.502C>T",
+     "ac": 1,
+     "an": 6070,
+     "af": 0.00016474464579901152,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-17412716-G-A",
+     "hgvsp": "p.Arg836Ter",
+     "hgvsc": "c.2506C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ABCD1",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 528,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "ACADM",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 357,
+   "q": 0.0035774705892802215,
+   "carrierFreq": 0.007142142882743396,
+   "top": [
+    {
+     "id": "1-75745788-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.600-18G>A",
+     "ac": 13,
+     "an": 5936,
+     "af": 0.0021900269541778976,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-75733603-C-T",
+     "hgvsp": "p.Thr121Ile",
+     "hgvsc": "c.362C>T",
+     "ac": 8,
+     "an": 5766,
+     "af": 0.001387443635102324,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ACADVL",
+   "inheritance": "AR",
+   "plpWithMidCounts": 7,
+   "clinvarPLP": 500,
+   "q": 0.0018874714759340785,
+   "carrierFreq": 0.00377138040329561,
+   "top": [
+    {
+     "id": "17-7222250-AAGG-A",
+     "hgvsp": "p.Glu277del",
+     "hgvsc": "c.829_831del",
+     "ac": 5,
+     "an": 6084,
+     "af": 0.000821827744904668,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "17-7220154-G-GGCCCGGCCCT",
+     "hgvsp": "p.Arg38ProfsTer24",
+     "hgvsc": "c.103_112dup",
+     "ac": 1,
+     "an": 4896,
+     "af": 0.0002042483660130719,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-7220124-C-A",
+     "hgvsp": "p.Ser22Ter",
+     "hgvsc": "c.65C>A",
+     "ac": 1,
+     "an": 5704,
+     "af": 0.0001753155680224404,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-7223132-G-C",
+     "hgvsp": null,
+     "hgvsc": "c.1078-1G>C",
+     "ac": 1,
+     "an": 5724,
+     "af": 0.00017470300489168413,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "17-7220782-GAC-G",
+     "hgvsp": "p.Gln100ValfsTer3",
+     "hgvsc": "c.298_299del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-7224002-G-A",
+     "hgvsp": "p.Arg456His",
+     "hgvsc": "c.1367G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-7222253-GAGA-G",
+     "hgvsp": "p.Lys278del",
+     "hgvsc": "c.833_835del",
+     "ac": 1,
+     "an": 6074,
+     "af": 0.00016463615409944023,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "ACAT1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 217,
+   "q": 0.00016469038208168644,
+   "carrierFreq": 0.0003293536412414255,
+   "top": [
+    {
+     "id": "11-108134240-G-GA",
+     "hgvsp": "p.Glu88ArgfsTer6",
+     "hgvsc": "c.261dup",
+     "ac": 1,
+     "an": 6072,
+     "af": 0.00016469038208168644,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "AFF2",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 24,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "AGA",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 112,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "AGXT",
+   "inheritance": "AR",
+   "plpWithMidCounts": 9,
+   "clinvarPLP": 278,
+   "q": 0.0020185542289508735,
+   "carrierFreq": 0.004033033896726601,
+   "top": [
+    {
+     "id": "2-240873022-G-A",
+     "hgvsp": "p.Gly190Arg",
+     "hgvsc": "c.568G>A",
+     "ac": 2,
+     "an": 5764,
+     "af": 0.00034698126301179735,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-240868890-A-AC",
+     "hgvsp": "p.Lys12GlnfsTer156",
+     "hgvsc": "c.33dup",
+     "ac": 2,
+     "an": 6020,
+     "af": 0.0003322259136212625,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-240868986-G-A",
+     "hgvsp": "p.Gly41Arg",
+     "hgvsc": "c.121G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-240868972-G-A",
+     "hgvsp": "p.Arg36His",
+     "hgvsc": "c.107G>A",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-240869168-A-AGATCATGG",
+     "hgvsp": null,
+     "hgvsc": "c.166-1_172dup",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-240869357-G-A",
+     "hgvsp": "p.Arg118His",
+     "hgvsc": "c.353G>A",
+     "ac": 1,
+     "an": 5922,
+     "af": 0.00016886187098953058,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "2-240871433-G-A",
+     "hgvsp": "p.Gly170Arg",
+     "hgvsc": "c.508G>A",
+     "ac": 1,
+     "an": 6018,
+     "af": 0.00016616816218012627,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-240875159-T-C",
+     "hgvsp": "p.Ile244Thr",
+     "hgvsc": "c.731T>C",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-240873985-C-A",
+     "hgvsp": "p.Asp201Glu",
+     "hgvsc": "c.603C>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "AHI1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 313,
+   "q": 0.0010327174013663402,
+   "carrierFreq": 0.002064368297501562,
+   "top": [
+    {
+     "id": "6-135463145-G-GT",
+     "hgvsp": "p.Thr304AsnfsTer6",
+     "hgvsc": "c.910dup",
+     "ac": 2,
+     "an": 5642,
+     "af": 0.0003544842254519674,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-135455750-A-T",
+     "hgvsp": "p.Val443Asp",
+     "hgvsc": "c.1328T>A",
+     "ac": 1,
+     "an": 5708,
+     "af": 0.0001751927119831815,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-135490661-G-GT",
+     "hgvsp": "p.Leu33ThrfsTer9",
+     "hgvsc": "c.96dup",
+     "ac": 1,
+     "an": 5762,
+     "af": 0.00017355085039916696,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-135394853-G-C",
+     "hgvsp": "p.Ser1011Ter",
+     "hgvsc": "c.3032C>G",
+     "ac": 1,
+     "an": 6064,
+     "af": 0.00016490765171503957,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-135300510-AT-A",
+     "hgvsp": "p.Glu1158AspfsTer3",
+     "hgvsc": "c.3474del",
+     "ac": 1,
+     "an": 6076,
+     "af": 0.00016458196181698485,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "AIRE",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 240,
+   "q": 0.0008669718657797419,
+   "carrierFreq": 0.0017331920913434828,
+   "top": [
+    {
+     "id": "21-44286628-C-CCAGG",
+     "hgvsp": "p.Asp70AlafsTer148",
+     "hgvsc": "c.205_208dup",
+     "ac": 3,
+     "an": 5768,
+     "af": 0.0005201109570041609,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "21-44286678-A-G",
+     "hgvsp": "p.Tyr85Cys",
+     "hgvsc": "c.254A>G",
+     "ac": 2,
+     "an": 5766,
+     "af": 0.000346860908775581,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ALDH3A2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 173,
+   "q": 0.0011624045167718366,
+   "carrierFreq": 0.002323457849283117,
+   "top": [
+    {
+     "id": "17-19663333-C-CTAAAAGTA",
+     "hgvsp": "p.Pro315LysfsTer16",
+     "hgvsc": "c.941_942insTAAAAGTA",
+     "ac": 7,
+     "an": 6022,
+     "af": 0.0011624045167718366,
+     "sig": "Pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "ALDOB",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 113,
+   "q": 0.0037930424308887083,
+   "carrierFreq": 0.007571697690894941,
+   "top": [
+    {
+     "id": "9-101427574-C-G",
+     "hgvsp": "p.Ala150Pro",
+     "hgvsc": "c.448G>C",
+     "ac": 14,
+     "an": 6062,
+     "af": 0.0023094688221709007,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-101421891-G-A",
+     "hgvsp": "p.Ala338Val",
+     "hgvsc": "c.1013C>T",
+     "ac": 5,
+     "an": 6062,
+     "af": 0.0008248102936324645,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-101424976-AG-A",
+     "hgvsp": "p.Leu289PhefsTer10",
+     "hgvsc": "c.865del",
+     "ac": 2,
+     "an": 6082,
+     "af": 0.0003288391976323578,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-101427498-G-T",
+     "hgvsp": "p.Ala175Asp",
+     "hgvsc": "c.524C>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-101428484-CTTTG-C",
+     "hgvsp": "p.Asn120LysfsTer32",
+     "hgvsc": "c.360_363del",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ALPL",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 543,
+   "q": 0.000657570295594225,
+   "carrierFreq": 0.0013147081924947956,
+   "top": [
+    {
+     "id": "1-21573733-G-A",
+     "hgvsp": "p.Glu311Lys",
+     "hgvsc": "c.931G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-21563219-G-A",
+     "hgvsp": "p.Arg136His",
+     "hgvsc": "c.407G>A",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-21573676-C-A",
+     "hgvsp": "p.Pro292Thr",
+     "hgvsc": "c.874C>A",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ANO10",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 106,
+   "q": 0.000511407281667628,
+   "carrierFreq": 0.001022553025927575,
+   "top": [
+    {
+     "id": "3-43598534-A-T",
+     "hgvsp": "p.Leu157Ter",
+     "hgvsc": "c.470T>A",
+     "ac": 1,
+     "an": 5758,
+     "af": 0.0001736714136853074,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-43600515-A-T",
+     "hgvsp": "p.Leu69Ter",
+     "hgvsc": "c.206T>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-43600431-AT-A",
+     "hgvsp": "p.Met97Ter",
+     "hgvsc": "c.289del",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ARSA",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 346,
+   "q": 0.0016725491088461508,
+   "carrierFreq": 0.003342300797170905,
+   "top": [
+    {
+     "id": "22-50625653-G-A",
+     "hgvsp": "p.Pro379Leu",
+     "hgvsc": "c.1136C>T",
+     "ac": 2,
+     "an": 5764,
+     "af": 0.00034698126301179735,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "22-50627165-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.465+1G>A",
+     "ac": 2,
+     "an": 6068,
+     "af": 0.0003295978905735003,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "22-50626618-G-A",
+     "hgvsp": "p.Thr276Met",
+     "hgvsc": "c.827C>T",
+     "ac": 2,
+     "an": 6082,
+     "af": 0.0003288391976323578,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "22-50626264-C-T",
+     "hgvsp": "p.Arg290His",
+     "hgvsc": "c.869G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "22-50627375-G-C",
+     "hgvsp": "p.Arg86Gly",
+     "hgvsc": "c.256C>G",
+     "ac": 1,
+     "an": 5746,
+     "af": 0.0001740341106856944,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "22-50626934-CA-C",
+     "hgvsp": "p.Trp195GlyfsTer5",
+     "hgvsc": "c.583del",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ARX",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 130,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "ASL",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 235,
+   "q": 0.0006816491285812573,
+   "carrierFreq": 0.0013628336116280337,
+   "top": [
+    {
+     "id": "7-66083175-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.446+1G>A",
+     "ac": 1,
+     "an": 5356,
+     "af": 0.00018670649738610905,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-66086751-G-A",
+     "hgvsp": "p.Val178Met",
+     "hgvsc": "c.532G>A",
+     "ac": 1,
+     "an": 6046,
+     "af": 0.00016539861065167054,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-66092078-C-G",
+     "hgvsp": "p.Arg379Gly",
+     "hgvsc": "c.1135C>G",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-66086763-C-T",
+     "hgvsp": "p.Arg182Ter",
+     "hgvsc": "c.544C>T",
+     "ac": 1,
+     "an": 6076,
+     "af": 0.00016458196181698485,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ASPA",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 179,
+   "q": 0.001013593351119865,
+   "carrierFreq": 0.002026159330758226,
+   "top": [
+    {
+     "id": "17-3489342-GGTAA-G",
+     "hgvsp": null,
+     "hgvsc": "c.634+5_634+8del",
+     "ac": 2,
+     "an": 5932,
+     "af": 0.00033715441672285906,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "17-3476238-G-A",
+     "hgvsp": "p.Gly27Arg",
+     "hgvsc": "c.79G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "17-3481708-C-A",
+     "hgvsp": "p.Asp114Glu",
+     "hgvsc": "c.342C>A",
+     "ac": 1,
+     "an": 5736,
+     "af": 0.00017433751743375174,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "17-3483501-TTCTCTGGCTCCAC-T",
+     "hgvsp": "p.Ser146TyrfsTer7",
+     "hgvsc": "c.437_449del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ATP7B",
+   "inheritance": "AR",
+   "plpWithMidCounts": 23,
+   "clinvarPLP": 854,
+   "q": 0.005609646822182509,
+   "carrierFreq": 0.011187825506895344,
+   "top": [
+    {
+     "id": "13-51961859-C-G",
+     "hgvsp": "p.Asp642His",
+     "hgvsc": "c.1924G>C",
+     "ac": 4,
+     "an": 6062,
+     "af": 0.0006598482349059716,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51937342-G-A",
+     "hgvsp": "p.Arg1319Ter",
+     "hgvsc": "c.3955C>T",
+     "ac": 3,
+     "an": 6084,
+     "af": 0.0004930966469428008,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51934958-TG-T",
+     "hgvsp": "p.Gln1399ArgfsTer6",
+     "hgvsc": "c.4195del",
+     "ac": 2,
+     "an": 5714,
+     "af": 0.00035001750087504374,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51974374-GA-G",
+     "hgvsp": "p.Leu282ProfsTer2",
+     "hgvsc": "c.845del",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51975170-T-C",
+     "hgvsp": null,
+     "hgvsc": "c.52-2A>G",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "13-51958436-A-G",
+     "hgvsp": "p.Ser744Pro",
+     "hgvsc": "c.2230T>C",
+     "ac": 2,
+     "an": 6062,
+     "af": 0.0003299241174529858,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51958538-C-T",
+     "hgvsp": "p.Gly710Ser",
+     "hgvsc": "c.2128G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51946346-C-CG",
+     "hgvsp": "p.Gly1000ArgfsTer28",
+     "hgvsc": "c.2997dup",
+     "ac": 1,
+     "an": 4978,
+     "af": 0.0002008838891120932,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51946336-G-A",
+     "hgvsp": "p.Ala1003Val",
+     "hgvsc": "c.3008C>T",
+     "ac": 1,
+     "an": 5082,
+     "af": 0.0001967729240456513,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-51935002-A-C",
+     "hgvsp": "p.Tyr1384Ter",
+     "hgvsc": "c.4152T>G",
+     "ac": 1,
+     "an": 5734,
+     "af": 0.00017439832577607255,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "13-51968586-GC-G",
+     "hgvsp": "p.Ala522ProfsTer2",
+     "hgvsc": "c.1564del",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "13-51939091-G-A",
+     "hgvsp": "p.Thr1220Met",
+     "hgvsc": "c.3659C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "BBS1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 238,
+   "q": 0.0001643655489809336,
+   "carrierFreq": 0.0003287040819280884,
+   "top": [
+    {
+     "id": "11-66515586-G-A",
+     "hgvsp": "p.Arg160Gln",
+     "hgvsc": "c.479G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "BBS2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 277,
+   "q": 0.0003288392331914599,
+   "carrierFreq": 0.0006575703311416659,
+   "top": [
+    {
+     "id": "16-56497774-TAGAC-T",
+     "hgvsp": "p.Val588IlefsTer9",
+     "hgvsc": "c.1762_1765del",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-56511229-G-C",
+     "hgvsp": "p.Pro134Arg",
+     "hgvsc": "c.401C>G",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "BCKDHB",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 241,
+   "q": 0.00017337031900138697,
+   "carrierFreq": 0.000346710580735321,
+   "top": [
+    {
+     "id": "6-80168905-C-T",
+     "hgvsp": "p.Arg170Cys",
+     "hgvsc": "c.508C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "BLM",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 567,
+   "q": 0.0004969712221242847,
+   "carrierFreq": 0.0009936954638530837,
+   "top": [
+    {
+     "id": "15-90760908-G-GA",
+     "hgvsp": "p.Asn515LysfsTer2",
+     "hgvsc": "c.1544dup",
+     "ac": 2,
+     "an": 6054,
+     "af": 0.0003303600925008259,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-90761015-C-T",
+     "hgvsp": "p.Gln548Ter",
+     "hgvsc": "c.1642C>T",
+     "ac": 1,
+     "an": 6002,
+     "af": 0.00016661112962345885,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "BTD",
+   "inheritance": "AR",
+   "plpWithMidCounts": 9,
+   "clinvarPLP": 234,
+   "q": 0.0015090704256638101,
+   "carrierFreq": 0.0030158635577780535,
+   "top": [
+    {
+     "id": "3-15641990-TC-T",
+     "hgvsp": "p.Phe111LeufsTer28",
+     "hgvsc": "c.333del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-15644413-G-A",
+     "hgvsp": "p.Cys166Tyr",
+     "hgvsc": "c.497G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-15644941-T-A",
+     "hgvsp": "p.Leu342Ter",
+     "hgvsc": "c.1025T>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "3-15644325-C-T",
+     "hgvsp": "p.Arg137Cys",
+     "hgvsc": "c.409C>T",
+     "ac": 1,
+     "an": 6056,
+     "af": 0.00016512549537648613,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-15645451-C-T",
+     "hgvsp": "p.Thr512Met",
+     "hgvsc": "c.1535C>T",
+     "ac": 1,
+     "an": 6060,
+     "af": 0.00016501650165016502,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-15645224-A-C",
+     "hgvsp": "p.Gln436His",
+     "hgvsc": "c.1308A>C",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-15645345-C-T",
+     "hgvsp": "p.Pro477Ser",
+     "hgvsc": "c.1429C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-15645469-G-A",
+     "hgvsp": "p.Arg518His",
+     "hgvsc": "c.1553G>A",
+     "ac": 1,
+     "an": 6078,
+     "af": 0.00016452780519907864,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-15644482-G-A",
+     "hgvsp": "p.Arg189His",
+     "hgvsc": "c.566G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CBS",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 286,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "CC2D2A",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 430,
+   "q": 0.0013367915635778265,
+   "carrierFreq": 0.0026717961154711922,
+   "top": [
+    {
+     "id": "4-15510217-C-T",
+     "hgvsp": "p.Arg173Ter",
+     "hgvsc": "c.517C>T",
+     "ac": 2,
+     "an": 6058,
+     "af": 0.0003301419610432486,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "4-15563422-CG-C",
+     "hgvsp": "p.Lys1029ArgfsTer3",
+     "hgvsc": "c.3084del",
+     "ac": 2,
+     "an": 6082,
+     "af": 0.0003288391976323578,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "4-15597428-C-CG",
+     "hgvsp": "p.Ser1488LeufsTer8",
+     "hgvsc": "c.4460dup",
+     "ac": 1,
+     "an": 5700,
+     "af": 0.00017543859649122806,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "4-15528630-T-A",
+     "hgvsp": "p.Leu457Ter",
+     "hgvsc": "c.1370T>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "4-15563395-C-T",
+     "hgvsp": "p.Arg1019Ter",
+     "hgvsc": "c.3055C>T",
+     "ac": 1,
+     "an": 6078,
+     "af": 0.00016452780519907864,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "4-15557451-C-T",
+     "hgvsp": "p.Arg925Ter",
+     "hgvsc": "c.2773C>T",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CCDC40",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 111,
+   "q": 0.0006674968719955637,
+   "carrierFreq": 0.0013345481919169178,
+   "top": [
+    {
+     "id": "17-80050063-G-C",
+     "hgvsp": null,
+     "hgvsc": "c.940-1G>C",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "17-80058954-CG-C",
+     "hgvsp": "p.Ile473PhefsTer2",
+     "hgvsc": "c.1416del",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "17-80089876-A-ACTGT",
+     "hgvsp": "p.Arg942ThrfsTer57",
+     "hgvsc": "c.2824_2825insCTGT",
+     "ac": 1,
+     "an": 6068,
+     "af": 0.00016479894528675015,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "17-80049951-C-T",
+     "hgvsp": "p.Arg301Ter",
+     "hgvsc": "c.901C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CCDC88C",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 176,
+   "q": 0.003690285228045173,
+   "carrierFreq": 0.0073669522510260155,
+   "top": [
+    {
+     "id": "14-91272869-CCT-C",
+     "hgvsp": "p.Glu1949GlyfsTer26",
+     "hgvsc": "c.5841_5842del",
+     "ac": 1,
+     "an": 316,
+     "af": 0.0031645569620253164,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "14-91291079-TTGTCTC-T",
+     "hgvsp": null,
+     "hgvsc": "c.4113-1_4117del",
+     "ac": 1,
+     "an": 5650,
+     "af": 0.00017699115044247788,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "14-91338559-G-A",
+     "hgvsp": "p.Thr274Ile",
+     "hgvsc": "c.821C>T",
+     "ac": 1,
+     "an": 5724,
+     "af": 0.00017470300489168413,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "14-91291030-C-G",
+     "hgvsp": "p.Met1389Ile",
+     "hgvsc": "c.4167G>C",
+     "ac": 1,
+     "an": 5746,
+     "af": 0.0001740341106856944,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "CCNO",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 43,
+   "q": 0.001015637183682666,
+   "carrierFreq": 0.0020302428484765267,
+   "top": [
+    {
+     "id": "5-55233261-T-TGGGCC",
+     "hgvsp": "p.Gln88ArgfsTer8",
+     "hgvsc": "c.258_262dup",
+     "ac": 3,
+     "an": 5982,
+     "af": 0.0005015045135406219,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-55231467-G-A",
+     "hgvsp": "p.Gln321Ter",
+     "hgvsc": "c.961C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "5-55232444-CCA-C",
+     "hgvsp": "p.Leu161ArgfsTer73",
+     "hgvsc": "c.482_483del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "5-55233256-C-CGGGCT",
+     "hgvsp": "p.Val90SerfsTer6",
+     "hgvsc": "c.263_267dup",
+     "ac": 1,
+     "an": 5974,
+     "af": 0.00016739203213927018,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CDH23",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 732,
+   "q": 0.0008414699009540895,
+   "carrierFreq": 0.00168223173031401,
+   "top": [
+    {
+     "id": "10-71645842-C-A",
+     "hgvsp": "p.Ser384Arg",
+     "hgvsc": "c.1152C>A",
+     "ac": 1,
+     "an": 5752,
+     "af": 0.00017385257301808066,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "10-71812487-CCT-C",
+     "hgvsp": "p.Pro3130ArgfsTer19",
+     "hgvsc": "c.9389_9390del",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "10-71790413-G-A",
+     "hgvsp": "p.Gly2017Ser",
+     "hgvsc": "c.6049G>A",
+     "ac": 1,
+     "an": 6060,
+     "af": 0.00016501650165016502,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "10-71803362-A-G",
+     "hgvsp": "p.Asn2605Ser",
+     "hgvsc": "c.7814A>G",
+     "ac": 1,
+     "an": 6070,
+     "af": 0.00016474464579901152,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "10-71810017-G-T",
+     "hgvsp": "p.Glu2974Ter",
+     "hgvsc": "c.8920G>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CEP290",
+   "inheritance": "AR",
+   "plpWithMidCounts": 11,
+   "clinvarPLP": 1062,
+   "q": 0.0021367898969125105,
+   "carrierFreq": 0.0042690139227613555,
+   "top": [
+    {
+     "id": "12-88079217-CCCGA-C",
+     "hgvsp": "p.Ser1745ArgfsTer4",
+     "hgvsc": "c.5235_5238del",
+     "ac": 2,
+     "an": 6008,
+     "af": 0.00033288948069241014,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-88139186-G-A",
+     "hgvsp": "p.Gln86Ter",
+     "hgvsc": "c.256C>T",
+     "ac": 1,
+     "an": 4538,
+     "af": 0.00022036139268400177,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "12-88049291-CCTTCT-C",
+     "hgvsp": "p.Glu2443GlyfsTer11",
+     "hgvsc": "c.7328_7332del",
+     "ac": 1,
+     "an": 5270,
+     "af": 0.00018975332068311195,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-88049337-A-ATACT",
+     "hgvsp": "p.Tyr2429Ter",
+     "hgvsc": "c.7283_7286dup",
+     "ac": 1,
+     "an": 5374,
+     "af": 0.00018608113137327876,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-88083182-TA-T",
+     "hgvsp": "p.Phe1620LeufsTer11",
+     "hgvsc": "c.4860del",
+     "ac": 1,
+     "an": 5612,
+     "af": 0.0001781895937277263,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "12-88118482-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.1711+1G>A",
+     "ac": 1,
+     "an": 5680,
+     "af": 0.00017605633802816902,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-88118527-A-AT",
+     "hgvsp": "p.Ile556AsnfsTer20",
+     "hgvsc": "c.1666dup",
+     "ac": 1,
+     "an": 5744,
+     "af": 0.00017409470752089137,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-88058877-AC-A",
+     "hgvsp": "p.Ser2263IlefsTer17",
+     "hgvsc": "c.6788del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-88118527-AT-A",
+     "hgvsp": "p.Ile556PhefsTer17",
+     "hgvsc": "c.1666del",
+     "ac": 1,
+     "an": 5796,
+     "af": 0.0001725327812284334,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-88140968-CTGAG-C",
+     "hgvsp": "p.Thr55SerfsTer3",
+     "hgvsc": "c.164_167del",
+     "ac": 1,
+     "an": 5956,
+     "af": 0.000167897918065816,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-88079202-G-A",
+     "hgvsp": "p.Arg1752Trp",
+     "hgvsc": "c.5254C>T",
+     "ac": 1,
+     "an": 6040,
+     "af": 0.00016556291390728477,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "CFTR",
+   "inheritance": "AR",
+   "plpWithMidCounts": 20,
+   "clinvarPLP": 1395,
+   "q": 0.03486052888613504,
+   "carrierFreq": 0.06850580129804895,
+   "top": [
+    {
+     "id": "7-117548630-T-G",
+     "hgvsp": null,
+     "hgvsc": "c.1210-11T>G",
+     "ac": 98,
+     "an": 5910,
+     "af": 0.016582064297800337,
+     "sig": "Pathogenic/Likely pathogenic; other",
+     "stars": 2
+    },
+    {
+     "id": "7-117548628-GTT-G",
+     "hgvsp": null,
+     "hgvsc": "c.1210-7_1210-6del",
+     "ac": 64,
+     "an": 5810,
+     "af": 0.011015490533562823,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-117559590-ATCT-A",
+     "hgvsp": "p.Phe508del",
+     "hgvsc": "c.1521_1523del",
+     "ac": 11,
+     "an": 6058,
+     "af": 0.0018157807857378673,
+     "sig": "Pathogenic",
+     "stars": 4
+    },
+    {
+     "id": "7-117627753-A-G",
+     "hgvsp": "p.Ile1234Val",
+     "hgvsc": "c.3700A>G",
+     "ac": 8,
+     "an": 5760,
+     "af": 0.001388888888888889,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "7-117652877-C-G",
+     "hgvsp": "p.Asn1303Lys",
+     "hgvsc": "c.3909C>G",
+     "ac": 3,
+     "an": 5386,
+     "af": 0.0005569996286669142,
+     "sig": "Pathogenic",
+     "stars": 4
+    },
+    {
+     "id": "7-117480108-C-T",
+     "hgvsp": "p.Pro5Leu",
+     "hgvsc": "c.14C>T",
+     "ac": 3,
+     "an": 6080,
+     "af": 0.000493421052631579,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-117667029-C-G",
+     "hgvsp": "p.Ser1455Ter",
+     "hgvsc": "c.4364C>G",
+     "ac": 3,
+     "an": 6084,
+     "af": 0.0004930966469428008,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-117530953-G-C",
+     "hgvsp": "p.Asp110His",
+     "hgvsc": "c.328G>C",
+     "ac": 2,
+     "an": 6062,
+     "af": 0.0003299241174529858,
+     "sig": "Pathogenic; drug response",
+     "stars": 3
+    },
+    {
+     "id": "7-117530974-C-T",
+     "hgvsp": "p.Arg117Cys",
+     "hgvsc": "c.349C>T",
+     "ac": 2,
+     "an": 6066,
+     "af": 0.0003297065611605671,
+     "sig": "Pathogenic; drug response",
+     "stars": 3
+    },
+    {
+     "id": "7-117590406-T-C",
+     "hgvsp": "p.Leu578Pro",
+     "hgvsc": "c.1733T>C",
+     "ac": 1,
+     "an": 5690,
+     "af": 0.0001757469244288225,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "7-117534309-A-G",
+     "hgvsp": "p.Ile175Val",
+     "hgvsc": "c.523A>G",
+     "ac": 1,
+     "an": 5744,
+     "af": 0.00017409470752089137,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-117610637-C-T",
+     "hgvsp": "p.Thr1036Ile",
+     "hgvsc": "c.3107C>T",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CHRNE",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 279,
+   "q": 0.00033057851239669424,
+   "carrierFreq": 0.0006610477426405303,
+   "top": [
+    {
+     "id": "17-4898864-T-TC",
+     "hgvsp": "p.Asn452GlufsTer4",
+     "hgvsc": "c.1353dup",
+     "ac": 2,
+     "an": 6050,
+     "af": 0.00033057851239669424,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CLCN1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 347,
+   "q": 0.000840078077055299,
+   "carrierFreq": 0.0016794504229351581,
+   "top": [
+    {
+     "id": "7-143331240-A-AC",
+     "hgvsp": "p.Ala331CysfsTer14",
+     "hgvsc": "c.989dup",
+     "ac": 1,
+     "an": 5760,
+     "af": 0.00017361111111111112,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "7-143350576-CCT-C",
+     "hgvsp": "p.Leu840ValfsTer31",
+     "hgvsc": "c.2518_2519del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-143321720-G-T",
+     "hgvsp": "p.Gly190Ter",
+     "hgvsc": "c.568G>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "7-143321721-G-C",
+     "hgvsp": "p.Gly190Ala",
+     "hgvsc": "c.569G>C",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "7-143339295-G-A",
+     "hgvsp": "p.Gly482Arg",
+     "hgvsc": "c.1444G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CLRN1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 87,
+   "q": 0.0005022095166337448,
+   "carrierFreq": 0.0010041668188688346,
+   "top": [
+    {
+     "id": "3-150943893-G-A",
+     "hgvsp": "p.Arg110Ter",
+     "hgvsc": "c.328C>T",
+     "ac": 2,
+     "an": 6082,
+     "af": 0.0003288391976323578,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "3-150972450-A-G",
+     "hgvsp": null,
+     "hgvsc": "c.253+6T>C",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CNGA3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 7,
+   "clinvarPLP": 215,
+   "q": 0.0018441002542584867,
+   "carrierFreq": 0.0036847998027692563,
+   "top": [
+    {
+     "id": "2-98396255-C-T",
+     "hgvsp": "p.Thr362Ile",
+     "hgvsc": "c.1085C>T",
+     "ac": 3,
+     "an": 5768,
+     "af": 0.0005201109570041609,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "2-98396017-C-T",
+     "hgvsp": "p.Arg283Trp",
+     "hgvsc": "c.847C>T",
+     "ac": 3,
+     "an": 6084,
+     "af": 0.0004930966469428008,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-98396360-G-T",
+     "hgvsp": "p.Gly397Val",
+     "hgvsc": "c.1190G>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-98391869-G-A",
+     "hgvsp": "p.Cys191Tyr",
+     "hgvsc": "c.572G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-98396244-G-A",
+     "hgvsp": "p.Trp358Ter",
+     "hgvsc": "c.1074G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-98396755-G-A",
+     "hgvsp": "p.Val529Met",
+     "hgvsc": "c.1585G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-98396864-C-T",
+     "hgvsp": "p.Thr565Met",
+     "hgvsc": "c.1694C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CNGB3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 275,
+   "q": 0.0006782558612247757,
+   "carrierFreq": 0.0013560516914363774,
+   "top": [
+    {
+     "id": "8-86643780-AG-A",
+     "hgvsp": "p.Thr383IlefsTer13",
+     "hgvsc": "c.1148del",
+     "ac": 2,
+     "an": 6034,
+     "af": 0.00033145508783559825,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-86743513-GCTGAGACTGA-G",
+     "hgvsp": "p.Gln36LysfsTer44",
+     "hgvsc": "c.105_114del",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-86743585-C-CTA",
+     "hgvsp": "p.Gly15Ter",
+     "hgvsc": "c.41_42dup",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "COL7A1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 11,
+   "clinvarPLP": 1180,
+   "q": 0.0020325306477362265,
+   "carrierFreq": 0.0040609301146384835,
+   "top": [
+    {
+     "id": "3-48573235-C-G",
+     "hgvsp": "p.Gly2218Ala",
+     "hgvsc": "c.6653G>C",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "3-48570177-C-T",
+     "hgvsp": "p.Gly2481Asp",
+     "hgvsc": "c.7442G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48583161-C-T",
+     "hgvsp": "p.Gly1483Asp",
+     "hgvsc": "c.4448G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48584062-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.4198-1G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "3-48586407-CT-C",
+     "hgvsp": "p.Val1160Ter",
+     "hgvsc": "c.3474del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48576249-C-T",
+     "hgvsp": "p.Pro1940Pro",
+     "hgvsc": "c.5820G>A",
+     "ac": 1,
+     "an": 6004,
+     "af": 0.00016655562958027982,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48568804-G-A",
+     "hgvsp": "p.Arg2580Cys",
+     "hgvsc": "c.7738C>T",
+     "ac": 1,
+     "an": 6016,
+     "af": 0.00016622340425531914,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48580301-G-A",
+     "hgvsp": "p.Pro1699Leu",
+     "hgvsc": "c.5096C>T",
+     "ac": 1,
+     "an": 6032,
+     "af": 0.00016578249336870026,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48581271-G-A",
+     "hgvsp": "p.Arg1630Ter",
+     "hgvsc": "c.4888C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48584910-C-T",
+     "hgvsp": "p.Pro1337Pro",
+     "hgvsc": "c.4011G>A",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-48568101-G-A",
+     "hgvsp": "p.Arg2622Trp",
+     "hgvsc": "c.7864C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CPT2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 234,
+   "q": 0.0008246494710674308,
+   "carrierFreq": 0.0016486188953847014,
+   "top": [
+    {
+     "id": "1-53202427-C-T",
+     "hgvsp": "p.Ser113Leu",
+     "hgvsc": "c.338C>T",
+     "ac": 4,
+     "an": 6058,
+     "af": 0.0006602839220864972,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-53210044-C-T",
+     "hgvsp": "p.Arg124Ter",
+     "hgvsc": "c.370C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CYP11A1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 63,
+   "q": 0.0003393178795722466,
+   "carrierFreq": 0.0006785206225210505,
+   "top": [
+    {
+     "id": "15-74345103-G-A",
+     "hgvsp": "p.Ala189Val",
+     "hgvsc": "c.566C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-74343924-G-A",
+     "hgvsp": "p.Arg232Ter",
+     "hgvsc": "c.694C>T",
+     "ac": 1,
+     "an": 6026,
+     "af": 0.00016594756057085962,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CYP11B1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 205,
+   "q": 0.0006782676047348243,
+   "carrierFreq": 0.0013560751625258938,
+   "top": [
+    {
+     "id": "8-142876299-A-G",
+     "hgvsp": "p.Leu299Pro",
+     "hgvsc": "c.896T>C",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-142875253-T-TTC",
+     "hgvsp": "p.Asn394ArgfsTer37",
+     "hgvsc": "c.1179_1180dup",
+     "ac": 1,
+     "an": 5694,
+     "af": 0.00017562346329469617,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-142875013-G-A",
+     "hgvsp": "p.Arg448Cys",
+     "hgvsc": "c.1342C>T",
+     "ac": 1,
+     "an": 5750,
+     "af": 0.00017391304347826088,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
   {
    "gene": "CYP1B1",
    "inheritance": "AR",
@@ -77,6 +2472,2149 @@
      "ac": 1,
      "an": 6072,
      "af": 0.00016469038208168644,
+     "sig": "Pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "CYP21A2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 10,
+   "clinvarPLP": 107,
+   "q": 0.03341793385308474,
+   "carrierFreq": 0.06571910940316039,
+   "top": [
+    {
+     "id": "6-32040110-G-T",
+     "hgvsp": "p.Val282Leu",
+     "hgvsc": "c.844G>T",
+     "ac": 59,
+     "an": 5916,
+     "af": 0.009972954699121028,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-32041093-C-T",
+     "hgvsp": "p.Pro483Ser",
+     "hgvsc": "c.1447C>T",
+     "ac": 45,
+     "an": 4690,
+     "af": 0.009594882729211088,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-32040421-C-T",
+     "hgvsp": "p.Gln319Ter",
+     "hgvsc": "c.955C>T",
+     "ac": 33,
+     "an": 5780,
+     "af": 0.005709342560553633,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-32039081-C-G",
+     "hgvsp": "p.Pro105Ala",
+     "hgvsc": "c.313C>G",
+     "ac": 19,
+     "an": 5730,
+     "af": 0.0033158813263525306,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-32041006-C-T",
+     "hgvsp": "p.Pro454Ser",
+     "hgvsc": "c.1360C>T",
+     "ac": 8,
+     "an": 3932,
+     "af": 0.002034587995930824,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-32040116-A-G",
+     "hgvsp": "p.Met284Val",
+     "hgvsc": "c.850A>G",
+     "ac": 9,
+     "an": 6054,
+     "af": 0.0014866204162537165,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-32041097-G-C",
+     "hgvsp": "p.Arg484Pro",
+     "hgvsc": "c.1451G>C",
+     "ac": 3,
+     "an": 4694,
+     "af": 0.0006391137622496804,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-32040529-C-T",
+     "hgvsp": "p.Arg355Cys",
+     "hgvsc": "c.1063C>T",
+     "ac": 2,
+     "an": 6056,
+     "af": 0.00033025099075297226,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-32038481-G-A",
+     "hgvsp": "p.Trp20Ter",
+     "hgvsc": "c.59G>A",
+     "ac": 1,
+     "an": 5938,
+     "af": 0.0001684068710003368,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-32040709-C-T",
+     "hgvsp": "p.Pro387Leu",
+     "hgvsc": "c.1160C>T",
+     "ac": 1,
+     "an": 6028,
+     "af": 0.00016589250165892502,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "CYP27A1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 210,
+   "q": 0.007700316823563057,
+   "carrierFreq": 0.01534133876794297,
+   "top": [
+    {
+     "id": "2-218809675-GC-G",
+     "hgvsp": "p.Arg119GlyfsTer24",
+     "hgvsc": "c.355del",
+     "ac": 2,
+     "an": 294,
+     "af": 0.006802721088435374,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "2-218782183-A-G",
+     "hgvsp": "p.Met1?",
+     "hgvsc": "c.1A>G",
+     "ac": 1,
+     "an": 4408,
+     "af": 0.00022686025408348456,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "2-218814759-T-C",
+     "hgvsp": null,
+     "hgvsc": "c.1476+2T>C",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-218813095-C-T",
+     "hgvsp": "p.Thr339Met",
+     "hgvsc": "c.1016C>T",
+     "ac": 1,
+     "an": 5930,
+     "af": 0.00016863406408094435,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-218812421-G-C",
+     "hgvsp": "p.Ala216Pro",
+     "hgvsc": "c.646G>C",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-218814188-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.1184+1G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "CYP27B1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 106,
+   "q": 0.0001644195988161789,
+   "carrierFreq": 0.00032881216382785183,
+   "top": [
+    {
+     "id": "12-57763730-G-A",
+     "hgvsp": "p.Arg432Cys",
+     "hgvsc": "c.1294C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "DHCR7",
+   "inheritance": "AR",
+   "plpWithMidCounts": 8,
+   "clinvarPLP": 291,
+   "q": 0.004141318469204645,
+   "carrierFreq": 0.008265486419745893,
+   "top": [
+    {
+     "id": "11-71444952-T-C",
+     "hgvsp": "p.Met1?",
+     "hgvsc": "c.1A>G",
+     "ac": 12,
+     "an": 6062,
+     "af": 0.001979544704717915,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-71442257-GGCTACCTGCAGGAGTCACGGCCCCCTCCTGGAT-G",
+     "hgvsp": null,
+     "hgvsc": "c.385_412+5del",
+     "ac": 5,
+     "an": 6052,
+     "af": 0.0008261731658955717,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-71444871-G-A",
+     "hgvsp": "p.Gln28Ter",
+     "hgvsc": "c.82C>T",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-71435840-C-G",
+     "hgvsp": null,
+     "hgvsc": "c.964-1G>C",
+     "ac": 2,
+     "an": 6038,
+     "af": 0.0003312355084465055,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-71438889-T-C",
+     "hgvsp": "p.Asn274Ser",
+     "hgvsc": "c.821A>G",
+     "ac": 1,
+     "an": 6078,
+     "af": 0.00016452780519907864,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "11-71435461-C-T",
+     "hgvsp": "p.Glu448Lys",
+     "hgvsc": "c.1342G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-71435575-C-T",
+     "hgvsp": "p.Gly410Ser",
+     "hgvsc": "c.1228G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-71441401-C-T",
+     "hgvsp": "p.Trp151Ter",
+     "hgvsc": "c.452G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "DHDDS",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 46,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "DLD",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 140,
+   "q": 0.0011516946363935505,
+   "carrierFreq": 0.0023020628722515424,
+   "top": [
+    {
+     "id": "7-107915506-G-T",
+     "hgvsp": "p.Gly229Cys",
+     "hgvsc": "c.685G>T",
+     "ac": 7,
+     "an": 6078,
+     "af": 0.0011516946363935505,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "DMD",
+   "inheritance": "XL",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 2085,
+   "q": 0.0003370407819346141,
+   "carrierFreq": 0.0006740815638692282,
+   "top": [
+    {
+     "id": "X-32454660-A-T",
+     "hgvsp": null,
+     "hgvsc": "c.3603+2T>A",
+     "ac": 1,
+     "an": 2967,
+     "af": 0.0003370407819346141,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "DNAH11",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 584,
+   "q": 0.0020708716320380414,
+   "carrierFreq": 0.004137454754759684,
+   "top": [
+    {
+     "id": "7-21687528-G-C",
+     "hgvsp": null,
+     "hgvsc": "c.5924+1G>C",
+     "ac": 8,
+     "an": 5764,
+     "af": 0.0013879250520471894,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-21543343-TGG-T",
+     "hgvsp": "p.Glu34AlafsTer71",
+     "hgvsc": "c.99_100del",
+     "ac": 1,
+     "an": 5574,
+     "af": 0.0001794043774668102,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "7-21559601-A-G",
+     "hgvsp": null,
+     "hgvsc": "c.693-2A>G",
+     "ac": 1,
+     "an": 5724,
+     "af": 0.00017470300489168413,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-21591479-C-T",
+     "hgvsp": "p.Arg857Ter",
+     "hgvsc": "c.2569C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-21619178-C-T",
+     "hgvsp": "p.Arg1445Ter",
+     "hgvsc": "c.4333C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "DNAH5",
+   "inheritance": "AR",
+   "plpWithMidCounts": 8,
+   "clinvarPLP": 1599,
+   "q": 0.008630520952082945,
+   "carrierFreq": 0.01718655601226149,
+   "top": [
+    {
+     "id": "5-13841905-C-A",
+     "hgvsp": null,
+     "hgvsc": "c.5272-1G>T",
+     "ac": 23,
+     "an": 3090,
+     "af": 0.00744336569579288,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "5-13885006-TGA-T",
+     "hgvsp": "p.Thr990AsnfsTer2",
+     "hgvsc": "c.2964_2965del",
+     "ac": 1,
+     "an": 5760,
+     "af": 0.00017361111111111112,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "5-13811667-G-A",
+     "hgvsp": "p.Gln2463Ter",
+     "hgvsc": "c.7387C>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "5-13885973-C-A",
+     "hgvsp": "p.Glu912Ter",
+     "hgvsc": "c.2734G>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-13839355-C-A",
+     "hgvsp": null,
+     "hgvsc": "c.5882+1G>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "5-13753489-C-T",
+     "hgvsp": "p.Arg3539His",
+     "hgvsc": "c.10616G>A",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-13753490-G-A",
+     "hgvsp": "p.Arg3539Cys",
+     "hgvsc": "c.10615C>T",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-13841051-A-AT",
+     "hgvsp": "p.Ile1855AsnfsTer6",
+     "hgvsc": "c.5563dup",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "DOCK8",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 119,
+   "q": 0.00034680077338917743,
+   "carrierFreq": 0.0006934812760019948,
+   "top": [
+    {
+     "id": "9-442011-T-C",
+     "hgvsp": null,
+     "hgvsc": "c.5490+2T>C",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "9-439297-C-A",
+     "hgvsp": "p.Ser1711Ter",
+     "hgvsc": "c.5132C>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "DONSON",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 45,
+   "q": 0.0003471622125531831,
+   "carrierFreq": 0.0006942039035044978,
+   "top": [
+    {
+     "id": "21-33581337-CAG-C",
+     "hgvsp": "p.Pro438ArgfsTer12",
+     "hgvsc": "c.1313_1314del",
+     "ac": 1,
+     "an": 5756,
+     "af": 0.00017373175816539263,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "21-33584693-AAGACAAAGCAG-A",
+     "hgvsp": "p.Pro224LeufsTer11",
+     "hgvsc": "c.671_681del",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "DYNC2H1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 703,
+   "q": 0.002111753178327182,
+   "carrierFreq": 0.004219046855168274,
+   "top": [
+    {
+     "id": "11-103243766-C-A",
+     "hgvsp": "p.Ser3298Ter",
+     "hgvsc": "c.9893C>A",
+     "ac": 4,
+     "an": 5702,
+     "af": 0.0007015082427218519,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-103120705-C-T",
+     "hgvsp": "p.Ala384Val",
+     "hgvsc": "c.1151C>T",
+     "ac": 4,
+     "an": 5988,
+     "af": 0.0006680026720106881,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-103199246-C-T",
+     "hgvsp": "p.Arg2620Ter",
+     "hgvsc": "c.7858C>T",
+     "ac": 1,
+     "an": 4092,
+     "af": 0.00024437927663734115,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-103192150-C-T",
+     "hgvsp": "p.Arg2532Trp",
+     "hgvsc": "c.7594C>T",
+     "ac": 1,
+     "an": 5972,
+     "af": 0.00016744809109176155,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-103155476-T-C",
+     "hgvsp": "p.Ile1240Thr",
+     "hgvsc": "c.3719T>C",
+     "ac": 1,
+     "an": 6048,
+     "af": 0.00016534391534391533,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-103177652-A-T",
+     "hgvsp": "p.Met1991Leu",
+     "hgvsc": "c.5971A>T",
+     "ac": 1,
+     "an": 6058,
+     "af": 0.0001650709805216243,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ELP1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 452,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "ERCC2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 257,
+   "q": 0.0004944522445871842,
+   "carrierFreq": 0.0009886600061522755,
+   "top": [
+    {
+     "id": "19-45365053-G-A",
+     "hgvsp": "p.Arg156Ter",
+     "hgvsc": "c.466C>T",
+     "ac": 1,
+     "an": 6060,
+     "af": 0.00016501650165016502,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-45352580-G-A",
+     "hgvsp": "p.Arg658Cys",
+     "hgvsc": "c.1972C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-45352351-C-T",
+     "hgvsp": "p.Arg683Gln",
+     "hgvsc": "c.2048G>A",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "ETFDH",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 300,
+   "q": 0.00017337031900138697,
+   "carrierFreq": 0.000346710580735321,
+   "top": [
+    {
+     "id": "4-158697653-T-G",
+     "hgvsp": "p.Leu309Arg",
+     "hgvsc": "c.926T>G",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "EVC2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 384,
+   "q": 0.0001649620587264929,
+   "carrierFreq": 0.0003298969049722045,
+   "top": [
+    {
+     "id": "4-5640789-G-A",
+     "hgvsp": "p.Arg399Ter",
+     "hgvsc": "c.1195C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "EYS",
+   "inheritance": "AR",
+   "plpWithMidCounts": 8,
+   "clinvarPLP": 1110,
+   "q": 0.004199027365146655,
+   "carrierFreq": 0.008380422899480044,
+   "top": [
+    {
+     "id": "6-64388718-C-A",
+     "hgvsp": "p.Gly2017Val",
+     "hgvsc": "c.6050G>T",
+     "ac": 14,
+     "an": 5982,
+     "af": 0.002340354396522902,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-65384473-G-GT",
+     "hgvsp": "p.Asn404LysfsTer3",
+     "hgvsc": "c.1211dup",
+     "ac": 3,
+     "an": 6026,
+     "af": 0.0004978426817125788,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-63726595-ATG-A",
+     "hgvsp": "p.His2719TyrfsTer27",
+     "hgvsc": "c.8155_8156del",
+     "ac": 2,
+     "an": 5692,
+     "af": 0.00035137034434293746,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-65495378-C-CA",
+     "hgvsp": "p.Met12AspfsTer14",
+     "hgvsc": "c.32dup",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-63720626-A-T",
+     "hgvsp": "p.Tyr3135Ter",
+     "hgvsc": "c.9405T>A",
+     "ac": 1,
+     "an": 5448,
+     "af": 0.00018355359765051394,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-64081879-CTGTT-C",
+     "hgvsp": "p.Asn2182ValfsTer2",
+     "hgvsc": "c.6544_6547del",
+     "ac": 1,
+     "an": 5952,
+     "af": 0.00016801075268817206,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-65353609-G-T",
+     "hgvsp": "p.Cys436Ter",
+     "hgvsc": "c.1308C>A",
+     "ac": 1,
+     "an": 6068,
+     "af": 0.00016479894528675015,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-65494921-G-A",
+     "hgvsp": "p.Arg164Ter",
+     "hgvsc": "c.490C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "F7",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 75,
+   "q": 0.0026512108649208387,
+   "carrierFreq": 0.005295392810791388,
+   "top": [
+    {
+     "id": "13-113118518-C-T",
+     "hgvsp": "p.Ala282Val",
+     "hgvsc": "c.845C>T",
+     "ac": 10,
+     "an": 6060,
+     "af": 0.0016501650165016502,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-113118716-G-T",
+     "hgvsp": "p.Cys348Phe",
+     "hgvsc": "c.1043G>T",
+     "ac": 2,
+     "an": 6062,
+     "af": 0.0003299241174529858,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-113118412-G-GGCGAGCACGACCTCA",
+     "hgvsp": "p.Leu251_Asp255dup",
+     "hgvsc": "c.751_765dup",
+     "ac": 1,
+     "an": 5726,
+     "af": 0.00017464198393293747,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "13-113105812-A-C",
+     "hgvsp": null,
+     "hgvsc": "c.-30A>C",
+     "ac": 1,
+     "an": 6004,
+     "af": 0.00016655562958027982,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-113115695-G-A",
+     "hgvsp": "p.Gly134Ser",
+     "hgvsc": "c.400G>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-113118698-G-A",
+     "hgvsp": "p.Arg342Gln",
+     "hgvsc": "c.1025G>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic; other",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "F8",
+   "inheritance": "XL",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 518,
+   "q": 0.000228675966155957,
+   "carrierFreq": 0.000457351932311914,
+   "top": [
+    {
+     "id": "X-154861818-T-C",
+     "hgvsp": "p.Gln2208Arg",
+     "hgvsc": "c.6623A>G",
+     "ac": 1,
+     "an": 4373,
+     "af": 0.000228675966155957,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "F9",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 253,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "FAH",
+   "inheritance": "AR",
+   "plpWithMidCounts": 8,
+   "clinvarPLP": 182,
+   "q": 0.0013541301054539245,
+   "carrierFreq": 0.0027064265425653655,
+   "top": [
+    {
+     "id": "15-80158171-G-T",
+     "hgvsp": null,
+     "hgvsc": "c.192+1G>T",
+     "ac": 1,
+     "an": 5750,
+     "af": 0.00017391304347826088,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-80158168-CA-C",
+     "hgvsp": "p.Gln64ArgfsTer28",
+     "hgvsc": "c.191del",
+     "ac": 1,
+     "an": 5756,
+     "af": 0.00017373175816539263,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-80173013-G-C",
+     "hgvsp": null,
+     "hgvsc": "c.707-1G>C",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-80180137-C-T",
+     "hgvsp": "p.Thr325Met",
+     "hgvsc": "c.974C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-80180230-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.1062+5G>A",
+     "ac": 1,
+     "an": 6038,
+     "af": 0.00016561775422325274,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-80180188-C-T",
+     "hgvsp": "p.Pro342Leu",
+     "hgvsc": "c.1025C>T",
+     "ac": 1,
+     "an": 6058,
+     "af": 0.0001650709805216243,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-80158170-G-T",
+     "hgvsp": "p.Gln64His",
+     "hgvsc": "c.192G>T",
+     "ac": 1,
+     "an": 6072,
+     "af": 0.00016469038208168644,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-80173016-C-T",
+     "hgvsp": "p.Arg237Ter",
+     "hgvsc": "c.709C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "FANCC",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 300,
+   "q": 0.0037486439066973347,
+   "carrierFreq": 0.00748323548225549,
+   "top": [
+    {
+     "id": "9-95125145-CTA-C",
+     "hgvsp": "p.Ile312SerfsTer61",
+     "hgvsc": "c.935_936del",
+     "ac": 1,
+     "an": 294,
+     "af": 0.003401360544217687,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-95171080-G-A",
+     "hgvsp": "p.Arg174Ter",
+     "hgvsc": "c.520C>T",
+     "ac": 1,
+     "an": 5750,
+     "af": 0.00017391304347826088,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-95125124-G-A",
+     "hgvsp": "p.Gln320Ter",
+     "hgvsc": "c.958C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "FKRP",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 217,
+   "q": 0.0005818990750306056,
+   "carrierFreq": 0.0011634595435277006,
+   "top": [
+    {
+     "id": "19-46756228-G-T",
+     "hgvsp": "p.Glu260Ter",
+     "hgvsc": "c.778G>T",
+     "ac": 1,
+     "an": 4782,
+     "af": 0.00020911752404851526,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-46756185-GC-G",
+     "hgvsp": "p.Pro247ArgfsTer30",
+     "hgvsc": "c.740del",
+     "ac": 1,
+     "an": 5144,
+     "af": 0.00019440124416796267,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "19-46756391-C-T",
+     "hgvsp": "p.Thr314Met",
+     "hgvsc": "c.941C>T",
+     "ac": 1,
+     "an": 5606,
+     "af": 0.00017838030681412772,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "FKTN",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 167,
+   "q": 0.00021285653469561516,
+   "carrierFreq": 0.000425667761486892,
+   "top": [
+    {
+     "id": "9-105604251-C-T",
+     "hgvsp": "p.Gln136Ter",
+     "hgvsc": "c.406C>T",
+     "ac": 1,
+     "an": 4698,
+     "af": 0.00021285653469561516,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "FMO3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 7,
+   "clinvarPLP": 113,
+   "q": 0.0018759587444509686,
+   "carrierFreq": 0.003748398267691133,
+   "top": [
+    {
+     "id": "1-171114360-AG-A",
+     "hgvsp": null,
+     "hgvsc": "c.1183+1del",
+     "ac": 4,
+     "an": 5764,
+     "af": 0.0006939625260235947,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-171114316-TCC-T",
+     "hgvsp": "p.Pro380HisfsTer3",
+     "hgvsc": "c.1139_1140del",
+     "ac": 2,
+     "an": 6080,
+     "af": 0.0003289473684210526,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-171092791-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.132+1G>A",
+     "ac": 1,
+     "an": 5648,
+     "af": 0.00017705382436260624,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "1-171107680-TG-T",
+     "hgvsp": "p.Val110TyrfsTer4",
+     "hgvsc": "c.328del",
+     "ac": 1,
+     "an": 5760,
+     "af": 0.00017361111111111112,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "1-171110882-C-T",
+     "hgvsp": "p.Arg238Ter",
+     "hgvsc": "c.712C>T",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-171107723-C-T",
+     "hgvsp": "p.Gln124Ter",
+     "hgvsc": "c.370C>T",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-171107811-C-T",
+     "hgvsp": "p.Pro153Leu",
+     "hgvsc": "c.458C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "FMR1",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 16,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "FXN",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 21,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "G6PC1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 157,
+   "q": 0.0004932587964485367,
+   "carrierFreq": 0.0009862742886568299,
+   "top": [
+    {
+     "id": "17-42903947-C-T",
+     "hgvsp": "p.Arg83Cys",
+     "hgvsc": "c.247C>T",
+     "ac": 3,
+     "an": 6082,
+     "af": 0.0004932587964485367,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "G6PD",
+   "inheritance": "XL",
+   "plpWithMidCounts": 10,
+   "clinvarPLP": 225,
+   "q": 0.053779868450279905,
+   "carrierFreq": 0.10755973690055981,
+   "top": [
+    {
+     "id": "X-154534419-G-A",
+     "hgvsp": "p.Ser188Phe",
+     "hgvsc": "c.563C>T",
+     "ac": 183,
+     "an": 4353,
+     "af": 0.04203997243280496,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154536002-C-T",
+     "hgvsp": "p.Val68Met",
+     "hgvsc": "c.202G>A",
+     "ac": 19,
+     "an": 4354,
+     "af": 0.004363803399173174,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154536156-A-G",
+     "hgvsp": "p.Ile48Thr",
+     "hgvsc": "c.143T>C",
+     "ac": 10,
+     "an": 4355,
+     "af": 0.002296211251435132,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154532990-C-T",
+     "hgvsp": "p.Ala335Thr",
+     "hgvsc": "c.1003G>A",
+     "ac": 9,
+     "an": 4352,
+     "af": 0.002068014705882353,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154533044-C-T",
+     "hgvsp": "p.Glu317Lys",
+     "hgvsc": "c.949G>A",
+     "ac": 6,
+     "an": 4355,
+     "af": 0.0013777267508610792,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154535270-A-C",
+     "hgvsp": "p.Leu128Arg",
+     "hgvsc": "c.383T>G",
+     "ac": 2,
+     "an": 4115,
+     "af": 0.0004860267314702309,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154532269-C-G",
+     "hgvsp": "p.Arg459Pro",
+     "hgvsc": "c.1376G>C",
+     "ac": 2,
+     "an": 4368,
+     "af": 0.0004578754578754579,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154532257-C-T",
+     "hgvsp": "p.Arg463His",
+     "hgvsc": "c.1388G>A",
+     "ac": 1,
+     "an": 4340,
+     "af": 0.0002304147465437788,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154532390-G-A",
+     "hgvsp": "p.Arg454Cys",
+     "hgvsc": "c.1360C>T",
+     "ac": 1,
+     "an": 4349,
+     "af": 0.00022993791676247414,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "X-154533596-C-G",
+     "hgvsp": "p.Asp282His",
+     "hgvsc": "c.844G>C",
+     "ac": 1,
+     "an": 4350,
+     "af": 0.00022988505747126436,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "GAA",
+   "inheritance": "AR",
+   "plpWithMidCounts": 11,
+   "clinvarPLP": 874,
+   "q": 0.0035464612394626414,
+   "carrierFreq": 0.00708034509160238,
+   "top": [
+    {
+     "id": "17-80104542-T-G",
+     "hgvsp": null,
+     "hgvsc": "c.-32-13T>G",
+     "ac": 6,
+     "an": 5138,
+     "af": 0.0011677695601401323,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80112929-G-A",
+     "hgvsp": "p.Gly648Ser",
+     "hgvsc": "c.1942G>A",
+     "ac": 4,
+     "an": 6044,
+     "af": 0.0006618133686300463,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80113282-G-A",
+     "hgvsp": "p.Arg702His",
+     "hgvsc": "c.2105G>A",
+     "ac": 2,
+     "an": 6058,
+     "af": 0.0003301419610432486,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80107863-C-G",
+     "hgvsp": "p.His308Asp",
+     "hgvsc": "c.922C>G",
+     "ac": 1,
+     "an": 5374,
+     "af": 0.00018608113137327876,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "17-80105872-C-T",
+     "hgvsp": "p.Arg224Trp",
+     "hgvsc": "c.670C>T",
+     "ac": 1,
+     "an": 5384,
+     "af": 0.00018573551263001485,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80113002-G-A",
+     "hgvsp": "p.Arg672Gln",
+     "hgvsc": "c.2015G>A",
+     "ac": 1,
+     "an": 5758,
+     "af": 0.0001736714136853074,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80108398-T-C",
+     "hgvsp": "p.Leu355Pro",
+     "hgvsc": "c.1064T>C",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80108612-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.1194+5G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80110015-T-G",
+     "hgvsp": "p.Val466Gly",
+     "hgvsc": "c.1397T>G",
+     "ac": 1,
+     "an": 6054,
+     "af": 0.00016518004625041294,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "17-80117016-G-C",
+     "hgvsp": "p.Trp746Cys",
+     "hgvsc": "c.2238G>C",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-80110826-G-A",
+     "hgvsp": "p.Asp513Asn",
+     "hgvsc": "c.1537G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "GALNT3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 59,
+   "q": 0.00037253521749315983,
+   "carrierFreq": 0.0007449316524980043,
+   "top": [
+    {
+     "id": "2-165762056-T-C",
+     "hgvsp": null,
+     "hgvsc": "c.689-2A>G",
+     "ac": 1,
+     "an": 5024,
+     "af": 0.00019904458598726116,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-165761976-C-A",
+     "hgvsp": "p.Gly256Val",
+     "hgvsc": "c.767G>T",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "GALT",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 316,
+   "q": 0.0010424276893942416,
+   "carrierFreq": 0.0020837687233008495,
+   "top": [
+    {
+     "id": "9-34648849-C-T",
+     "hgvsp": "p.Arg259Trp",
+     "hgvsc": "c.775C>T",
+     "ac": 3,
+     "an": 5682,
+     "af": 0.0005279831045406547,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-34648907-A-G",
+     "hgvsp": null,
+     "hgvsc": "c.820+13A>G",
+     "ac": 1,
+     "an": 5708,
+     "af": 0.0001751927119831815,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-34648765-C-T",
+     "hgvsp": "p.Arg231Cys",
+     "hgvsc": "c.691C>T",
+     "ac": 1,
+     "an": 5718,
+     "af": 0.00017488632388947185,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-34648359-A-G",
+     "hgvsp": "p.Asp197Gly",
+     "hgvsc": "c.590A>G",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "GBA1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 333,
+   "q": 0.0028328556135718665,
+   "carrierFreq": 0.005657686156216313,
+   "top": [
+    {
+     "id": "1-155238519-T-G",
+     "hgvsp": "p.Lys196Gln",
+     "hgvsc": "c.586A>C",
+     "ac": 6,
+     "an": 6042,
+     "af": 0.0009930486593843098,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "1-155235843-T-C",
+     "hgvsp": "p.Asn409Ser",
+     "hgvsc": "c.1226A>G",
+     "ac": 5,
+     "an": 6062,
+     "af": 0.0008248102936324645,
+     "sig": "Pathogenic/Likely pathogenic; risk factor",
+     "stars": 2
+    },
+    {
+     "id": "1-155238587-G-T",
+     "hgvsp": "p.Thr173Asn",
+     "hgvsc": "c.518C>A",
+     "ac": 3,
+     "an": 5762,
+     "af": 0.0005206525511975009,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "1-155239934-G-A",
+     "hgvsp": "p.Arg87Trp",
+     "hgvsc": "c.259C>T",
+     "ac": 1,
+     "an": 6060,
+     "af": 0.00016501650165016502,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-155235727-C-G",
+     "hgvsp": "p.Asp448His",
+     "hgvsc": "c.1342G>C",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-155239968-GGTA-G",
+     "hgvsp": "p.Thr75del",
+     "hgvsc": "c.222_224del",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "GBE1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 249,
+   "q": 0.0003519472832101641,
+   "carrierFreq": 0.000703770699530204,
+   "top": [
+    {
+     "id": "3-81648854-A-G",
+     "hgvsp": null,
+     "hgvsc": "c.691+2T>C",
+     "ac": 1,
+     "an": 5370,
+     "af": 0.00018621973929236498,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-81646466-C-G",
+     "hgvsp": "p.Gln236His",
+     "hgvsc": "c.708G>C",
+     "ac": 1,
+     "an": 6034,
+     "af": 0.00016572754391779913,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "GCDH",
+   "inheritance": "AR",
+   "plpWithMidCounts": 9,
+   "clinvarPLP": 322,
+   "q": 0.001698743970579681,
+   "carrierFreq": 0.0033946022100818096,
+   "top": [
+    {
+     "id": "19-12896275-T-C",
+     "hgvsp": "p.Phe236Leu",
+     "hgvsc": "c.706T>C",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12896372-G-T",
+     "hgvsp": "p.Gly268Val",
+     "hgvsc": "c.803G>T",
+     "ac": 1,
+     "an": 5758,
+     "af": 0.0001736714136853074,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12892145-G-A",
+     "hgvsp": "p.Gly101Arg",
+     "hgvsc": "c.301G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12893629-C-T",
+     "hgvsp": "p.Arg161Trp",
+     "hgvsc": "c.481C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12897825-G-A",
+     "hgvsp": "p.Arg402Gln",
+     "hgvsc": "c.1205G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12897833-A-G",
+     "hgvsp": "p.Met405Val",
+     "hgvsc": "c.1213A>G",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12891381-CG-C",
+     "hgvsp": "p.Ala27ArgfsTer34",
+     "hgvsc": "c.79del",
+     "ac": 1,
+     "an": 6078,
+     "af": 0.00016452780519907864,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12897788-G-C",
+     "hgvsp": "p.Gly390Arg",
+     "hgvsc": "c.1168G>C",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12897824-C-T",
+     "hgvsp": "p.Arg402Trp",
+     "hgvsc": "c.1204C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "GJB2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 12,
+   "clinvarPLP": 243,
+   "q": 0.009279778753056418,
+   "carrierFreq": 0.01847344321240718,
+   "top": [
+    {
+     "id": "13-20189546-AC-A",
+     "hgvsp": "p.Gly12ValfsTer2",
+     "hgvsc": "c.35del",
+     "ac": 25,
+     "an": 6058,
+     "af": 0.004126774513040607,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "13-20189473-C-T",
+     "hgvsp": "p.Val37Ile",
+     "hgvsc": "c.109G>A",
+     "ac": 11,
+     "an": 6058,
+     "af": 0.0018157807857378673,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "13-20189313-A-G",
+     "hgvsp": "p.Leu90Pro",
+     "hgvsc": "c.269T>C",
+     "ac": 4,
+     "an": 6084,
+     "af": 0.0006574621959237344,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-20189076-C-T",
+     "hgvsp": "p.Cys169Tyr",
+     "hgvsc": "c.506G>A",
+     "ac": 3,
+     "an": 5768,
+     "af": 0.0005201109570041609,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-20189414-CA-C",
+     "hgvsp": "p.Leu56ArgfsTer26",
+     "hgvsc": "c.167del",
+     "ac": 3,
+     "an": 6078,
+     "af": 0.0004935834155972359,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "13-20189031-C-G",
+     "hgvsp": "p.Arg184Pro",
+     "hgvsc": "c.551G>C",
+     "ac": 3,
+     "an": 6084,
+     "af": 0.0004930966469428008,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-20189605-T-G",
+     "hgvsp": null,
+     "hgvsc": "c.-22-2A>C",
+     "ac": 2,
+     "an": 5716,
+     "af": 0.0003498950314905528,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "13-20188999-T-C",
+     "hgvsp": "p.Met195Val",
+     "hgvsc": "c.583A>G",
+     "ac": 1,
+     "an": 6060,
+     "af": 0.00016501650165016502,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "13-20189174-G-T",
+     "hgvsp": "p.Tyr136Ter",
+     "hgvsc": "c.408C>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-20189221-TCTC-T",
+     "hgvsp": "p.Glu120del",
+     "hgvsc": "c.358_360del",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-20189246-CTT-C",
+     "hgvsp": "p.Lys112GlufsTer2",
+     "hgvsc": "c.334_335del",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "13-20189522-A-C",
+     "hgvsp": "p.Ile20Met",
+     "hgvsc": "c.60T>G",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "GLA",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 1170,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "GLB1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 7,
+   "clinvarPLP": 322,
+   "q": 0.001371059921278069,
+   "carrierFreq": 0.002740240037248376,
+   "top": [
+    {
+     "id": "3-33058220-C-T",
+     "hgvsp": "p.Arg201His",
+     "hgvsc": "c.602G>A",
+     "ac": 2,
+     "an": 6062,
+     "af": 0.0003299241174529858,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-33072543-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.245+1G>A",
+     "ac": 1,
+     "an": 5226,
+     "af": 0.00019135093761959434,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-33046150-C-G",
+     "hgvsp": "p.Lys346Asn",
+     "hgvsc": "c.1038G>C",
+     "ac": 1,
+     "an": 5494,
+     "af": 0.00018201674554058973,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-33068940-C-T",
+     "hgvsp": "p.Trp92Ter",
+     "hgvsc": "c.276G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-33018470-C-T",
+     "hgvsp": "p.Arg442Gln",
+     "hgvsc": "c.1325G>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-33058221-G-A",
+     "hgvsp": "p.Arg201Cys",
+     "hgvsc": "c.601C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-33068245-G-A",
+     "hgvsp": "p.Arg148Cys",
+     "hgvsc": "c.442C>T",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "GNPTAB",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 468,
+   "q": 0.0008235619746327998,
+   "carrierFreq": 0.0016464456949396578,
+   "top": [
+    {
+     "id": "12-101753469-TGA-T",
+     "hgvsp": "p.Leu1168GlnfsTer5",
+     "hgvsc": "c.3503_3504del",
+     "ac": 2,
+     "an": 6062,
+     "af": 0.0003299241174529858,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-101770519-G-A",
+     "hgvsp": "p.Arg334Ter",
+     "hgvsc": "c.1000C>T",
+     "ac": 2,
+     "an": 6074,
+     "af": 0.00032927230819888045,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-101761346-C-CATAT",
+     "hgvsp": "p.Met972IlefsTer5",
+     "hgvsc": "c.2916-1_2916insATAT",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "GRIP1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 50,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "HBA1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 116,
+   "q": 0.006088020769904483,
+   "carrierFreq": 0.012138977542914153,
+   "top": [
+    {
+     "id": "16-176808-AGAGGT-A",
+     "hgvsp": null,
+     "hgvsc": "c.95+2_95+6del",
+     "ac": 14,
+     "an": 4294,
+     "af": 0.0032603632976245926,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-177340-C-T",
+     "hgvsp": "p.Pro120Ser",
+     "hgvsc": "c.358C>T",
+     "ac": 8,
+     "an": 6084,
+     "af": 0.0013149243918474688,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-177307-AC-A",
+     "hgvsp": "p.Leu110TrpfsTer24",
+     "hgvsc": "c.328del",
+     "ac": 4,
+     "an": 5768,
+     "af": 0.0006934812760055479,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-176945-CCCA-C",
+     "hgvsp": "p.Thr40del",
+     "hgvsc": "c.119_121del",
+     "ac": 1,
+     "an": 3256,
+     "af": 0.0003071253071253071,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-176927-A-G",
+     "hgvsp": null,
+     "hgvsc": "c.96-2A>G",
+     "ac": 1,
+     "an": 3424,
+     "af": 0.0002920560747663551,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-176775-CG-C",
+     "hgvsp": "p.His21ThrfsTer29",
+     "hgvsc": "c.60del",
+     "ac": 1,
+     "an": 4544,
+     "af": 0.00022007042253521127,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "HBA2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 8,
+   "clinvarPLP": 156,
+   "q": 0.020828610152375655,
+   "carrierFreq": 0.041223389303871705,
+   "top": [
+    {
+     "id": "16-173004-AGAGGT-A",
+     "hgvsp": null,
+     "hgvsc": "c.95+2_95+6del",
+     "ac": 34,
+     "an": 1946,
+     "af": 0.017471736896197326,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "16-172971-CG-C",
+     "hgvsp": "p.His21ThrfsTer29",
+     "hgvsc": "c.60del",
+     "ac": 2,
+     "an": 1780,
+     "af": 0.0011235955056179776,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-173312-G-T",
+     "hgvsp": "p.Asp95Tyr",
+     "hgvsc": "c.283G>T",
+     "ac": 3,
+     "an": 4098,
+     "af": 0.0007320644216691069,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-173146-C-CT",
+     "hgvsp": "p.Thr40TyrfsTer18",
+     "hgvsc": "c.117_118insT",
+     "ac": 1,
+     "an": 2554,
+     "af": 0.00039154267815191856,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "16-173148-C-CTT",
+     "hgvsp": "p.Lys41SerfsTer10",
+     "hgvsc": "c.119_120insTT",
+     "ac": 1,
+     "an": 2570,
+     "af": 0.0003891050583657588,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "16-173149-CAAGA-C",
+     "hgvsp": "p.Lys41ProfsTer8",
+     "hgvsc": "c.121_124del",
+     "ac": 1,
+     "an": 2578,
+     "af": 0.0003878975950349108,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "16-173526-AC-A",
+     "hgvsp": "p.Pro120LeufsTer14",
+     "hgvsc": "c.359del",
+     "ac": 1,
+     "an": 6012,
+     "af": 0.00016633399866932801,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "16-173598-T-C",
+     "hgvsp": "p.Ter143GlnextTer31",
+     "hgvsc": "c.427T>C",
+     "ac": 1,
+     "an": 6012,
+     "af": 0.00016633399866932801,
      "sig": "Pathogenic",
      "stars": 3
     }
@@ -209,6 +4747,2834 @@
      "af": 0.00033057851239669424,
      "sig": "Pathogenic",
      "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "HEXA",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 320,
+   "q": 0.0006599666064083726,
+   "carrierFreq": 0.0013194976568950967,
+   "top": [
+    {
+     "id": "15-72375971-A-G",
+     "hgvsp": "p.Met1?",
+     "hgvsc": "c.2T>C",
+     "ac": 2,
+     "an": 6038,
+     "af": 0.0003312355084465055,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-72345461-C-T",
+     "hgvsp": "p.Arg504His",
+     "hgvsc": "c.1511G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-72345476-C-T",
+     "hgvsp": "p.Arg499His",
+     "hgvsc": "c.1496G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "HPS1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 220,
+   "q": 0.000683727997108854,
+   "carrierFreq": 0.0013669885102436385,
+   "top": [
+    {
+     "id": "10-98427229-T-TG",
+     "hgvsp": "p.Met325HisfsTer128",
+     "hgvsc": "c.972dup",
+     "ac": 2,
+     "an": 5936,
+     "af": 0.00033692722371967657,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "10-98425956-AACCAGTGTTTGGAGGGTGTCCTCTGCTATCTACAGAGGAAGAAGAGCTGCAGTGAGAGGTGGGATCCCTAAGT-A",
+     "hgvsp": null,
+     "hgvsc": "c.988-44_1016del",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "10-98425949-AGTGGGG-A",
+     "hgvsp": "p.Pro340_His341del",
+     "hgvsc": "c.1018_1023del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "HPS3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 375,
+   "q": 0.000709293772152553,
+   "carrierFreq": 0.0014180844466499254,
+   "top": [
+    {
+     "id": "3-149163939-C-A",
+     "hgvsp": "p.Ser860Ter",
+     "hgvsc": "c.2579C>A",
+     "ac": 1,
+     "an": 5296,
+     "af": 0.00018882175226586103,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "3-149158752-G-A",
+     "hgvsp": "p.Trp593Ter",
+     "hgvsc": "c.1778G>A",
+     "ac": 1,
+     "an": 5760,
+     "af": 0.00017361111111111112,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-149145503-C-T",
+     "hgvsp": "p.Gln374Ter",
+     "hgvsc": "c.1120C>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "3-149162791-CTT-C",
+     "hgvsp": "p.Phe800GlnfsTer12",
+     "hgvsc": "c.2398_2399del",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "IDUA",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 461,
+   "q": 0.0005966706986441888,
+   "carrierFreq": 0.0011929853813658076,
+   "top": [
+    {
+     "id": "4-1002752-G-T",
+     "hgvsp": "p.Glu404Ter",
+     "hgvsc": "c.1210G>T",
+     "ac": 1,
+     "an": 3930,
+     "af": 0.0002544529262086514,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "4-1002145-C-T",
+     "hgvsp": "p.Ala319Val",
+     "hgvsc": "c.956C>T",
+     "ac": 1,
+     "an": 5682,
+     "af": 0.00017599436818021823,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "4-987916-G-A",
+     "hgvsp": "p.Arg89Gln",
+     "hgvsc": "c.266G>A",
+     "ac": 1,
+     "an": 6016,
+     "af": 0.00016622340425531914,
+     "sig": "Pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "INPP5E",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 85,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "ITGB3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 190,
+   "q": 0.00034674063800277393,
+   "carrierFreq": 0.0006933610469355145,
+   "top": [
+    {
+     "id": "17-47284586-C-T",
+     "hgvsp": "p.Arg169Ter",
+     "hgvsc": "c.505C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "17-47302736-ATGCAGTGAATT-A",
+     "hgvsp": "p.Asp677GlufsTer4",
+     "hgvsc": "c.2031_2041del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "KCNV2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 91,
+   "q": 0.0005158024874954297,
+   "carrierFreq": 0.0010313389227846192,
+   "top": [
+    {
+     "id": "9-2719100-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.1356+5G>A",
+     "ac": 1,
+     "an": 5704,
+     "af": 0.0001753155680224404,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "9-2718166-G-T",
+     "hgvsp": "p.Glu143Ter",
+     "hgvsc": "c.427G>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "9-2718302-G-A",
+     "hgvsp": "p.Trp188Ter",
+     "hgvsc": "c.563G>A",
+     "ac": 1,
+     "an": 5986,
+     "af": 0.0001670564650851988,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "L1CAM",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 209,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "LIFR",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 172,
+   "q": 0.00017337031900138697,
+   "carrierFreq": 0.000346710580735321,
+   "top": [
+    {
+     "id": "5-38511872-C-CA",
+     "hgvsp": "p.Glu219GlyfsTer3",
+     "hgvsc": "c.653dup",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "LRP2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 274,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "MAN2B1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 387,
+   "q": 0.003988458697655249,
+   "carrierFreq": 0.007961009592527657,
+   "top": [
+    {
+     "id": "19-12649429-C-CTGGGGT",
+     "hgvsp": null,
+     "hgvsc": "c.2268-7_2268-2dup",
+     "ac": 1,
+     "an": 274,
+     "af": 0.0036496350364963502,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "19-12665750-T-A",
+     "hgvsp": "p.His72Leu",
+     "hgvsc": "c.215A>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-12656688-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.1528-1G>A",
+     "ac": 1,
+     "an": 6044,
+     "af": 0.00016545334215751158,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MCCC2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 197,
+   "q": 0.016857878418089875,
+   "carrierFreq": 0.03343156877142062,
+   "top": [
+    {
+     "id": "5-71641018-G-A",
+     "hgvsp": "p.Val339Met",
+     "hgvsc": "c.1015G>A",
+     "ac": 98,
+     "an": 6056,
+     "af": 0.01618229854689564,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-71604362-C-A",
+     "hgvsp": "p.Ser173Ter",
+     "hgvsc": "c.518C>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-71649132-A-G",
+     "hgvsp": "p.Ile418Val",
+     "hgvsc": "c.1252A>G",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "5-71596297-C-T",
+     "hgvsp": "p.Arg72Ter",
+     "hgvsc": "c.214C>T",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-71602585-C-T",
+     "hgvsp": "p.Arg155Trp",
+     "hgvsc": "c.463C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MCOLN1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 151,
+   "q": 0.00017337031900138697,
+   "carrierFreq": 0.000346710580735321,
+   "top": [
+    {
+     "id": "19-7526885-CG-C",
+     "hgvsp": "p.Ala178ProfsTer60",
+     "hgvsc": "c.532del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "MCPH1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 117,
+   "q": 0.0011664657751068262,
+   "carrierFreq": 0.0023315709078091107,
+   "top": [
+    {
+     "id": "8-6431577-T-TA",
+     "hgvsp": "p.Arg108ThrfsTer2",
+     "hgvsc": "c.321dup",
+     "ac": 2,
+     "an": 6004,
+     "af": 0.00033311125916055963,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-6445043-C-T",
+     "hgvsp": "p.Gln441Ter",
+     "hgvsc": "c.1321C>T",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "8-6444762-C-A",
+     "hgvsp": "p.Ser347Ter",
+     "hgvsc": "c.1040C>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "8-6431577-TA-T",
+     "hgvsp": "p.Lys107AsnfsTer39",
+     "hgvsc": "c.321del",
+     "ac": 1,
+     "an": 5994,
+     "af": 0.0001668335001668335,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-6439078-G-GA",
+     "hgvsp": "p.Asn189LysfsTer15",
+     "hgvsc": "c.566dup",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MEFV",
+   "inheritance": "AR",
+   "plpWithMidCounts": 7,
+   "clinvarPLP": 22,
+   "q": 0.023254441698826882,
+   "carrierFreq": 0.045968114338929555,
+   "top": [
+    {
+     "id": "16-3243310-A-G",
+     "hgvsp": "p.Val726Ala",
+     "hgvsc": "c.2177T>C",
+     "ac": 75,
+     "an": 6062,
+     "af": 0.012372154404486968,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-3243407-T-C",
+     "hgvsp": "p.Met694Val",
+     "hgvsc": "c.2080A>G",
+     "ac": 28,
+     "an": 6062,
+     "af": 0.004618937644341801,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-3243447-C-G",
+     "hgvsp": "p.Met680Ile",
+     "hgvsc": "c.2040G>C",
+     "ac": 12,
+     "an": 6062,
+     "af": 0.001979544704717915,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-3243405-C-T",
+     "hgvsp": "p.Met694Ile",
+     "hgvsc": "c.2082G>A",
+     "ac": 11,
+     "an": 6062,
+     "af": 0.001814582645991422,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-3243447-C-T",
+     "hgvsp": "p.Met680Ile",
+     "hgvsc": "c.2040G>A",
+     "ac": 6,
+     "an": 6084,
+     "af": 0.0009861932938856016,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-3243205-C-T",
+     "hgvsp": "p.Arg761His",
+     "hgvsc": "c.2282G>A",
+     "ac": 5,
+     "an": 6074,
+     "af": 0.0008231807704972012,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-3243529-C-T",
+     "hgvsp": "p.Arg653His",
+     "hgvsc": "c.1958G>A",
+     "ac": 4,
+     "an": 6062,
+     "af": 0.0006598482349059716,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MERTK",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 128,
+   "q": 0.0005286642739353963,
+   "carrierFreq": 0.00105704906195625,
+   "top": [
+    {
+     "id": "2-112021445-GT-G",
+     "hgvsp": "p.Cys738TrpfsTer32",
+     "hgvsc": "c.2214del",
+     "ac": 2,
+     "an": 5490,
+     "af": 0.00036429872495446266,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-112028394-C-T",
+     "hgvsp": "p.Arg844Cys",
+     "hgvsc": "c.2530C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MID1",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 69,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "MLC1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 132,
+   "q": 0.00033046926635822867,
+   "carrierFreq": 0.000660829322780554,
+   "top": [
+    {
+     "id": "22-50079917-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.423+1G>A",
+     "ac": 2,
+     "an": 6052,
+     "af": 0.00033046926635822867,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MMACHC",
+   "inheritance": "AR",
+   "plpWithMidCounts": 8,
+   "clinvarPLP": 173,
+   "q": 0.003157716729806204,
+   "carrierFreq": 0.006305462284666774,
+   "top": [
+    {
+     "id": "1-45507544-T-TA",
+     "hgvsp": "p.Arg91LysfsTer14",
+     "hgvsc": "c.271dup",
+     "ac": 8,
+     "an": 6060,
+     "af": 0.0013201320132013201,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-45508806-G-C",
+     "hgvsp": "p.Gly147Ala",
+     "hgvsc": "c.440G>C",
+     "ac": 3,
+     "an": 6060,
+     "af": 0.0004950495049504951,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-45509051-C-T",
+     "hgvsp": "p.Gln229Ter",
+     "hgvsc": "c.685C>T",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-45508983-G-A",
+     "hgvsp": "p.Arg206Gln",
+     "hgvsc": "c.617G>A",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-45508932-G-A",
+     "hgvsp": "p.Arg189His",
+     "hgvsc": "c.566G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-45508909-CTG-C",
+     "hgvsp": "p.Val183ThrfsTer5",
+     "hgvsc": "c.547_548del",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-45508981-C-A",
+     "hgvsp": "p.Tyr205Ter",
+     "hgvsc": "c.615C>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-45508982-C-T",
+     "hgvsp": "p.Arg206Trp",
+     "hgvsc": "c.616C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MMUT",
+   "inheritance": "AR",
+   "plpWithMidCounts": 12,
+   "clinvarPLP": 402,
+   "q": 0.002532065342213137,
+   "carrierFreq": 0.005057719329529142,
+   "top": [
+    {
+     "id": "6-49451724-T-C",
+     "hgvsp": null,
+     "hgvsc": "c.1084-10A>G",
+     "ac": 3,
+     "an": 6082,
+     "af": 0.0004932587964485367,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-49447766-T-TC",
+     "hgvsp": "p.Val489SerfsTer3",
+     "hgvsc": "c.1463dup",
+     "ac": 2,
+     "an": 5746,
+     "af": 0.0003480682213713888,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-49444745-TG-T",
+     "hgvsp": "p.Ser524AlafsTer14",
+     "hgvsc": "c.1569del",
+     "ac": 1,
+     "an": 5756,
+     "af": 0.00017373175816539263,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-49440291-T-C",
+     "hgvsp": "p.Gln624Arg",
+     "hgvsc": "c.1871A>G",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-49440324-C-A",
+     "hgvsp": "p.Arg613Leu",
+     "hgvsc": "c.1838G>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-49459319-G-A",
+     "hgvsp": "p.Gln50Ter",
+     "hgvsc": "c.148C>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-49458050-G-A",
+     "hgvsp": "p.Gln132Ter",
+     "hgvsc": "c.394C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-49440319-G-T",
+     "hgvsp": "p.Pro615Thr",
+     "hgvsc": "c.1843C>A",
+     "ac": 1,
+     "an": 6060,
+     "af": 0.00016501650165016502,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-49441907-G-A",
+     "hgvsp": "p.Arg581Ter",
+     "hgvsc": "c.1741C>T",
+     "ac": 1,
+     "an": 6068,
+     "af": 0.00016479894528675015,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-49453627-TAGA-T",
+     "hgvsp": "p.Leu347del",
+     "hgvsc": "c.1038_1040del",
+     "ac": 1,
+     "an": 6074,
+     "af": 0.00016463615409944023,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-49451692-C-T",
+     "hgvsp": "p.Arg369His",
+     "hgvsc": "c.1106G>A",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-49451590-C-T",
+     "hgvsp": "p.Arg403Gln",
+     "hgvsc": "c.1208G>A",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MPL",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 276,
+   "q": 0.0008494385647115875,
+   "carrierFreq": 0.0016981555835478002,
+   "top": [
+    {
+     "id": "1-43352768-C-T",
+     "hgvsp": "p.Pro635Leu",
+     "hgvsc": "c.1904C>T",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-43338696-C-T",
+     "hgvsp": "p.Arg123Ter",
+     "hgvsc": "c.367C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-43338704-CT-C",
+     "hgvsp": "p.Phe126LeufsTer5",
+     "hgvsc": "c.378del",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-43338563-CCT-C",
+     "hgvsp": "p.Leu79GlufsTer84",
+     "hgvsc": "c.235_236del",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MVK",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 110,
+   "q": 0.0023173963538832194,
+   "carrierFreq": 0.004629422381905335,
+   "top": [
+    {
+     "id": "12-109596515-G-A",
+     "hgvsp": "p.Val377Ile",
+     "hgvsc": "c.1129G>A",
+     "ac": 13,
+     "an": 6038,
+     "af": 0.0021530308049022857,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "12-109586107-A-G",
+     "hgvsp": "p.Asn205Asp",
+     "hgvsc": "c.613A>G",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "MYO7A",
+   "inheritance": "AR",
+   "plpWithMidCounts": 8,
+   "clinvarPLP": 948,
+   "q": 0.0015284692717634767,
+   "carrierFreq": 0.0030546023252121524,
+   "top": [
+    {
+     "id": "11-77208777-G-A",
+     "hgvsp": "p.Ala2009Thr",
+     "hgvsc": "c.6025G>A",
+     "ac": 2,
+     "an": 5722,
+     "af": 0.0003495281370150297,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-77204177-A-T",
+     "hgvsp": "p.Lys1810Ter",
+     "hgvsc": "c.5428A>T",
+     "ac": 1,
+     "an": 5748,
+     "af": 0.00017397355601948505,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-77161030-A-T",
+     "hgvsp": "p.Lys420Ter",
+     "hgvsc": "c.1258A>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-77166102-GCTGGTCCA-G",
+     "hgvsp": "p.Val581LeufsTer28",
+     "hgvsc": "c.1740_1747del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-77156018-C-A",
+     "hgvsp": "p.His133Asn",
+     "hgvsc": "c.397C>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "11-77166073-C-T",
+     "hgvsp": "p.Arg570Ter",
+     "hgvsc": "c.1708C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-77205598-C-T",
+     "hgvsp": "p.Arg1873Trp",
+     "hgvsc": "c.5617C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-77181548-G-A",
+     "hgvsp": "p.Gly955Ser",
+     "hgvsc": "c.2863G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "NAGA",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 59,
+   "q": 0.00017337031900138697,
+   "carrierFreq": 0.000346710580735321,
+   "top": [
+    {
+     "id": "22-42067932-G-A",
+     "hgvsp": "p.Gln53Ter",
+     "hgvsc": "c.157C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "NCF1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 11,
+   "q": 0.0024830699774266367,
+   "carrierFreq": 0.004959974318340499,
+   "top": [
+    {
+     "id": "7-74783529-G-A",
+     "hgvsp": "p.Trp193Ter",
+     "hgvsc": "c.579G>A",
+     "ac": 11,
+     "an": 4430,
+     "af": 0.0024830699774266367,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "NEB",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 1622,
+   "q": 0.0018619599968845092,
+   "carrierFreq": 0.0037204530987391404,
+   "top": [
+    {
+     "id": "2-151610867-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.11806-1G>A",
+     "ac": 5,
+     "an": 5688,
+     "af": 0.0008790436005625879,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-151617470-T-A",
+     "hgvsp": null,
+     "hgvsc": "c.11077-2A>T",
+     "ac": 1,
+     "an": 3468,
+     "af": 0.0002883506343713956,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "2-151575779-C-T",
+     "hgvsp": "p.Trp5643Ter",
+     "hgvsc": "c.16929G>A",
+     "ac": 1,
+     "an": 5750,
+     "af": 0.00017391304347826088,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "2-151494189-ACT-A",
+     "hgvsp": "p.Arg8183SerfsTer9",
+     "hgvsc": "c.24549_24550del",
+     "ac": 1,
+     "an": 5758,
+     "af": 0.0001736714136853074,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-151656263-G-A",
+     "hgvsp": "p.Gln2129Ter",
+     "hgvsc": "c.6385C>T",
+     "ac": 1,
+     "an": 5762,
+     "af": 0.00017355085039916696,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-151492234-TG-T",
+     "hgvsp": "p.Pro8307GlnfsTer3",
+     "hgvsc": "c.24920del",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "NPHS1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 466,
+   "q": 0.0006636827568053313,
+   "carrierFreq": 0.0013269250388089349,
+   "top": [
+    {
+     "id": "19-35831056-G-A",
+     "hgvsp": "p.Arg1160Ter",
+     "hgvsc": "c.3478C>T",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-35849274-G-A",
+     "hgvsp": "p.Arg268Ter",
+     "hgvsc": "c.802C>T",
+     "ac": 1,
+     "an": 5864,
+     "af": 0.00017053206002728513,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "19-35848102-C-T",
+     "hgvsp": "p.Arg460Gln",
+     "hgvsc": "c.1379G>A",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "NR0B1",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 100,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "OCA2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 7,
+   "clinvarPLP": 351,
+   "q": 0.0018309291193755429,
+   "carrierFreq": 0.003658505937310874,
+   "top": [
+    {
+     "id": "15-27871240-G-A",
+     "hgvsp": "p.Arg720Cys",
+     "hgvsc": "c.2158C>T",
+     "ac": 3,
+     "an": 6084,
+     "af": 0.0004930966469428008,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-27983340-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.1503+5G>A",
+     "ac": 2,
+     "an": 6042,
+     "af": 0.00033101621979476995,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-27957658-G-A",
+     "hgvsp": "p.Arg572Cys",
+     "hgvsc": "c.1714C>T",
+     "ac": 2,
+     "an": 6082,
+     "af": 0.0003288391976323578,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-27957675-CG-C",
+     "hgvsp": "p.Arg566AlafsTer62",
+     "hgvsc": "c.1696del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "15-28081698-G-GCTCT",
+     "hgvsp": "p.Ser59ArgfsTer33",
+     "hgvsc": "c.173_176dup",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-27986615-G-A",
+     "hgvsp": "p.Thr404Met",
+     "hgvsc": "c.1211C>T",
+     "ac": 1,
+     "an": 6028,
+     "af": 0.00016589250165892502,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-27989600-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.1182+1G>A",
+     "ac": 1,
+     "an": 6048,
+     "af": 0.00016534391534391533,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "OTC",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 240,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "PAH",
+   "inheritance": "AR",
+   "plpWithMidCounts": 29,
+   "clinvarPLP": 884,
+   "q": 0.016025286042721718,
+   "carrierFreq": 0.031793762292692374,
+   "top": [
+    {
+     "id": "12-102851701-C-A",
+     "hgvsp": "p.Ala300Ser",
+     "hgvsc": "c.898G>T",
+     "ac": 14,
+     "an": 6082,
+     "af": 0.0023018743834265043,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102855154-C-T",
+     "hgvsp": "p.Val230Ile",
+     "hgvsc": "c.688G>A",
+     "ac": 13,
+     "an": 6062,
+     "af": 0.002144506763444408,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102840507-G-A",
+     "hgvsp": "p.Ala403Val",
+     "hgvsc": "c.1208C>T",
+     "ac": 11,
+     "an": 6056,
+     "af": 0.0018163804491413474,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102843790-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.1066-11G>A",
+     "ac": 9,
+     "an": 6054,
+     "af": 0.0014866204162537165,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102843706-G-A",
+     "hgvsp": "p.Thr380Met",
+     "hgvsc": "c.1139C>T",
+     "ac": 8,
+     "an": 6056,
+     "af": 0.001321003963011889,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102855313-C-T",
+     "hgvsp": "p.Val177Met",
+     "hgvsc": "c.529G>A",
+     "ac": 6,
+     "an": 6082,
+     "af": 0.0009865175928970734,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102866599-C-T",
+     "hgvsp": "p.Arg169His",
+     "hgvsc": "c.506G>A",
+     "ac": 5,
+     "an": 6080,
+     "af": 0.0008223684210526315,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102852815-G-A",
+     "hgvsp": "p.Pro281Leu",
+     "hgvsc": "c.842C>T",
+     "ac": 4,
+     "an": 6080,
+     "af": 0.0006578947368421052,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102843676-T-C",
+     "hgvsp": "p.Glu390Gly",
+     "hgvsc": "c.1169A>G",
+     "ac": 3,
+     "an": 6080,
+     "af": 0.000493421052631579,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102912816-A-G",
+     "hgvsp": "p.Leu48Ser",
+     "hgvsc": "c.143T>C",
+     "ac": 3,
+     "an": 6080,
+     "af": 0.000493421052631579,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102894767-T-C",
+     "hgvsp": "p.His107Arg",
+     "hgvsc": "c.320A>G",
+     "ac": 2,
+     "an": 6062,
+     "af": 0.0003299241174529858,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "12-102877457-C-A",
+     "hgvsp": null,
+     "hgvsc": "c.441+5G>T",
+     "ac": 2,
+     "an": 6082,
+     "af": 0.0003288391976323578,
+     "sig": "Pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "PCDH15",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 525,
+   "q": 0.0013869625520110955,
+   "carrierFreq": 0.00277200143890155,
+   "top": [
+    {
+     "id": "10-53823117-A-ATACTT",
+     "hgvsp": "p.Ser1537LysfsTer15",
+     "hgvsc": "c.4604_4608dup",
+     "ac": 7,
+     "an": 5768,
+     "af": 0.0012135922330097086,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "10-53809339-G-A",
+     "hgvsp": "p.Gln505Ter",
+     "hgvsc": "c.1513C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "PKHD1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 11,
+   "clinvarPLP": 1607,
+   "q": 0.00218519697870063,
+   "carrierFreq": 0.004365618871565613,
+   "top": [
+    {
+     "id": "6-52024940-G-A",
+     "hgvsp": "p.Arg1624Trp",
+     "hgvsc": "c.4870C>T",
+     "ac": 3,
+     "an": 6084,
+     "af": 0.0004930966469428008,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-51659037-G-A",
+     "hgvsp": "p.Gln3697Ter",
+     "hgvsc": "c.11089C>T",
+     "ac": 1,
+     "an": 5762,
+     "af": 0.00017355085039916696,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-51659052-G-A",
+     "hgvsp": "p.Arg3692Ter",
+     "hgvsc": "c.11074C>T",
+     "ac": 1,
+     "an": 5762,
+     "af": 0.00017355085039916696,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-52046144-G-A",
+     "hgvsp": "p.Gln818Ter",
+     "hgvsc": "c.2452C>T",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-51753321-T-TG",
+     "hgvsp": "p.Ile2944HisfsTer6",
+     "hgvsc": "c.8829dup",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-52025821-AG-A",
+     "hgvsp": "p.Leu1330PhefsTer5",
+     "hgvsc": "c.3988del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-52060038-G-A",
+     "hgvsp": "p.Arg375Trp",
+     "hgvsc": "c.1123C>T",
+     "ac": 1,
+     "an": 6038,
+     "af": 0.00016561775422325274,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-51659682-G-A",
+     "hgvsp": "p.Arg3482Cys",
+     "hgvsc": "c.10444C>T",
+     "ac": 1,
+     "an": 6058,
+     "af": 0.0001650709805216243,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-51747926-AT-A",
+     "hgvsp": "p.Asp3230ValfsTer34",
+     "hgvsc": "c.9689del",
+     "ac": 1,
+     "an": 6058,
+     "af": 0.0001650709805216243,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-51632706-G-A",
+     "hgvsp": "p.Arg3842Ter",
+     "hgvsc": "c.11524C>T",
+     "ac": 1,
+     "an": 6076,
+     "af": 0.00016458196181698485,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-52024750-A-G",
+     "hgvsp": "p.Ile1687Thr",
+     "hgvsc": "c.5060T>C",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "PKLR",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 118,
+   "q": 0.0058309037900874635,
+   "carrierFreq": 0.011627808141165596,
+   "top": [
+    {
+     "id": "1-155291918-G-A",
+     "hgvsp": "p.Arg486Trp",
+     "hgvsc": "c.1456C>T",
+     "ac": 32,
+     "an": 5488,
+     "af": 0.0058309037900874635,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "PLP1",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 166,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "PMM2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 231,
+   "q": 0.0006728779309011009,
+   "carrierFreq": 0.001345303097092243,
+   "top": [
+    {
+     "id": "16-8811153-G-A",
+     "hgvsp": "p.Arg141His",
+     "hgvsc": "c.422G>A",
+     "ac": 2,
+     "an": 6016,
+     "af": 0.0003324468085106383,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-8847731-A-T",
+     "hgvsp": "p.Asn216Ile",
+     "hgvsc": "c.647A>T",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "16-8801911-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.178+1G>A",
+     "ac": 1,
+     "an": 5988,
+     "af": 0.00016700066800267202,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "POLG",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 463,
+   "q": 0.0008441091656990083,
+   "carrierFreq": 0.0016875058111143204,
+   "top": [
+    {
+     "id": "15-89319053-C-G",
+     "hgvsp": "p.Gly1051Arg",
+     "hgvsc": "c.3151G>C",
+     "ac": 3,
+     "an": 6062,
+     "af": 0.0004948861761794787,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "15-89333626-CT-C",
+     "hgvsp": "p.Gln43ArgfsTer223",
+     "hgvsc": "c.128del",
+     "ac": 1,
+     "an": 5726,
+     "af": 0.00017464198393293747,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "15-89333623-CTG-C",
+     "hgvsp": "p.Gln44AlafsTer199",
+     "hgvsc": "c.130_131del",
+     "ac": 1,
+     "an": 5728,
+     "af": 0.00017458100558659218,
+     "sig": "Pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "PRF1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 151,
+   "q": 0.0005177348556811761,
+   "carrierFreq": 0.0010352016619815663,
+   "top": [
+    {
+     "id": "10-70598599-C-T",
+     "hgvsp": "p.Trp374Ter",
+     "hgvsc": "c.1122G>A",
+     "ac": 2,
+     "an": 6078,
+     "af": 0.0003290556103981573,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "10-70600900-C-T",
+     "hgvsp": "p.Met1?",
+     "hgvsc": "c.3G>A",
+     "ac": 1,
+     "an": 5300,
+     "af": 0.00018867924528301886,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "QDPR",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 53,
+   "q": 0.0005127424856725425,
+   "carrierFreq": 0.0010252220664884737,
+   "top": [
+    {
+     "id": "4-17512002-C-T",
+     "hgvsp": "p.Gly18Asp",
+     "hgvsc": "c.53G>A",
+     "ac": 1,
+     "an": 5748,
+     "af": 0.00017397355601948505,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "4-17492328-T-C",
+     "hgvsp": "p.Tyr150Cys",
+     "hgvsc": "c.449A>G",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "4-17492262-G-A",
+     "hgvsp": "p.Pro172Leu",
+     "hgvsc": "c.515C>T",
+     "ac": 1,
+     "an": 6046,
+     "af": 0.00016539861065167054,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "RAG1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 167,
+   "q": 0.0008308325149251214,
+   "carrierFreq": 0.0016609747471824088,
+   "top": [
+    {
+     "id": "11-36573822-CT-C",
+     "hgvsp": "p.Glu174SerfsTer27",
+     "hgvsc": "c.519del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-36574491-G-A",
+     "hgvsp": "p.Arg396His",
+     "hgvsc": "c.1187G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "11-36575399-C-T",
+     "hgvsp": "p.Arg699Trp",
+     "hgvsc": "c.2095C>T",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "11-36576222-G-A",
+     "hgvsp": "p.Arg973His",
+     "hgvsc": "c.2918G>A",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-36576258-A-G",
+     "hgvsp": "p.Tyr985Cys",
+     "hgvsc": "c.2954A>G",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "RARS2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 240,
+   "q": 0.0006826933626146159,
+   "carrierFreq": 0.0013649206550018222,
+   "top": [
+    {
+     "id": "6-87589949-G-T",
+     "hgvsp": "p.Cys3Ter",
+     "hgvsc": "c.9C>A",
+     "ac": 1,
+     "an": 5554,
+     "af": 0.00018005041411595248,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-87514991-A-G",
+     "hgvsp": "p.Leu539Pro",
+     "hgvsc": "c.1616T>C",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "6-87518639-C-T",
+     "hgvsp": "p.Arg469His",
+     "hgvsc": "c.1406G>A",
+     "ac": 1,
+     "an": 6068,
+     "af": 0.00016479894528675015,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "6-87524566-TAG-T",
+     "hgvsp": "p.Tyr322CysfsTer16",
+     "hgvsc": "c.963_964del",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "RNASEH2B",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 70,
+   "q": 0.0019834710743801653,
+   "carrierFreq": 0.003963007991257372,
+   "top": [
+    {
+     "id": "13-50945445-G-A",
+     "hgvsp": "p.Ala177Thr",
+     "hgvsc": "c.529G>A",
+     "ac": 12,
+     "an": 6050,
+     "af": 0.0019834710743801653,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "RPE65",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 378,
+   "q": 0.0005117026967292669,
+   "carrierFreq": 0.0010231435538087252,
+   "top": [
+    {
+     "id": "1-68429928-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.1451-1G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "1-68431319-G-T",
+     "hgvsp": "p.Ala434Glu",
+     "hgvsc": "c.1301C>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "1-68438247-A-AT",
+     "hgvsp": "p.Asn356LysfsTer9",
+     "hgvsc": "c.1067dup",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "RPGR",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 843,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "RPGRIP1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 4,
+   "clinvarPLP": 180,
+   "q": 0.0011983849057659365,
+   "carrierFreq": 0.0023953336851495477,
+   "top": [
+    {
+     "id": "14-21312457-GA-G",
+     "hgvsp": "p.Glu370AsnfsTer5",
+     "hgvsc": "c.1107del",
+     "ac": 4,
+     "an": 5756,
+     "af": 0.0006949270326615705,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "14-21328463-C-T",
+     "hgvsp": "p.Gln979Ter",
+     "hgvsc": "c.2935C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "14-21312466-C-T",
+     "hgvsp": "p.Arg371Ter",
+     "hgvsc": "c.1111C>T",
+     "ac": 1,
+     "an": 6056,
+     "af": 0.00016512549537648613,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "14-21324647-C-T",
+     "hgvsp": "p.Arg598Ter",
+     "hgvsc": "c.1792C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "RS1",
+   "inheritance": "XL",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 309,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "SCO2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 48,
+   "q": 0.0003309067205490555,
+   "carrierFreq": 0.0006617039418403969,
+   "top": [
+    {
+     "id": "22-50523661-A-AGATCTGCTCAGCC",
+     "hgvsp": "p.Ser251GlyfsTer2",
+     "hgvsc": "c.738_750dup",
+     "ac": 1,
+     "an": 6042,
+     "af": 0.00016550810989738498,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "22-50524240-G-A",
+     "hgvsp": "p.Arg58Ter",
+     "hgvsc": "c.172C>T",
+     "ac": 1,
+     "an": 6046,
+     "af": 0.00016539861065167054,
+     "sig": "Pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "SGCG",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 109,
+   "q": 0.0006685401364563937,
+   "carrierFreq": 0.0013366333269986264,
+   "top": [
+    {
+     "id": "13-23295429-CT-C",
+     "hgvsp": "p.Phe175LeufsTer20",
+     "hgvsc": "c.525del",
+     "ac": 3,
+     "an": 6060,
+     "af": 0.0004950495049504951,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "13-23324411-A-AG",
+     "hgvsp": "p.Thr251AspfsTer68",
+     "hgvsc": "c.750dup",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "SLC19A3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 83,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "SLC26A2",
+   "inheritance": "AR",
+   "plpWithMidCounts": 6,
+   "clinvarPLP": 217,
+   "q": 0.0013341269513794942,
+   "carrierFreq": 0.0026664740080365457,
+   "top": [
+    {
+     "id": "5-149981041-T-C",
+     "hgvsp": "p.Leu483Pro",
+     "hgvsc": "c.1448T>C",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-149981315-TA-T",
+     "hgvsp": "p.Lys575SerfsTer10",
+     "hgvsc": "c.1724del",
+     "ac": 2,
+     "an": 6084,
+     "af": 0.0003287310979618672,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-149977866-A-T",
+     "hgvsp": "p.Lys72Ter",
+     "hgvsc": "c.214A>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-149981239-CA-C",
+     "hgvsp": "p.Lys550ArgfsTer35",
+     "hgvsc": "c.1649del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-149980428-C-T",
+     "hgvsp": "p.Arg279Trp",
+     "hgvsc": "c.835C>T",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "5-149981580-G-A",
+     "hgvsp": "p.Gly663Arg",
+     "hgvsc": "c.1987G>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "SLC26A3",
+   "inheritance": "AR",
+   "plpWithMidCounts": 2,
+   "clinvarPLP": 103,
+   "q": 0.00035373103057934714,
+   "carrierFreq": 0.0007073369355167225,
+   "top": [
+    {
+     "id": "7-107791059-C-A",
+     "hgvsp": "p.Gly187Ter",
+     "hgvsc": "c.559G>T",
+     "ac": 1,
+     "an": 5550,
+     "af": 0.00018018018018018018,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-107786822-CTT-C",
+     "hgvsp": null,
+     "hgvsc": "c.971+3_971+4del",
+     "ac": 1,
+     "an": 5762,
+     "af": 0.00017355085039916696,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    }
+   ]
+  },
+  {
+   "gene": "SLC26A4",
+   "inheritance": "AR",
+   "plpWithMidCounts": 16,
+   "clinvarPLP": 605,
+   "q": 0.0035871068053772446,
+   "carrierFreq": 0.00716134627552123,
+   "top": [
+    {
+     "id": "7-107675060-T-A",
+     "hgvsp": "p.Val239Asp",
+     "hgvsc": "c.716T>A",
+     "ac": 3,
+     "an": 6062,
+     "af": 0.0004948861761794787,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-107689022-T-A",
+     "hgvsp": null,
+     "hgvsc": "c.1002-31T>A",
+     "ac": 2,
+     "an": 5760,
+     "af": 0.00034722222222222224,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "7-107689054-T-C",
+     "hgvsp": "p.Phe335Leu",
+     "hgvsc": "c.1003T>C",
+     "ac": 2,
+     "an": 6058,
+     "af": 0.0003301419610432486,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "7-107674326-C-T",
+     "hgvsp": "p.Thr193Ile",
+     "hgvsc": "c.578C>T",
+     "ac": 2,
+     "an": 6080,
+     "af": 0.0003289473684210526,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-107661804-AG-A",
+     "hgvsp": null,
+     "hgvsc": "c.164+1del",
+     "ac": 1,
+     "an": 4484,
+     "af": 0.00022301516503122213,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-107683247-G-T",
+     "hgvsp": "p.Asp271Tyr",
+     "hgvsc": "c.811G>T",
+     "ac": 1,
+     "an": 5120,
+     "af": 0.0001953125,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "7-107672230-T-A",
+     "hgvsp": "p.Ser133Thr",
+     "hgvsc": "c.397T>A",
+     "ac": 1,
+     "an": 5712,
+     "af": 0.00017507002801120448,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-107683281-G-A",
+     "hgvsp": "p.Cys282Tyr",
+     "hgvsc": "c.845G>A",
+     "ac": 1,
+     "an": 5854,
+     "af": 0.00017082336863682952,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "7-107690236-A-C",
+     "hgvsp": "p.Gln421Pro",
+     "hgvsc": "c.1262A>C",
+     "ac": 1,
+     "an": 5930,
+     "af": 0.00016863406408094435,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-107683537-G-T",
+     "hgvsp": "p.Gly334Val",
+     "hgvsc": "c.1001G>T",
+     "ac": 1,
+     "an": 6052,
+     "af": 0.00016523463317911433,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "7-107683453-A-G",
+     "hgvsp": null,
+     "hgvsc": "c.919-2A>G",
+     "ac": 1,
+     "an": 6060,
+     "af": 0.00016501650165016502,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "7-107674302-G-C",
+     "hgvsp": "p.Arg185Thr",
+     "hgvsc": "c.554G>C",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Likely pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "SLC37A4",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 178,
+   "q": 0.0006936015885100595,
+   "carrierFreq": 0.001386722093856596,
+   "top": [
+    {
+     "id": "11-119024957-G-A",
+     "hgvsp": "p.Arg415Ter",
+     "hgvsc": "c.1243C>T",
+     "ac": 2,
+     "an": 5768,
+     "af": 0.00034674063800277393,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-119026979-G-A",
+     "hgvsp": "p.Gln248Ter",
+     "hgvsc": "c.742C>T",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-119025021-C-T",
+     "hgvsp": "p.Trp393Ter",
+     "hgvsc": "c.1179G>A",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "SLC6A8",
+   "inheritance": "XL",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 196,
+   "q": 0.004608294930875576,
+   "carrierFreq": 0.009216589861751152,
+   "top": [
+    {
+     "id": "X-153694577-C-T",
+     "hgvsp": "p.Arg514Ter",
+     "hgvsc": "c.1540C>T",
+     "ac": 1,
+     "an": 217,
+     "af": 0.004608294930875576,
+     "sig": "Pathogenic",
+     "stars": 3
+    }
+   ]
+  },
+  {
+   "gene": "SMN1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 63,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "SMPD1",
+   "inheritance": "AR",
+   "plpWithMidCounts": 7,
+   "clinvarPLP": 377,
+   "q": 0.00333958301105648,
+   "carrierFreq": 0.006668013207425272,
+   "top": [
+    {
+     "id": "11-6391623-G-GC",
+     "hgvsp": "p.Lys189GlnfsTer4",
+     "hgvsc": "c.564dup",
+     "ac": 8,
+     "an": 4342,
+     "af": 0.0018424689083371719,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-6391637-CT-C",
+     "hgvsp": "p.Ser192AlafsTer65",
+     "hgvsc": "c.573del",
+     "ac": 2,
+     "an": 4410,
+     "af": 0.00045351473922902497,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-6391553-T-C",
+     "hgvsp": "p.Leu163Pro",
+     "hgvsc": "c.488T>C",
+     "ac": 2,
+     "an": 5664,
+     "af": 0.00035310734463276836,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-6391481-T-C",
+     "hgvsp": "p.Leu139Pro",
+     "hgvsc": "c.416T>C",
+     "ac": 1,
+     "an": 5580,
+     "af": 0.00017921146953405018,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-6390694-G-A",
+     "hgvsp": "p.Trp32Ter",
+     "hgvsc": "c.96G>A",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-6394503-C-T",
+     "hgvsp": "p.Gln598Ter",
+     "hgvsc": "c.1792C>T",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "11-6393620-C-T",
+     "hgvsp": "p.His423Tyr",
+     "hgvsc": "c.1267C>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "TF",
+   "inheritance": "AR",
+   "plpWithMidCounts": 0,
+   "clinvarPLP": 32,
+   "q": 0,
+   "carrierFreq": 0,
+   "top": []
+  },
+  {
+   "gene": "TMEM216",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 44,
+   "q": 0.000581956133262943,
+   "carrierFreq": 0.0011635735935848768,
+   "top": [
+    {
+     "id": "11-61392563-G-A",
+     "hgvsp": null,
+     "hgvsc": "c.-266G>A",
+     "ac": 1,
+     "an": 4790,
+     "af": 0.00020876826722338206,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-61392563-G-T",
+     "hgvsp": null,
+     "hgvsc": "c.-266G>T",
+     "ac": 1,
+     "an": 4790,
+     "af": 0.00020876826722338206,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-61393965-G-T",
+     "hgvsp": "p.Arg73Leu",
+     "hgvsc": "c.218G>T",
+     "ac": 1,
+     "an": 6082,
+     "af": 0.0001644195988161789,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "TMEM67",
+   "inheritance": "AR",
+   "plpWithMidCounts": 5,
+   "clinvarPLP": 227,
+   "q": 0.0065318091058389535,
+   "carrierFreq": 0.013020953681482816,
+   "top": [
+    {
+     "id": "8-93755776-A-T",
+     "hgvsp": null,
+     "hgvsc": "c.224-2A>T",
+     "ac": 5,
+     "an": 1128,
+     "af": 0.004432624113475178,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-93755784-C-A",
+     "hgvsp": "p.Ser77Ter",
+     "hgvsc": "c.230C>A",
+     "ac": 2,
+     "an": 2086,
+     "af": 0.0009587727708533077,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "8-93755787-G-T",
+     "hgvsp": "p.Cys78Phe",
+     "hgvsc": "c.233G>T",
+     "ac": 2,
+     "an": 2492,
+     "af": 0.0008025682182985554,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "8-93786265-TAGTGGATGCAGTA-T",
+     "hgvsp": "p.Ala432GlufsTer5",
+     "hgvsc": "c.1293_1305del",
+     "ac": 1,
+     "an": 5768,
+     "af": 0.00017337031900138697,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "8-93795503-T-C",
+     "hgvsp": "p.Phe590Ser",
+     "hgvsc": "c.1769T>C",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "TNXB",
+   "inheritance": "AR",
+   "plpWithMidCounts": 1,
+   "clinvarPLP": 309,
+   "q": 0.00017397355601948505,
+   "carrierFreq": 0.0003479168452407144,
+   "top": [
+    {
+     "id": "6-32097148-G-GCA",
+     "hgvsp": "p.Arg236AlafsTer43",
+     "hgvsc": "c.703_704dup",
+     "ac": 1,
+     "an": 5748,
+     "af": 0.00017397355601948505,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "TPO",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 120,
+   "q": 0.0008809910660637639,
+   "carrierFreq": 0.0017612059868690189,
+   "top": [
+    {
+     "id": "2-1487841-C-T",
+     "hgvsp": "p.Arg540Ter",
+     "hgvsc": "c.1618C>T",
+     "ac": 3,
+     "an": 6062,
+     "af": 0.0004948861761794787,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-1477447-A-ACGGC",
+     "hgvsp": "p.Ala397ProfsTer76",
+     "hgvsc": "c.1184_1187dup",
+     "ac": 1,
+     "an": 4512,
+     "af": 0.00022163120567375886,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "2-1494027-G-A",
+     "hgvsp": "p.Arg665Gln",
+     "hgvsc": "c.1994G>A",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "TYR",
+   "inheritance": "AR",
+   "plpWithMidCounts": 9,
+   "clinvarPLP": 313,
+   "q": 0.003488741606511276,
+   "carrierFreq": 0.006965311895025472,
+   "top": [
+    {
+     "id": "11-89227816-T-A",
+     "hgvsp": null,
+     "hgvsc": "c.1037-7T>A",
+     "ac": 9,
+     "an": 6052,
+     "af": 0.001487111698612029,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-89191278-G-A",
+     "hgvsp": "p.Arg299His",
+     "hgvsc": "c.896G>A",
+     "ac": 3,
+     "an": 6058,
+     "af": 0.0004952129415648729,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-89177954-A-G",
+     "hgvsp": "p.Met1?",
+     "hgvsc": "c.1A>G",
+     "ac": 2,
+     "an": 5976,
+     "af": 0.00033467202141900936,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-89284852-C-T",
+     "hgvsp": "p.Arg422Trp",
+     "hgvsc": "c.1264C>T",
+     "ac": 2,
+     "an": 6060,
+     "af": 0.00033003300330033004,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-89191397-A-C",
+     "hgvsp": "p.Ser339Arg",
+     "hgvsc": "c.1015A>C",
+     "ac": 1,
+     "an": 5760,
+     "af": 0.00017361111111111112,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "11-89178060-G-A",
+     "hgvsp": "p.Cys36Tyr",
+     "hgvsc": "c.107G>A",
+     "ac": 1,
+     "an": 5766,
+     "af": 0.0001734304543877905,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-89191214-C-T",
+     "hgvsp": "p.Arg278Ter",
+     "hgvsc": "c.832C>T",
+     "ac": 1,
+     "an": 6052,
+     "af": 0.00016523463317911433,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-89284843-G-A",
+     "hgvsp": "p.Gly419Arg",
+     "hgvsc": "c.1255G>A",
+     "ac": 1,
+     "an": 6062,
+     "af": 0.0001649620587264929,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "11-89178026-G-GT",
+     "hgvsp": "p.Ser26LeufsTer3",
+     "hgvsc": "c.74dup",
+     "ac": 1,
+     "an": 6080,
+     "af": 0.0001644736842105263,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "USH2A",
+   "inheritance": "AR",
+   "plpWithMidCounts": 24,
+   "clinvarPLP": 2166,
+   "q": 0.005589346267227083,
+   "carrierFreq": 0.011147451742759218,
+   "top": [
+    {
+     "id": "1-216247118-C-A",
+     "hgvsp": "p.Cys759Phe",
+     "hgvsc": "c.2276G>T",
+     "ac": 4,
+     "an": 6062,
+     "af": 0.0006598482349059716,
+     "sig": "Pathogenic",
+     "stars": 3
+    },
+    {
+     "id": "1-216418680-C-G",
+     "hgvsp": null,
+     "hgvsc": "c.486-1G>C",
+     "ac": 3,
+     "an": 5756,
+     "af": 0.0005211952744961779,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-215970645-C-A",
+     "hgvsp": "p.Gly2313Cys",
+     "hgvsc": "c.6937G>T",
+     "ac": 3,
+     "an": 6078,
+     "af": 0.0004935834155972359,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-216073096-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.5776+1G>A",
+     "ac": 2,
+     "an": 5762,
+     "af": 0.0003471017007983339,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-215674637-G-A",
+     "hgvsp": "p.Thr4425Met",
+     "hgvsc": "c.13274C>T",
+     "ac": 2,
+     "an": 6062,
+     "af": 0.0003299241174529858,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-215758592-T-C",
+     "hgvsp": null,
+     "hgvsc": "c.11389+3A>G",
+     "ac": 1,
+     "an": 5316,
+     "af": 0.00018811136192626034,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "1-215846007-C-A",
+     "hgvsp": "p.Glu2958Ter",
+     "hgvsc": "c.8872G>T",
+     "ac": 1,
+     "an": 5534,
+     "af": 0.00018070112034694616,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "1-215845823-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.9055+1G>A",
+     "ac": 1,
+     "an": 5582,
+     "af": 0.00017914725904693657,
+     "sig": "Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-215743336-C-T",
+     "hgvsp": null,
+     "hgvsc": "c.11390-1G>A",
+     "ac": 1,
+     "an": 5676,
+     "af": 0.00017618040873854828,
+     "sig": "Pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "1-215845905-CTG-C",
+     "hgvsp": "p.Thr2991ArgfsTer61",
+     "hgvsc": "c.8972_8973del",
+     "ac": 1,
+     "an": 5760,
+     "af": 0.00017361111111111112,
+     "sig": "Pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-216084781-CT-C",
+     "hgvsp": "p.Ser1695ValfsTer19",
+     "hgvsc": "c.5083del",
+     "ac": 1,
+     "an": 5760,
+     "af": 0.00017361111111111112,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "1-216207338-C-T",
+     "hgvsp": "p.Trp1084Ter",
+     "hgvsc": "c.3251G>A",
+     "ac": 1,
+     "an": 5764,
+     "af": 0.00017349063150589867,
+     "sig": "Pathogenic",
+     "stars": 2
+    }
+   ]
+  },
+  {
+   "gene": "XPC",
+   "inheritance": "AR",
+   "plpWithMidCounts": 3,
+   "clinvarPLP": 220,
+   "q": 0.0005042928957146762,
+   "carrierFreq": 0.0010083314801045962,
+   "top": [
+    {
+     "id": "3-14158010-C-G",
+     "hgvsp": null,
+     "hgvsc": "c.1872+1G>C",
+     "ac": 1,
+     "an": 5696,
+     "af": 0.00017556179775280898,
+     "sig": "Pathogenic/Likely pathogenic",
+     "stars": 2
+    },
+    {
+     "id": "3-14156435-G-C",
+     "hgvsp": "p.Pro645Ala",
+     "hgvsc": "c.1933C>G",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Likely pathogenic",
+     "stars": 1
+    },
+    {
+     "id": "3-14158238-GCA-G",
+     "hgvsp": "p.Val548AlafsTer25",
+     "hgvsc": "c.1643_1644del",
+     "ac": 1,
+     "an": 6084,
+     "af": 0.0001643655489809336,
+     "sig": "Pathogenic",
+     "stars": 2
     }
    ]
   }
