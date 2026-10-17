@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:report": "vitest run --exclude tests/*.int.test.ts --reporter=json --outputFile=data/tests.json",
     "calibrate": "tsx scripts/calibrate.ts",
-    "eval:ask": "tsx --conditions=react-server --env-file=.env.local scripts/eval-ask.mts"
+    "eval:ask": "tsx --conditions=react-server --env-file=.env.scripts.local scripts/eval-ask.mts"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.1152.0",

@@ -7,7 +7,7 @@
   <img alt="data" src="https://img.shields.io/badge/data-synthetic%20people%20only-9B2335">
 </p>
 
-**[Live site](#)** · **[Two-phone demo](#)** · **[How it works](#)** · **[Proof](#)** · **[Counsellor desk](#)** (demo passcode in the submission) · **[Programme view](#)**
+**[Live site](https://twokeys-health.vercel.app/en)** · **[Two-phone demo](https://twokeys-health.vercel.app/en/demo)** · **[How it works](https://twokeys-health.vercel.app/en/how)** · **[Proof](https://twokeys-health.vercel.app/en/proof)** · **[Counsellor desk](https://twokeys-health.vercel.app/en/desk)** (demo passcode in the submission) · **[Programme view](https://twokeys-health.vercel.app/en/programme)** · **[العربية](https://twokeys-health.vercel.app/ar)**
 
 Two Keys lets a couple learn what they could pass on to their children together, and nothing else. Their premarital carrier results are compared inside their own phones with authorised private set intersection: each partner learns only the genes they both carry. The partner, the families and the server learn nothing else. Each result is explained in plain Arabic or English at three reading levels, and a counsellor is one tap away. Relatives can be told, anonymously, that they may want a test.
 
