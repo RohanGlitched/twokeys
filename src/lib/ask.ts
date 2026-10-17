@@ -48,8 +48,8 @@ const T = {
     ar: 'هذا القرار لكما، ويختار كثير من الأزواج في وضعكما خيارات مختلفة. يمكنني شرح الخيارات وما يتضمنه كل منها. وللأسئلة الشرعية يمكن لعالِم تثقان به أن يساعد، وللجانب الطبي يمكن للمستشار مناقشة الأمر معكما.',
   },
   crisis: {
-    en: 'I’m sorry you’re feeling this way. Please talk to someone now: in the UAE you can call the National Programme for Happiness and Wellbeing support line on 800 4673 (800 HOPE), or 999 in an emergency. I have also asked a counsellor to contact you.',
-    ar: 'يؤسفني أنك تشعر بهذا. أرجو أن تتحدث مع أحد الآن: في الإمارات يمكنك الاتصال بخط الدعم 800 4673 (800 HOPE)، أو 999 في حالات الطوارئ. وقد طلبت من مستشار التواصل معك.',
+    en: 'I’m sorry you’re feeling this way. If you might hurt yourself, please call 999 now or go to the nearest emergency department (in Abu Dhabi, SKMC; in Al Ain, Al Ain Hospital). I have also asked a counsellor to contact you.',
+    ar: 'يؤسفني أنك تشعر بهذا. إن كنت قد تؤذي نفسك، فاتصل بالرقم 999 الآن أو توجّه إلى أقرب قسم طوارئ (في أبوظبي مستشفى الشيخ خليفة الطبي، وفي العين مستشفى العين). وقد طلبت من مستشار التواصل معك.',
   },
 };
 

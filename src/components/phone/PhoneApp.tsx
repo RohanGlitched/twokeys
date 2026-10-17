@@ -11,6 +11,8 @@ import { conditionFor, type Level } from '@/lib/conditions';
 import { F, type Relationship } from '@/lib/risk';
 import { Diamond, Mark, Person } from '@/components/glyphs';
 import { Sadu } from '@/components/Sadu';
+import { Ask, Counsellor, Family, Options } from './Views';
+import { sessionId } from '@/lib/pairing';
 
 type L = { en: string; ar: string };
 export interface PublicPerson { id: string; name: L; sex: 'F' | 'M'; age: number }
@@ -23,7 +25,7 @@ export interface PhoneProps {
   embedded?: boolean;
 }
 
-type View = 'card' | 'mine' | 'pair' | 'running' | 'result';
+type View = 'card' | 'mine' | 'pair' | 'running' | 'result' | 'options' | 'counsellor' | 'ask' | 'family';
 
 const REL: Record<Relationship, L> = {
   unrelated: { en: 'not related', ar: 'لا قرابة' },
@@ -214,8 +216,16 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
         )}
 
         {view === 'result' && outcome && (
-          <Result lang={lang} genes={genes} relationship={relationship} level={level} setLevel={setLevel} me={me} steps={steps} />
+          <Result lang={lang} genes={genes} relationship={relationship} level={level} setLevel={setLevel} me={me} steps={steps} onGo={setView} />
         )}
+
+        {view === 'options' && <Options lang={lang} onBack={() => setView('result')} onCounsellor={() => setView('counsellor')} />}
+        {view === 'counsellor' && (
+          <Counsellor lang={lang} onBack={() => setView(outcome ? 'result' : 'card')} person={me.id} pairing={link ? sessionId(link) : null}
+            genes={[...genes.ar, ...genes.xl]} level={level} related={F[relationship] > 0} />
+        )}
+        {view === 'ask' && <Ask lang={lang} onBack={() => setView('result')} genes={genes.ar} xl={genes.xl} level={level} related={F[relationship] > 0} />}
+        {view === 'family' && <Family lang={lang} onBack={() => setView(outcome ? 'result' : 'card')} genes={[...new Set([...genes.ar, ...(mine ?? []).filter((f) => f.inheritance === 'AR').map((f) => f.gene)])]} />}
       </div>
     </div>
   );
@@ -241,8 +251,8 @@ function StepLine({ s, lang }: { s: Step; lang: Locale }) {
   }
 }
 
-function Result({ lang, genes, relationship, level, setLevel, me, steps }: {
-  lang: Locale; genes: { ar: string[]; xl: string[] }; relationship: Relationship; level: Level; setLevel: (l: Level) => void; me: PublicPerson; steps: Step[];
+function Result({ lang, genes, relationship, level, setLevel, me, steps, onGo }: {
+  lang: Locale; genes: { ar: string[]; xl: string[] }; relationship: Relationship; level: Level; setLevel: (l: Level) => void; me: PublicPerson; steps: Step[]; onGo: (v: View) => void;
 }) {
   const t = (l: L) => l[lang];
   const related = F[relationship] > 0;
@@ -290,10 +300,10 @@ function Result({ lang, genes, relationship, level, setLevel, me, steps }: {
       )}
 
       <div className="mt-6 grid grid-cols-2 gap-2.5 text-[14px] font-medium">
-        <a className="rounded-[2px] border border-ink px-3 py-3 text-center" href="#options">{t({ en: 'Your options', ar: 'خياراتكما' })}</a>
-        <a className="rounded-[2px] bg-ink px-3 py-3 text-center text-wool" href="#counsellor">{t({ en: 'Talk to a counsellor', ar: 'تحدّث إلى مستشار' })}</a>
-        <a className="rounded-[2px] border border-ink px-3 py-3 text-center" href="#ask">{t({ en: 'Ask a question', ar: 'اطرح سؤالاً' })}</a>
-        <a className="rounded-[2px] border border-ink px-3 py-3 text-center" href="#family">{t({ en: 'Tell relatives', ar: 'أخبر أقاربك' })}</a>
+        <button className="rounded-[2px] border border-ink px-3 py-3" onClick={() => onGo('options')}>{t({ en: 'Your options', ar: 'خياراتكما' })}</button>
+        <button className="rounded-[2px] bg-ink px-3 py-3 text-wool" onClick={() => onGo('counsellor')}>{t({ en: 'Talk to a counsellor', ar: 'تحدّث إلى مستشار' })}</button>
+        <button className="rounded-[2px] border border-ink px-3 py-3" onClick={() => onGo('ask')}>{t({ en: 'Ask a question', ar: 'اطرح سؤالاً' })}</button>
+        <button className="rounded-[2px] border border-ink px-3 py-3" onClick={() => onGo('family')}>{t({ en: 'Tell relatives', ar: 'أخبر أقاربك' })}</button>
       </div>
 
       {sent?.kind === 'sent' && (
