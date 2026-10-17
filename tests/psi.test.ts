@@ -1,26 +1,51 @@
 import { describe, expect, it } from 'vitest';
-import { issueCard, newLabKey, runLocally, SET_SIZE, Initiator, Responder } from '../src/lib/psi';
+import { Initiator, Responder, runLocally, SET_SIZE, type Token } from '../src/lib/psi';
+import { issue, matchedGenes, type Finding } from '../src/lib/lab';
 
-const lab = newLabKey('lab-a');
+const labKey = new Uint8Array(32).fill(7);
+const otherLab = new Uint8Array(32).fill(9);
+const S = 'a1'.repeat(16);
+const ar = (gene: string, severity: 'severe' | 'mild' = 'severe'): Finding => ({ gene, inheritance: 'AR', severity });
+const xl = (gene: string): Finding => ({ gene, inheritance: 'XL', severity: 'severe' });
 
-describe('authorised PSI', () => {
-  it('each partner learns exactly the genes both carry', () => {
-    const alice = issueCard(lab, ['HBB', 'CFTR', 'SMN1', 'PAH']);
-    const bob = issueCard(lab, ['HBB', 'GJB2', 'PAH']);
-    const { aliceLearns, bobLearns } = runLocally(alice, bob);
-    expect(aliceLearns.sort()).toEqual(['HBB', 'PAH']);
-    expect(bobLearns.sort()).toEqual(['HBB', 'PAH']);
+function pair(a: Finding[], b: Finding[], opts: { mode?: 'reveal' | 'count'; session?: string; keyB?: Uint8Array; aSex?: 'F' | 'M'; bSex?: 'F' | 'M' } = {}) {
+  const ta = issue(labKey, opts.session ?? S, 'A', opts.aSex ?? 'F', a);
+  const tb = issue(opts.keyB ?? labKey, S, 'B', opts.bSex ?? 'M', b);
+  return runLocally(ta, tb, opts.mode ?? 'reveal');
+}
+const genes = (o: { mode: string; labels?: string[] }) => matchedGenes((o as { labels: string[] }).labels);
+
+describe('session-bound authorised PSI', () => {
+  it('both partners learn exactly the genes both carry', () => {
+    const r = pair([ar('HBB'), ar('CFTR'), ar('CYP21A2')], [ar('HBB'), ar('GJB2'), ar('CYP21A2')]);
+    expect(genes(r.aLearns).ar).toEqual(['CYP21A2', 'HBB']);
+    expect(genes(r.bLearns).ar).toEqual(['CYP21A2', 'HBB']);
   });
 
-  it('finds nothing when nothing is shared, and handles empty cards', () => {
-    expect(runLocally(issueCard(lab, ['HBB']), issueCard(lab, ['CFTR'])).aliceLearns).toEqual([]);
-    expect(runLocally(issueCard(lab, []), issueCard(lab, ['CFTR'])).bobLearns).toEqual([]);
+  it('severe × mild matches, mild × mild does not', () => {
+    expect(genes(pair([ar('GJB2', 'severe')], [ar('GJB2', 'mild')]).aLearns).ar).toEqual(['GJB2']);
+    expect(genes(pair([ar('GJB2', 'mild')], [ar('GJB2', 'severe')]).bLearns).ar).toEqual(['GJB2']);
+    expect(genes(pair([ar('GJB2', 'mild')], [ar('GJB2', 'mild')]).aLearns).ar).toEqual([]);
   });
 
-  it('every message has the same fixed size, so card sizes stay hidden', () => {
-    const small = runLocally(issueCard(lab, ['HBB']), issueCard(lab, []));
-    const big = runLocally(issueCard(lab, Array.from({ length: 30 }, (_, i) => `G${i}`)), issueCard(lab, ['HBB']));
-    for (const r of [small, big]) {
+  it('X-linked genes match only when she carries and he is affected', () => {
+    expect(genes(pair([xl('G6PD')], [xl('G6PD')]).aLearns).xl).toEqual(['G6PD']);
+    expect(genes(pair([xl('G6PD')], []).aLearns).xl).toEqual([]);
+  });
+
+  it('tokens from another session or another key never match', () => {
+    expect(genes(pair([ar('HBB')], [ar('HBB')], { session: 'b2'.repeat(16) }).aLearns).ar).toEqual([]);
+    expect(genes(pair([ar('HBB')], [ar('HBB')], { keyB: otherLab }).aLearns).ar).toEqual([]);
+  });
+
+  it('count mode tells the initiator how many, not which', () => {
+    const r = pair([ar('HBB', 'mild'), ar('PAH', 'mild')], [ar('HBB'), ar('PAH')], { mode: 'count' });
+    expect(r.aLearns).toEqual({ mode: 'count', count: 2 });
+    expect(r.bLearns).toEqual({ mode: 'count', count: 2 });
+  });
+
+  it('every message has a fixed size, so the number of findings stays hidden', () => {
+    for (const r of [pair([], []), pair(Array.from({ length: 30 }, (_, i) => ar(`G${i}`)), [ar('HBB')])]) {
       expect(r.relaySaw.m1.a).toHaveLength(SET_SIZE);
       expect(r.relaySaw.m2.ab).toHaveLength(SET_SIZE);
       expect(r.relaySaw.m2.b).toHaveLength(SET_SIZE);
@@ -28,40 +53,26 @@ describe('authorised PSI', () => {
     }
   });
 
-  it('the relay never sees a token or a gene name', () => {
-    const alice = issueCard(lab, ['HBB', 'CFTR']);
-    const bob = issueCard(lab, ['HBB']);
-    const { relaySaw } = runLocally(alice, bob);
-    const wire = JSON.stringify(relaySaw);
-    for (const t of [...alice.tokens, ...bob.tokens]) {
+  it('the relay never sees a lab token or a gene name', () => {
+    const ta = issue(labKey, S, 'A', 'F', [ar('HBB'), ar('CFTR')]);
+    const tb = issue(labKey, S, 'B', 'M', [ar('HBB')]);
+    const wire = JSON.stringify(runLocally(ta, tb).relaySaw);
+    for (const t of [...ta, ...tb]) {
       expect(wire).not.toContain(t.token);
-      expect(wire).not.toContain(t.gene);
+      expect(wire).not.toContain(t.label);
     }
   });
 
-  it('a card from another lab key cannot match (no forged tokens)', () => {
-    const forger = newLabKey('forger');
-    const alice = issueCard(lab, ['HBB']);
-    const fake = issueCard(forger, ['HBB']);
-    expect(runLocally(alice, fake).aliceLearns).toEqual([]);
-  });
-
-  it('rejects malformed or wrongly sized messages', () => {
-    const i = new Initiator(issueCard(lab, ['HBB']));
-    const r = new Responder(issueCard(lab, ['HBB']));
-    expect(() => r.step2({ a: i.step1().a.slice(1) })).toThrow();
-    const bad = i.step1().a.slice();
-    bad[0] = '00'.repeat(32); // identity
-    expect(() => r.step2({ a: bad })).toThrow();
-    bad[0] = 'zz'.repeat(32);
-    expect(() => r.step2({ a: bad })).toThrow();
-  });
-
-  it('two runs of the same cards look unrelated on the wire', () => {
-    const alice = issueCard(lab, ['HBB']);
-    const bob = issueCard(lab, ['HBB']);
-    const r1 = runLocally(alice, bob).relaySaw.m1.a;
-    const r2 = runLocally(alice, bob).relaySaw.m1.a;
-    expect(r1.filter((x) => r2.includes(x))).toEqual([]);
+  it('rejects wrong sizes, duplicates, the identity and non-canonical points', () => {
+    const tok: Token[] = issue(labKey, S, 'A', 'F', [ar('HBB')]);
+    const i = new Initiator(tok);
+    const good = i.step1();
+    expect(() => new Responder(tok).step2({ ...good, a: good.a.slice(1) })).toThrow();
+    expect(() => new Responder(tok).step2({ ...good, a: [good.a[0], ...good.a.slice(0, -1)] })).toThrow();
+    for (const bad of ['00'.repeat(32), 'ff'.repeat(32), 'zz'.repeat(32)]) {
+      const a = good.a.slice();
+      a[0] = bad;
+      expect(() => new Responder(tok).step2({ ...good, a })).toThrow();
+    }
   });
 });

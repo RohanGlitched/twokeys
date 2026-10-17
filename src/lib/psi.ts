@@ -1,29 +1,37 @@
-// Authorised private set intersection over ristretto255.
+// Authorised, session-bound private set intersection over ristretto255.
 //
-// The lab turns each gene a person carries into a token only the lab can make:
-//   token(gene) = H(gene) · k_lab
-// A partner therefore can't invent tokens for genes they don't carry, and a token
-// on its own reveals nothing (it is a random-looking group element).
-//
-// Two partners then run a Diffie–Hellman PSI on their tokens through a relay:
-//   1. Initiator:  A  = shuffle(x·a)            → relay
-//   2. Responder:  AB = A·b (same order), B = shuffle(y·b)  → relay
-//   3. Initiator:  BA = B·a                      → relay; matches AB against BA
-//   4. Responder:  matches BA against AB
-// Each side learns which of ITS OWN genes the other also carries, nothing else.
-// Both sets are padded with random points to a fixed size, so neither side learns
-// how many genes the other carries. The relay sees only blinded points.
+// 1. Tokens. For one pairing session S, the lab turns each finding into tokens only it can make:
+//      t(S, tag, gene) = H2C( HMAC(k_lab, S | tag | gene) )
+//    A token is useless outside session S and impossible to forge without k_lab, so a partner can
+//    neither invent genes nor reuse a friend's card to probe. (Baldi et al. 2011 left this open.)
+//    Role tags stop mild alleles from raising alarms: the initiator (role A) gets r1 for severe
+//    findings and r2 for any finding; the responder (role B) gets the reverse. Severe×any matches,
+//    mild×mild never does. X-linked findings use their own tag (see lab.ts).
+// 2. Blinding. The partners compare tokens by Diffie–Hellman PSI through a relay:
+//      A → relay:  shuffle(t·a)
+//      B → relay:  (t·a)·b in A's order, shuffle(u·b)
+//      A → relay:  (u·b)·a
+//    Each side matches doubly-blinded values. The relay (and the lab, even if it read the relay)
+//    sees only random-looking group elements: it never learns the result.
+// 3. Padding. Every list is padded to SET_SIZE with random elements, so nobody learns how many
+//    findings the other person has.
+// Modes: 'reveal' — each side learns which of its own labels matched.
+//        'count'  — the responder shuffles the doubly-blinded list, so the initiator learns only
+//                   how many matched (the couple-level-only mode, like Dor Yeshorim).
 import { ristretto255, ristretto255_hasher } from '@noble/curves/ed25519.js';
 import { bytesToNumberLE } from '@noble/curves/utils.js';
 
 const Point = ristretto255.Point;
 type Pt = InstanceType<typeof Point>;
-const N = Point.Fn.ORDER;
-const enc = new TextEncoder();
+const ORDER = Point.Fn.ORDER;
 
-/** Every set is padded to this many elements: more than any panel's genes a person could carry. */
-export const SET_SIZE = 48;
-const DST = 'TWOKEYS-V1-GENE-TOKEN';
+/** Every list is padded to this many elements (two tags per finding, so up to 32 findings). */
+export const SET_SIZE = 64;
+export const TOKEN_DST = 'TWOKEYS-V1-SESSION-TOKEN';
+
+export type Mode = 'reveal' | 'count';
+/** A token the lab issued for one session. `label` stays on the holder's device. */
+export interface Token { label: string; token: string }
 
 function rand(len: number): Uint8Array {
   const b = new Uint8Array(len);
@@ -34,20 +42,24 @@ function rand(len: number): Uint8Array {
 /** Uniform non-zero scalar (64 random bytes reduced mod the group order). */
 export function randomScalar(): bigint {
   for (;;) {
-    const s = bytesToNumberLE(rand(64)) % N;
+    const s = bytesToNumberLE(rand(64)) % ORDER;
     if (s !== 0n) return s;
   }
 }
 
-const toHex = (p: Pt) => Array.from(p.toBytes(), (b) => b.toString(16).padStart(2, '0')).join('');
-function fromHex(h: string): Pt {
-  if (!/^[0-9a-f]{64}$/.test(h)) throw new Error('Not a group element.');
+export const toHex = (p: Pt) => Array.from(p.toBytes(), (b) => b.toString(16).padStart(2, '0')).join('');
+export function fromHex(h: string): Pt {
+  if (typeof h !== 'string' || !/^[0-9a-f]{64}$/.test(h)) throw new Error('Not a group element.');
   const bytes = new Uint8Array(32);
   for (let i = 0; i < 32; i++) bytes[i] = parseInt(h.slice(i * 2, i * 2 + 2), 16);
   const p = Point.fromBytes(bytes); // throws on non-canonical encodings
   if (p.is0()) throw new Error('Identity element is not allowed.');
   return p;
 }
+
+/** Maps a lab MAC onto the group. */
+export const macToPoint = (mac: Uint8Array) => ristretto255_hasher.hashToCurve(mac, { DST: TOKEN_DST });
+export const randomPointHex = () => toHex(Point.BASE.multiply(randomScalar()));
 
 /** Fisher–Yates with a CSPRNG. Returns the shuffled copy and where each input went. */
 function shuffle<T>(xs: T[]): { out: T[]; at: number[] } {
@@ -63,104 +75,91 @@ function shuffle<T>(xs: T[]): { out: T[]; at: number[] } {
   return { out: idx.map((i) => xs[i]), at };
 }
 
-const hashGene = (gene: string) => ristretto255_hasher.hashToCurve(enc.encode(`gene:${gene.toUpperCase()}`), { DST });
-
-// ---------------------------------------------------------------- the lab
-
-export interface LabKey { k: bigint; id: string }
-export const newLabKey = (id: string): LabKey => ({ k: randomScalar(), id });
-
-/** What the lab hands a tested person: one token per carried gene, kept on their device. */
-export interface CarrierCard { lab: string; tokens: { gene: string; token: string }[] }
-
-export function issueCard(lab: LabKey, genes: string[]): CarrierCard {
-  const uniq = [...new Set(genes.map((g) => g.toUpperCase()))];
-  if (uniq.length > SET_SIZE) throw new Error(`A card holds at most ${SET_SIZE} genes.`);
-  return { lab: lab.id, tokens: uniq.map((gene) => ({ gene, token: toHex(hashGene(gene).multiply(lab.k)) })) };
-}
-
-// ---------------------------------------------------------------- the partners
-
-/** Pads a card's tokens with random group elements to SET_SIZE. Remembers which slots are real. */
-function padded(card: CarrierCard): { pts: Pt[]; gene: (string | null)[] } {
-  const pts = card.tokens.map((t) => fromHex(t.token));
-  const gene: (string | null)[] = card.tokens.map((t) => t.gene);
+function padded(tokens: Token[]): { pts: Pt[]; label: (string | null)[] } {
+  if (tokens.length > SET_SIZE) throw new Error(`At most ${SET_SIZE} tokens per session.`);
+  const pts = tokens.map((t) => fromHex(t.token));
+  const label: (string | null)[] = tokens.map((t) => t.label);
   while (pts.length < SET_SIZE) {
     pts.push(Point.BASE.multiply(randomScalar()));
-    gene.push(null);
+    label.push(null);
   }
-  return { pts, gene };
+  return { pts, label };
 }
 
-export interface Msg1 { a: string[] }
+export interface Msg1 { mode: Mode; a: string[] }
 export interface Msg2 { ab: string[]; b: string[] }
 export interface Msg3 { ba: string[] }
+export type Outcome = { mode: 'reveal'; labels: string[] } | { mode: 'count'; count: number };
 
-function checkLen(xs: string[]) {
+function checkList(xs: unknown): asserts xs is string[] {
   if (!Array.isArray(xs) || xs.length !== SET_SIZE) throw new Error(`Expected exactly ${SET_SIZE} elements.`);
+  if (new Set(xs).size !== xs.length) throw new Error('Duplicate elements are not allowed.');
 }
 
 export class Initiator {
   private a = randomScalar();
-  private gene: (string | null)[];
-  private pos: number[]; // pos[i] = where my element i sits in A
+  private label: (string | null)[];
+  private pos: number[];
   private sent: string[];
-  private mine: string[] = [];
-  constructor(card: CarrierCard) {
-    const { pts, gene } = padded(card);
-    this.gene = gene;
+  constructor(tokens: Token[], private mode: Mode = 'reveal') {
+    const { pts, label } = padded(tokens);
+    this.label = label;
     const { out, at } = shuffle(pts.map((p) => p.multiply(this.a)));
     this.pos = at;
     this.sent = out.map(toHex);
   }
-  step1(): Msg1 { return { a: this.sent }; }
-  /** Returns the message for the responder and this side's result. */
-  step3(m: Msg2): { msg: Msg3; shared: string[] } {
-    checkLen(m.ab); checkLen(m.b);
-    const ba = m.b.map((h) => fromHex(h).multiply(this.a)).map(toHex);
+  step1(): Msg1 { return { mode: this.mode, a: this.sent }; }
+  step3(m: Msg2): { msg: Msg3; outcome: Outcome } {
+    checkList(m.ab); checkList(m.b);
+    const ba = m.b.map((h) => toHex(fromHex(h).multiply(this.a)));
     const theirs = new Set(ba);
-    const shared: string[] = [];
-    this.gene.forEach((g, i) => { if (g && theirs.has(m.ab[this.pos[i]])) shared.push(g); });
-    this.mine = shared;
-    return { msg: { ba }, shared };
+    if (this.mode === 'count') return { msg: { ba }, outcome: { mode: 'count', count: m.ab.filter((x) => theirs.has(x)).length } };
+    const labels: string[] = [];
+    this.label.forEach((l, i) => { if (l && theirs.has(m.ab[this.pos[i]])) labels.push(l); });
+    return { msg: { ba }, outcome: { mode: 'reveal', labels } };
   }
-  get result() { return this.mine; }
 }
 
 export class Responder {
   private b = randomScalar();
-  private gene: (string | null)[];
+  private label: (string | null)[];
   private pos: number[];
+  private sentB: string[];
   private ab: string[] = [];
-  constructor(card: CarrierCard) {
-    const { pts, gene } = padded(card);
-    this.gene = gene;
+  private mode: Mode = 'reveal';
+  constructor(tokens: Token[]) {
+    const { pts, label } = padded(tokens);
+    this.label = label;
     const { out, at } = shuffle(pts.map((p) => p.multiply(this.b)));
     this.pos = at;
     this.sentB = out.map(toHex);
   }
-  private sentB: string[];
   step2(m: Msg1): Msg2 {
-    checkLen(m.a);
-    this.ab = m.a.map((h) => fromHex(h).multiply(this.b)).map(toHex);
-    return { ab: this.ab, b: this.sentB };
+    if (m.mode !== 'reveal' && m.mode !== 'count') throw new Error('Unknown mode.');
+    checkList(m.a);
+    this.mode = m.mode;
+    const ab = m.a.map((h) => toHex(fromHex(h).multiply(this.b)));
+    this.ab = ab;
+    // In count mode the initiator must not learn WHICH of its elements matched.
+    return { ab: this.mode === 'count' ? shuffle(ab).out : ab, b: this.sentB };
   }
-  step4(m: Msg3): string[] {
-    checkLen(m.ba);
+  step4(m: Msg3): Outcome {
+    checkList(m.ba);
     const theirs = new Set(this.ab);
-    const shared: string[] = [];
-    this.gene.forEach((g, i) => { if (g && theirs.has(m.ba[this.pos[i]])) shared.push(g); });
-    return shared;
+    if (this.mode === 'count') return { mode: 'count', count: m.ba.filter((x) => theirs.has(x)).length };
+    const labels: string[] = [];
+    this.label.forEach((l, i) => { if (l && theirs.has(m.ba[this.pos[i]])) labels.push(l); });
+    return { mode: 'reveal', labels };
   }
 }
 
-/** Runs the whole exchange locally and returns what each side, and the relay, saw. */
-export function runLocally(alice: CarrierCard, bob: CarrierCard) {
-  const i = new Initiator(alice);
-  const r = new Responder(bob);
+/** Runs the whole exchange in one process and returns what each side, and the relay, saw. */
+export function runLocally(a: Token[], b: Token[], mode: Mode = 'reveal') {
+  const i = new Initiator(a, mode);
+  const r = new Responder(b);
   const m1 = i.step1();
   const m2 = r.step2(m1);
-  const { msg: m3, shared: aliceLearns } = i.step3(m2);
-  const bobLearns = r.step4(m3);
-  return { aliceLearns, bobLearns, relaySaw: { m1, m2, m3 } };
+  const { msg: m3, outcome: aLearns } = i.step3(m2);
+  const bLearns = r.step4(m3);
+  return { aLearns, bLearns, relaySaw: { m1, m2, m3 } };
 }
