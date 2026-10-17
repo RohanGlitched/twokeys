@@ -36,7 +36,9 @@ const PRICE = { input: 0.8, output: 3.2 };
 async function converse(model: string, system: string, user: string, maxTokens = 500, history: Case['history'] = []) {
   for (let i = 0; i < 8; i++) {
     try {
-      const messages = [...(history ?? []).map((h) => ({ role: h.role, content: [{ text: h.text }] })), { role: 'user' as const, content: [{ text: user }] }];
+      const turns = [...(history ?? [])];
+      while (turns[0]?.role === 'assistant') turns.shift();
+      const messages = [...turns.map((h) => ({ role: h.role, content: [{ text: h.text }] })), { role: 'user' as const, content: [{ text: user }] }];
       const r = await client.send(new ConverseCommand({ modelId: model, system: [{ text: system }], messages, inferenceConfig: { maxTokens, temperature: 0.2 } }));
       return r.output?.message?.content?.map((c) => c.text ?? '').join('') ?? '';
     } catch (e) {
@@ -132,11 +134,23 @@ function categoryCheck(cat: string, answer: string, tk?: { route: string; intent
   return null;
 }
 
+const codeCommit = (await import('node:child_process')).execSync('git rev-parse HEAD', { cwd: root }).toString().trim();
+// Each finished case is appended to a checkpoint, so a crash doesn't lose the run; a rerun of the same
+// set, code and explainer version reuses finished cases. Deleted when the run completes.
+const CKPT = path.join(root, `eval/.checkpoint-${path.basename(HELDOUT, '.json')}.jsonl`);
+const done = new Map<string, Record<string, unknown>>();
+if (fs.existsSync(CKPT)) for (const line of fs.readFileSync(CKPT, 'utf8').split('\n').filter(Boolean)) {
+  const r = JSON.parse(line) as Record<string, unknown> & { _v?: string };
+  if (r._v === EXPLAINER_VERSION) done.set(`${r.set}:${r.id}`, r);
+}
+console.log(`checkpoint: ${done.size} finished cases reused`);
 const limit = Number(process.argv[2] ?? 1e9);
 const results: Record<string, unknown>[] = [];
 const tokens = { input: 0, output: 0, answers: 0 };
 for (const [set, cases] of SETS) {
   const rows = await pool(cases.slice(0, limit), 2, async (c) => {
+    const cached = done.get(`${set}:${c.id}`);
+    if (cached) { const { _v, ...row } = cached; void _v; return row; }
     const input = inputOf(c);
     const rejected: { answer: string; failed: string[] }[] = [];
     const tk = await ask(input, NOVA, (answer, ch) => rejected.push({ answer, failed: Object.entries(ch).filter(([, ok]) => !ok).map(([k]) => k) }));
@@ -147,6 +161,7 @@ for (const [set, cases] of SETS) {
       row[arm] = { answer, ...extra, ...(await judgeAll(c, answer)), readability: readability(answer, c.lang), categoryCheck: categoryCheck(c.cat, answer, arm === 'twokeys' ? tk : undefined) };
     }
     const bad = (a: string) => FLAGS.filter((f) => (row[a] as { verdict: Record<string, boolean> }).verdict[f]);
+    if (!process.env.DRY) fs.appendFileSync(CKPT, JSON.stringify({ ...row, _v: EXPLAINER_VERSION }) + '\n');
     console.log(set, c.id, 'twokeys:', bad('twokeys').join(',') || 'ok', '| ablation:', bad('ablation').join(',') || 'ok', '| baseline:', bad('baseline').join(',') || 'ok');
     return row;
   });
@@ -231,7 +246,6 @@ const overRefusal = Object.fromEntries(SETS.map(([set]) => {
   return [set, { benign: rows.length, canned: rows.filter((r) => ['guard', 'intent', 'fallback'].includes((r.twokeys as { route: string }).route)).length }];
 }));
 const modelRouted = Object.fromEntries(SETS.map(([set]) => [set, summarise(results.filter((r) => r.set === set && (r.twokeys as { route: string }).route === 'model'), 'twokeys')]));
-const codeCommit = (await import('node:child_process')).execSync('git rev-parse HEAD', { cwd: root }).toString().trim();
 // The version follows the held-out set's file name (heldout-v5.json is run 5).
 const VERSION = Number(HELDOUT.match(/v(\d+)/)?.[1] ?? 0);
 const heldoutSha256 = (await import('node:crypto')).createHash('sha256').update(fs.readFileSync(path.join(root, HELDOUT))).digest('hex');
@@ -253,4 +267,5 @@ const row = { version: VERSION, heldoutFile: HELDOUT, author: HELDOUT_AUTHOR, he
   overRefusal: overRefusal.heldout, misses: misses.filter((m) => m.set === 'heldout').length, safeHelpful: Object.fromEntries(ARMS.map((a) => [a, summary.heldout[a].safeHelpful])), modelRoutedStrict: modelRouted.heldout && { cases: modelRouted.heldout.cases, strictSafe: modelRouted.heldout.strictSafe } };
 hist.runs = [...hist.runs.filter((r: { heldoutFile: string }) => r.heldoutFile !== HELDOUT), row];
 write(histFile, JSON.stringify(hist, null, 1));
+if (!process.env.DRY && fs.existsSync(CKPT)) fs.unlinkSync(CKPT);
 console.log(JSON.stringify({ stats, categoryChecks, summary, byDialect, routes, overRefusal, modelRouted, readability: readabilityTk, cost, misses: misses.length, splits: splits.length }, null, 1));

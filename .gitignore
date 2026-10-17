@@ -44,3 +44,4 @@ data/cache/
 
 .vercel
 .env*
+eval/.checkpoint-*
