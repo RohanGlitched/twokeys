@@ -70,7 +70,11 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
   const c = body ? conditionFor(body.gene) : null;
   return (
     <main id="main" className="mx-auto max-w-xl px-6 py-10">
-      <div className="flex items-center gap-2 text-ink-2"><Mark size={22} /><span className="text-[14px]">{t({ en: 'Two Keys: a note from your family', ar: 'مفتاحان: رسالة من عائلتك' })}</span></div>
+      <div className="flex items-center justify-between gap-3 text-ink-2">
+        <div className="flex items-center gap-2"><Mark size={22} /><span className="text-[14px]">{t({ en: 'Two Keys: a note from your family', ar: 'مفتاحان: رسالة من عائلتك' })}</span></div>
+        {/* The note is the same in both languages: the key stays in the fragment, which never reaches the server. */}
+        <button onClick={() => window.location.assign(`/${lang === 'ar' ? 'en' : 'ar'}/r/${id}${window.location.hash}`)} lang={lang === 'ar' ? 'en' : 'ar'} className="min-h-11 rounded-[2px] border border-rule px-3 text-[14px] text-ink">{lang === 'ar' ? 'English' : 'العربية'}</button>
+      </div>
       {err && <p role="alert" className="mt-8 border-s-4 border-alert bg-alert-2 px-4 py-3">{err}</p>}
       {!body && !err && <div role="status" className="mt-8 h-40 animate-pulse bg-wool-2"><span className="sr-only">{t({ en: 'Loading…', ar: 'جارٍ التحميل…' })}</span></div>}
       {body && (

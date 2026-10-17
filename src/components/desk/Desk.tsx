@@ -16,6 +16,8 @@ const CNV = new Set(['CYP21A2', 'HBA', 'HBA1', 'HBA2', 'SMN1', 'GBA1', 'F8']);
 const XL = new Set(['ABCD1', 'AFF2', 'ARX', 'DMD', 'F8', 'F9', 'FMR1', 'GLA', 'L1CAM', 'MID1', 'NR0B1', 'OTC', 'PLP1', 'RPGR', 'RS1', 'SLC6A8', 'G6PD']);
 /** Must match COUNSELLORS in lib/deskauth.ts (server-only). */
 const COUNSELLORS = ['Dr. Fatima Al Hammadi (synthetic)', 'Dr. Yousef Al Marzouqi (synthetic)', 'Judge (demo)'];
+/** How each sign-in name is shown in Arabic (the value sent to the server stays the same). */
+const COUNSELLOR_AR: Record<string, string> = { 'Dr. Fatima Al Hammadi (synthetic)': 'د. فاطمة الحمادي (افتراضية)', 'Dr. Yousef Al Marzouqi (synthetic)': 'د. يوسف المرزوقي (افتراضي)', 'Judge (demo)': 'محكّم (عرض)' };
 const PRIORITY: Record<NonNullable<DeskCase['priority']>, L> = { urgent: { en: 'Urgent: call today', ar: 'عاجل: اتصال اليوم' }, pregnant: { en: 'Pregnant', ar: 'حمل' }, routine: { en: 'Routine', ar: 'روتيني' } };
 const LEVEL: Record<string, L> = { simple: { en: 'simple reading', ar: 'قراءة مبسطة' }, standard: { en: 'standard reading', ar: 'قراءة عادية' }, detailed: { en: 'detailed reading', ar: 'قراءة مفصلة' } };
 type Clocked = Pick<QueueItem, 'status' | 'createdAt' | 'dueBy' | 'firstContactAt'>;
@@ -118,7 +120,7 @@ export function Desk({ lang }: { lang: Locale }) {
         <form className="mt-6 grid gap-3" onSubmit={(e) => { e.preventDefault(); load(); }}>
           <label className="text-[13px] text-ink-2" htmlFor="who">{t({ en: 'Counsellor account', ar: 'حساب المرشد الوراثي' })}
             <select id="who" value={user} onChange={(e) => setUser(e.target.value)} className="mt-1 block w-full rounded-[2px] border border-ink bg-paper px-3 py-3 text-[15px] text-ink">
-              {COUNSELLORS.map((c) => <option key={c} value={c}>{c}</option>)}
+              {COUNSELLORS.map((c) => <option key={c} value={c}>{lang === 'ar' ? COUNSELLOR_AR[c] ?? c : c}</option>)}
             </select></label>
           <label className="text-[13px] text-ink-2" htmlFor="pc">{t({ en: 'Passcode', ar: 'رمز المرور' })}
             <input id="pc" type="password" value={code} onChange={(e) => setCode(e.target.value)} className="mt-1 block w-full rounded-[2px] border border-ink bg-paper px-3 py-3 text-ink" autoComplete="off" /></label>
@@ -256,6 +258,7 @@ export function Desk({ lang }: { lang: Locale }) {
                     <button onClick={() => act('close')} className="rounded-[2px] border border-rule px-4 py-2.5 text-[14px] text-ink-2">{t({ en: 'Close with outcome', ar: 'أغلق مع النتيجة' })}</button>
                   </div>
                 )}
+                {c.status !== 'withdrawn' && c.status !== 'closed' && <p className="text-[12px] text-ink-2">{t({ en: 'In a deployment, calls and in-app messages go through the operator’s own phone system and the person’s app inbox; this demo records the contact and its time only.', ar: 'في التشغيل الفعلي تمر المكالمات والرسائل عبر نظام الاتصال لدى الجهة المشغِّلة وصندوق الرسائل في تطبيق الشخص؛ ويسجّل هذا العرض التواصل ووقته فقط.' })}</p>}
                 {err && <p role="alert" className="text-[13px] text-alert">{err}</p>}
 
                 {c.status !== 'withdrawn' && (
