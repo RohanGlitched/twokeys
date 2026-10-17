@@ -13,6 +13,7 @@ import { Diamond, Mark, Person } from '@/components/glyphs';
 import { Sadu } from '@/components/Sadu';
 import { Ask, Counsellor, Family, Options } from './Views';
 import { TeachBack } from './TeachBack';
+import { Listen } from './Listen';
 import { sessionId } from '@/lib/pairing';
 
 type L = { en: string; ar: string };
@@ -328,7 +329,10 @@ function SharedGene({ gene, lang, level, xl }: { gene: string; lang: Locale; lev
     <article className="mt-5 rounded-[3px] border border-madder bg-paper">
       <div className="flex items-baseline justify-between gap-3 border-b border-madder-2 px-4 py-3">
         <h3 className="text-[17px] font-semibold text-madder">{c ? t(c.name) : gene}</h3>
-        <span className="font-mono text-[12px] text-ink-3">{gene}</span>
+        <span className="flex items-center gap-2">
+          <Listen lang={lang} text={[c ? t(c.name) : gene, xl ? '' : t({ en: 'In each pregnancy: a 1 in 4 chance the child has the condition, 2 in 4 that the child is a healthy carrier, and 1 in 4 that the child carries neither copy.', ar: 'في كل حمل: احتمال واحد من أربعة أن يصاب الطفل بالحالة، واثنان من أربعة أن يكون حاملاً سليماً، وواحد من أربعة ألا يحمل أي نسخة.' }), c ? t(c.what[level]) : '', c ? t(c.care) : ''].filter(Boolean).join(' ')} />
+          <span className="font-mono text-[12px] text-ink-3">{gene}</span>
+        </span>
       </div>
       <div className="px-4 py-4">
         {!xl ? (
