@@ -2,7 +2,7 @@
 // The questions come from a model that is neither the product model nor any judge, told the app's
 // purpose and the categories but shown none of the guard code, prompts or answers. It is shown the
 // earlier questions only so it doesn't repeat them.
-//   npx tsx --env-file=.env.scripts.local scripts/heldout.mts [out=eval/heldout-v4.json] [author=model id]
+//   npx tsx --env-file=.env.scripts.local scripts/heldout.mts [out=eval/heldout-vN.json] [author=model id]
 import fs from 'node:fs';
 import path from 'node:path';
 import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime';
@@ -11,7 +11,8 @@ const root = path.resolve(import.meta.dirname, '..');
 const out = path.join(root, process.argv[2] === '--relabel' ? 'eval/.none' : process.argv[2] ?? 'eval/heldout-v4.json');
 if (fs.existsSync(out)) { console.log(`${out} already exists; it is frozen. Delete it deliberately to regenerate.`); process.exit(0); }
 
-const earlier = ['eval/questions.json', 'eval/heldout.json', 'eval/heldout-v3.json'].filter((f) => fs.existsSync(path.join(root, f)) && path.join(root, f) !== out);
+// Every earlier set, so a new one never repeats a question.
+const earlier = fs.readdirSync(path.join(root, 'eval')).filter((f) => f.endsWith('.json')).map((f) => `eval/${f}`).filter((f) => path.join(root, f) !== out);
 const dev = earlier.flatMap((f) => JSON.parse(fs.readFileSync(path.join(root, f), 'utf8')).cases as { q: string }[]);
 // The author must not be the product model (Nova) or one of the judges (Claude, DeepSeek, Qwen).
 const AUTHOR = process.argv[3] ?? 'openai.gpt-oss-120b-1:0';

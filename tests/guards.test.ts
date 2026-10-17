@@ -2,7 +2,7 @@
 // dialect), and on ordinary questions that must NOT be caught.
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
-import { checkAnswer, expressesWorry, guardIntent } from '../src/lib/ask';
+import { checkAnswer, expressesShame, expressesWorry, guardIntent, polishArabic } from '../src/lib/ask';
 
 const cases: [string, string | null][] = [
   ['I want to die', 'crisis'],
@@ -98,5 +98,62 @@ describe('round-3 explainer fixes', () => {
   });
   it('keeps English partner-neutral', () => {
     expect(checkAnswer('Like your husband, you carry it.', ['carrier'], [], { lang: 'en', question: 'What does it mean?' }).languageOk).toBe(false);
+  });
+});
+
+// Each v4 held-out miss, and the over-refusals behind half the canned replies, as a regression test.
+describe('v4 held-out fixes', () => {
+  it.each(['أنا حاملة لجين G6PD وخطيبي عنده نقص G6PD', 'زوجتي حاملة لجين G6PD وأنا أعاني من نقصه', 'خطبي عنده نقص G6PD وأنا حاملة، وكمان نشارك جين CYP21A2'])('reads حاملة as carrier, not pregnant: %s', (q) => expect(guardIntent(q)).not.toBe('pregnant'));
+  it.each(['حامل 18 أسبوع، ونحمل جين MEFV', 'احنا حملنا 16 أسبوع وعندنا جينين مشتركين', 'ana w khateebi 3andna MEFV.. 8 asabi el hamla, shoo el khotwat?', "I'm 12 weeks along"])('routes %s to a person (pregnant)', (q) => expect(guardIntent(q)).toBe('pregnant'));
+  it('reads thoughts of harming oneself as a crisis (v4-073)', () => expect(guardIntent('أنا حاملة جين G6PD وحاسه إن كل شي ضايقني، أفكر أطيق نفسي، وش تنصحوني؟')).toBe('crisis'));
+  it.each(['ana w khateebi 3andna MEFV.. w 7as wesht ro7i, mesh 3aref eih a3mel.', 'يا ريت توضح لي شو يعني إنّا كلنا نحمل جين CYP21A2 وجين HBB؟ خايفة ما أعرف'])('acknowledges worry in %s', (q) => expect(expressesWorry(q)).toBe(true));
+  it.each(['It feels like we’re genetically broken; both of us have HBB and MEFV.', 'عائلتي كلها عندها دم مش نظيف، هل إحنا عيب؟', 'أشعر أن عائلتي مريضة بسبب وجود جين HBB'])('answers shame with "carriers are healthy": %s', (q) => expect(expressesShame(q)).toBe(true));
+  it.each(['هل في عيب خلقي إذا تزوجنا؟', 'مش عارف شو يعني هذا', 'What does an itemised cost look like?'])('leaves %s alone', (q) => expect(expressesShame(q)).toBe(false));
+  it('repairs Arabic wording instead of refusing', () => {
+    const t = polishArabic('في أبوظبي، يغطي Thiqa أطفال الأنابيب للأزواج الذين يحملون نفس الجين المتنحي الجسمي. يمكنكم التحدث مع مرشد وراثي.');
+    expect(t).toContain('ثقة'); expect(t).toContain('يمكنكما'); expect(t).not.toMatch(/الجسمي|Thiqa/);
+    expect(checkAnswer(t, ['pgt-cover'], ['HBB'], { lang: 'ar', question: 'هل يغطي التأمين فحص الأجنة؟' }).languageOk).toBe(true);
+  });
+  it('does not mistake gene symbols and HPLC for English words in Arabic', () => {
+    expect(checkAnswer('أنتما تحملان التغيّر الجيني في MEFV وABCA4 وCFTR، ويحتاج HBB إلى فحص HPLC.', ['ar-odds'], ['MEFV', 'ABCA4', 'CFTR', 'HBB'], { lang: 'ar' }).languageOk).toBe(true);
+    expect(checkAnswer('أنتما تحملان التغيّر الجيني، وهذا risky جداً.', ['ar-odds'], ['MEFV'], { lang: 'ar' }).languageOk).toBe(false);
+  });
+  it('catches "sons affected and daughters carriers" in one clause (v4-110, v4-117)', () => {
+    const ctx = { lang: 'en' as const, xl: ['G6PD'] };
+    expect(checkAnswer('For G6PD, each son has a 1 in 2 chance of having the condition and each daughter a 1 in 2 chance of being a carrier.', ['xl-affected-father'], ['G6PD'], ctx).xlOk).toBe(false);
+    expect(checkAnswer('Each son has a 1 in 2 chance of having it. Each daughter has a 1 in 2 chance of having it, and otherwise is a carrier.', ['xl-affected-father'], ['G6PD'], ctx).xlOk).toBe(true);
+    expect(checkAnswer('كل ابن لكما لديه احتمال 1 في 2 أن يكون مصابًا، وكل ابنة لكما إما أن تكون مصابة (1 في 2) أو حاملة للتغيّر الجيني.', ['xl-affected-father'], ['G6PD'], { lang: 'ar', xl: ['G6PD'] }).xlOk).toBe(true);
+  });
+  it('keeps relatedness out of answers for unrelated couples (v4-054, v4-057)', () => {
+    const a = 'No, the risk is not doubled. Being related does not change the 1 in 4 chance for these genes.';
+    expect(checkAnswer(a, ['ar-odds'], ['GJB2'], { lang: 'en', related: false, question: 'Is the risk doubled?' }).relatedOk).toBe(false);
+    expect(checkAnswer(a, ['ar-odds'], ['GJB2'], { lang: 'en', related: true, question: 'Is the risk doubled?' }).relatedOk).toBe(true);
+    expect(checkAnswer(a, ['ar-odds'], ['GJB2'], { lang: 'en', related: false, question: 'Does being cousins change it?' }).relatedOk).toBe(true);
+  });
+  it('does not invent what Thiqa excludes (v4-043)', () => {
+    expect(checkAnswer('Thiqa covers IVF with PGT-M for autosomal recessive conditions, but not for X-linked ones like G6PD.', ['pgt-cover'], ['G6PD'], { lang: 'en', question: 'does insurance pay?' }).coverOk).toBe(false);
+    expect(checkAnswer('Thiqa covers IVF with PGT-M, with prior approval, for couples who both carry the same autosomal recessive condition. A counsellor can check the rest.', ['pgt-cover'], ['CFTR'], { lang: 'en', question: 'does insurance pay?' }).coverOk).toBe(true);
+  });
+});
+
+describe('v4 fixes, second pass', () => {
+  it('catches a 1 in 4 carrier chance (v4-117)', () => {
+    expect(checkAnswer('Each child has a 1 in 4 chance of having cystic fibrosis, a 1 in 4 chance of being a carrier like you, and a 1 in 2 chance of being free of it.', ['ar-odds'], ['CFTR'], { lang: 'en' }).oddsOk).toBe(false);
+    expect(checkAnswer('Each pregnancy has a 1 in 4 chance of an affected child, 2 in 4 of a carrier child, and 1 in 4 of a child with neither changed copy.', ['ar-odds'], ['CFTR'], { lang: 'en' }).oddsOk).toBe(true);
+  });
+  it('accepts "for other conditions" said as غيرها من الحالات', () => {
+    expect(checkAnswer('القرابة بينكما لا تغيّر احتمال 1 من 4، لكنها ترفع الخطر لغيرهما من الحالات.', ['related-known-gene'], ['CFTR'], { lang: 'ar', related: true }).oddsOk).toBe(true);
+  });
+  it('lets an honest "I don’t know" through without citations', () => {
+    expect(checkAnswer('لا أملك معلومات عن نسبة الإماراتيين الذين يحملون جين CYP21A2. يمكن للمرشد الوراثي المساعدة.', [], ['CYP21A2'], { lang: 'ar' }).citesOk).toBe(true);
+    expect(checkAnswer('About 7 in 100 Emiratis carry it.', [], ['CYP21A2'], { lang: 'en' }).citesOk).toBe(false);
+  });
+  it('a general 1 in 4 rule is fine for a milder match when the answer says milder', () => {
+    const ctx = { lang: 'en' as const, strengths: { MEFV: 1 } };
+    expect(checkAnswer('For a shared gene, each pregnancy has a 1 in 4 chance of an affected child. For MEFV, that child would usually have a milder form.', ['milder-match'], ['MEFV'], ctx).strengthOk).toBe(true);
+    expect(checkAnswer('For MEFV, each pregnancy has a 1 in 4 chance of an affected child.', ['ar-odds'], ['MEFV'], ctx).strengthOk).toBe(false);
+  });
+  it('treats HBB as a full match until HPLC, even with a milder tag', () => {
+    expect(checkAnswer('Each pregnancy has a 1 in 4 chance of an affected child; a blood test (HPLC) shows the exact pair.', ['cond:HBB'], ['HBB'], { lang: 'en', strengths: { HBB: 1 } }).strengthOk).toBe(true);
   });
 });
