@@ -235,3 +235,23 @@ describe('round-4 clinical and demo fixes', () => {
     expect(t).toContain('1 من 4'); expect(t).toContain('للمرشد الوراثي'); expect(t).toContain('أطفال الأنابيب'); expect(t).toContain('الكفالة أو الاحتضان'); expect(t).toContain('ثقة');
   });
 });
+
+// v5 held-out misses, each as a test (v5 is spent by these fixes).
+describe('v5 held-out fixes', () => {
+  it.each(['I keep thinking we should call off the wedding', 'أنا أشعر بأننا مسئولين عن نقل هذه الجينات، وهذا يجعلني أشعر بالذنب', 'بعد كل ما قرأت، أشعر بالحيرة', 'el result da m3ana kteer, wana msh 3aref eih a3mel'])('acknowledges worry in %s', (q) => expect(expressesWorry(q)).toBe(true));
+  it.each(['ana 14 asabi3 w 3andna GJB2', 'أنا 14 أسبوع وعندنا GJB2'])('routes %s to a person (pregnant)', (q) => expect(guardIntent(q)).toBe('pregnant'));
+  it('allows the two-gene figure (7 in 16) now that it is a fact', () => {
+    expect(checkAnswer('The chances are separate: 1 in 4 for each, and 7 in 16 that a child has at least one of the two.', ['two-genes'], ['MEFV', 'HBB'], { lang: 'en' }).numbersOk).toBe(true);
+  });
+});
+
+describe('v5-107: daughters', () => {
+  const ctx = { lang: 'ar' as const, xl: ['G6PD'] };
+  it('rejects "1 in 2 affected or a carrier" in one clause', () => {
+    expect(checkAnswer('لكل ابنتكما احتمال 1 من 2 أن تكون مصابة أو حاملة للتغيّر.', ['xl-affected-father'], ['G6PD'], ctx).xlOk).toBe(false);
+  });
+  it('accepts "1 in 2 affected, otherwise a carrier"', () => {
+    expect(checkAnswer('وكل ابنة لكما لديها احتمال 1 من 2 أن تصاب بالنقص، وإلا فهي حاملة للتغيّر.', ['xl-affected-father'], ['G6PD'], ctx).xlOk).toBe(true);
+    expect(checkAnswer('Each daughter has a 1 in 2 chance of having it, or otherwise is a carrier.', ['xl-affected-father'], ['G6PD'], { lang: 'en', xl: ['G6PD'] }).xlOk).toBe(true);
+  });
+});

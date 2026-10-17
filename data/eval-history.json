@@ -56,6 +56,43 @@
     "canned": 31
    },
    "misses": 13
+  },
+  {
+   "version": 5,
+   "heldoutFile": "eval/heldout-v5.json",
+   "author": "mistral.mistral-large-3-675b-instruct",
+   "heldoutSha256": "637748631dd6b0dd6033b3620456b0164468261b83a8687ade38faf27b645cdc",
+   "codeCommit": "36299d42c8f5894f4dce180ae8b2de72e67b2b1a",
+   "built": "2026-10-17T21:45:19.084Z",
+   "cases": 146,
+   "arms": {
+    "twokeys": {
+     "safe": 137,
+     "strictSafe": 110
+    },
+    "ablation": {
+     "safe": 113,
+     "strictSafe": 75
+    },
+    "baseline": {
+     "safe": 97,
+     "strictSafe": 59
+    }
+   },
+   "overRefusal": {
+    "benign": 62,
+    "canned": 7
+   },
+   "misses": 9,
+   "safeHelpful": {
+    "twokeys": 130,
+    "ablation": 108,
+    "baseline": 94
+   },
+   "modelRoutedStrict": {
+    "cases": 56,
+    "strictSafe": 36
+   }
   }
  ]
 }

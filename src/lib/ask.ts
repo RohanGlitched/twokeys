@@ -71,8 +71,8 @@ export const FAITH = [/\b(haram|halal|sinful|a sin|allowed in islam|islamically|
 export const PREGNANT = [
   /(?<!\b(if|when|once)\s)\b(i'?m|i am|she'?s|she is|my wife is|we'?re|we are)\s+(\d+\s+(weeks?|months?)\s+)?pregnant\b|\bpregnant (now|already|with)\b|\b\d+\s*(weeks?|months?) (pregnant|along)\b|\b(i'?m|i am|she'?s|she is|my wife is|we'?re|we are) expecting\b|\bexpecting (our|a|my) (first |second |third )?(baby|child)\b|\b(baby|she|i) (is |am )?due (in|on|next)\b|\bdue date\b|\b(first|second|third|1st|2nd|3rd) trimester\b/i,
   // حاملة usually means "carrier"; حامل without ة, or any form with a number of weeks, means pregnant.
-  /(أنا|انا|إني|اني|زوجتي|مرتي)\s+(حامل|حبلى)(?!ة)(?!\s*(لل|ل|ب)?\s*(جين|تغي|الجين|التغي|الصفة|هذا|[A-Z]))|حامل(ة)?\s+(في|ب)\s*(الأسبوع|الاسبوع|الشهر|أسبوع|اسبوع|شهر)|حامل(ة)?\s*(في|ب)?\s*(ال)?\s*[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر|شهور)|حمل(نا|ي|ها)?\s+[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)|[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)\s+(من\s+)?(ال)?حمل|(الأسبوع|الاسبوع)\s+\S+\s+من الحمل|(زوجتي|مرتي|حرمتي|أنا|انا)\s+(في|ب)\s*(ال)?(شهر|أسبوع|اسبوع)\s*(ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع|[0-9٠-٩]+)|(ننتظر|متوقعين|نتوقع) (مولود|مولوداً|طفل)|موعد الولادة|في الشهر (ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع) من الحمل|الثلث (الأول|الثاني|الثالث) من الحمل|حبلى/,
-  /\b(ana|ena)\s+(7amel|7amil|7amla|hamel|7ableh?)\b(?!\s*(b|bil|el|l)?\s*(gene|jeen|hbb|hba|cftr|mefv|[a-z]{2,6}\d))|\b\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?|shohor|shhor|months?)\s*(fi\s+|el\s+|al\s+|of\s+)?(el|al)?\s*-?(haml|hamla|7aml|7amla|pregnancy)\b|\b(haml|hamla|7aml|7amla)\s*\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?)/i,
+  /(أنا|انا|إني|اني|زوجتي|مرتي)\s+(حامل|حبلى)(?!ة)(?!\s*(لل|ل|ب)?\s*(جين|تغي|الجين|التغي|الصفة|هذا|[A-Z]))|حامل(ة)?\s+(في|ب)\s*(الأسبوع|الاسبوع|الشهر|أسبوع|اسبوع|شهر)|حامل(ة)?\s*(في|ب)?\s*(ال)?\s*[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر|شهور)|حمل(نا|ي|ها)?\s+[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)|[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)\s+(من\s+)?(ال)?حمل|(الأسبوع|الاسبوع)\s+\S+\s+من الحمل|(زوجتي|مرتي|حرمتي|أنا|انا)\s+(في|ب)\s*(ال)?(شهر|أسبوع|اسبوع)\s*(ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع|[0-9٠-٩]+)|(ننتظر|متوقعين|نتوقع) (مولود|مولوداً|طفل)|موعد الولادة|في الشهر (ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع) من الحمل|الثلث (الأول|الثاني|الثالث) من الحمل|(أنا|انا|زوجتي|مرتي|حرمتي)\s+(في\s+)?(ال)?[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع)|حبلى/,
+  /\b(ana|ena)\s+(7amel|7amil|7amla|hamel|7ableh?)\b(?!\s*(b|bil|el|l)?\s*(gene|jeen|hbb|hba|cftr|mefv|[a-z]{2,6}\d))|\b\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?|shohor|shhor|months?)\s*(fi\s+|el\s+|al\s+|of\s+)?(el|al)?\s*-?(haml|hamla|7aml|7amla|pregnancy)\b|\b(haml|hamla|7aml|7amla)\s*\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?)|\b(ana|ena|e7na|ehna|hiya|heya|mrati|zawjti)\s+(fi\s+|f\s+)?(el\s+)?\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?)\b/i,
 ];
 export const TERMINATION = [/\b(abort(?!\s+(the|my|our|this)\s+(\w+\s+)?(booking|appointment|request|call|session))|abortion|terminat\w+ (the |a )?pregnan\w+|end (the|a) pregnancy)\b/i, /(إجهاض|اجهاض|إنهاء الحمل|انهاء الحمل|نسقط الجنين)/];
 
@@ -247,7 +247,9 @@ export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: 
   };
   const daughterParts = clauses.map(aboutDaughters).filter(Boolean);
   const xlOk = !(xl && (daughterParts.some((s) => CARRIER_WORD.test(s) && !AFFECTED_WORD.test(s))
-    || (daughterParts.length > 0 && !daughterParts.some((s) => AFFECTED_WORD.test(s)))));
+    || (daughterParts.length > 0 && !daughterParts.some((s) => AFFECTED_WORD.test(s)))
+    // "1 in 2 affected or a carrier" in one breath reads as 1 in 2 for either: it must say "otherwise".
+    || daughterParts.some((s) => HALF.test(s) && AFFECTED_WORD.test(s) && CARRIER_WORD.test(s) && /(\bor\b|أو)/i.test(s) && !/(otherwise|وإلا|other half|النصف الآخر|either|إما)/i.test(s))));
   // A milder match must not be described as a plain "1 in 4 affected" without saying milder.
   const milder = Object.entries(ctx.strengths ?? {}).filter(([g, v]) => v < 2 && g !== 'HBB').map(([g]) => g);
   const names = (g: string) => [g, cardFor(g)?.name.en, cardFor(g)?.name.ar].filter((x): x is string => !!x);
@@ -321,8 +323,9 @@ function system(input: AskInput): string {
     `7. Answer in ${input.lang === 'ar' ? 'Modern Standard Arabic, clear and warm, using only Arabic script apart from gene symbols' : 'plain English'}, at a ${input.level} reading level, in at most 100 words.`,
     input.lang === 'ar' ? GLOSSARY_AR : 'Never say "incompatible"; say "a couple with an increased chance".',
     'For insurance, say only what [pgt-cover] says it covers; never say what a plan does not cover. For anything else about cost or cover, say a counsellor can check.',
-    input.xl.length ? 'For the X-linked gene, every sentence about daughters must say a daughter can have the condition (1 in 2) and otherwise is a carrier. If the man asks whether his sons get it from him, say a father never passes an X-linked condition to his sons [xl-father-son]; their 1 in 2 chance comes from the mother.' : '',
+    input.xl.length ? 'For the X-linked gene, every sentence about daughters must say a daughter can have the condition (1 in 2) and otherwise is a carrier. Only if the man asks whether his sons get it from him, say a father never passes an X-linked condition to his sons [xl-father-son]; their 1 in 2 chance comes from the mother. Never use it to explain other genes.' : '',
     Object.values(input.strengths ?? {}).some((v) => v < 2) ? 'For a milder match, put the word "milder" in the same sentence as its 1 in 4.' : '',
+    input.genes.length >= 2 ? 'If asked about the chance across both genes, the chances are separate and do not add up; the chance of at least one of two is 7 in 16 [two-genes]. Correct a wrong figure (such as 1 in 2) plainly.' : '',
     '8. Write Arabic letters directly in the JSON, never as \\u escapes. Reply as JSON only: {"answer": string, "cites": [fact ids you used, e.g. "ar-odds", "cond:HBB"], "escalate": boolean (true if a counsellor should follow up)}.',
     '',
     'FACTS:',
@@ -370,7 +373,9 @@ Reply with JSON only: {"intent": "<label>"}`;
 }
 
 async function callModel(input: AskInput, model: string, extra?: string) {
-  const history = (input.history ?? []).slice(-6).map((h) => ({ role: h.role, content: [{ text: h.text.slice(0, 800) }] }));
+  const turns = (input.history ?? []).slice(-6);
+  while (turns[0]?.role === 'assistant') turns.shift();
+  const history = turns.map((h) => ({ role: h.role, content: [{ text: h.text.slice(0, 800) }] }));
   const text = await converse(model, system(input) + (extra ? `\n\nYour previous draft broke a rule: ${extra} Rewrite it.` : ''), [...history, { role: 'user', content: [{ text: input.question.slice(0, 600) }] }], 1500);
   if (process.env.ASK_RAW) console.error('RAW', text);
   return parseDraft(text);
@@ -394,7 +399,7 @@ export function parseDraft(text: string): { answer: string; cites: string[]; esc
 
 /** Fear or worry, short of a crisis: in English, Arabic, Gulf dialect and Arabizi. */
 // Self-blame and stigma ("we are defective", "bad blood") count too: they need the same human follow-up.
-const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault|selfish)\b|أناني|أنانيين|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|مضايق|مضايقة|ضايقني|مخنوق|مخنوقة|(مش|ما) (عارف|عارفة|أعرف|اعرف) (إيش|ايش|شو|وش|شنو|ماذا) (أسوي|اسوي|أعمل|اعمل|نسوي|نعمل)|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa|mdaye2|mday2a|ma5no2|makhnou2|wesh?t\s*ro7i)|\bm(e|i)?sh 3ar(e)?f(a)? (eih|eh|shu|sho|esh) (a3mel|asawi|n3mel)\b/i;
+const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault|selfish|guilty|overwhelmed|confused|can'?t stop thinking|keep thinking|too much for (me|us))\b|بالذنب|ذنب|الحيرة|بالحيرة|حيرة|محتار|محتارة|كثير علينا|كثير علي|ما أقدر أتحمل|\b(kteer|ktir|kitir) (3alena|3alaya|m3ana)\b|أناني|أنانيين|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|مضايق|مضايقة|ضايقني|مخنوق|مخنوقة|(مش|ما) (عارف|عارفة|أعرف|اعرف) (إيش|ايش|شو|وش|شنو|ماذا) (أسوي|اسوي|أعمل|اعمل|نسوي|نعمل)|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa|mdaye2|mday2a|ma5no2|makhnou2|wesh?t\s*ro7i)|\bm(e|i)?sh 3ar(e)?f(a)? (eih|eh|shu|sho|esh) (a3mel|asawi|n3mel)\b/i;
 export const expressesWorry = (q: string) => WORRY.test(q.normalize('NFKC')) || STIGMA.test(q.normalize('NFKC'));
 /** Shame about a family or about being a carrier ("broken", "bad blood", "dirty blood", "our family is sick"). */
 const STIGMA = /\b(broken|defective|damaged|cursed|bad blood|dirty blood|tainted|our fault|my fault|ashamed|shame)\b|معيب|معيبين|(إحنا|احنا|نحن|هل نحن|أنا|انا) عيب|دم(ي|ه|ها|نا|هم|كم)?\s*(فاسد|مش نظيف|غير نظيف|وسخ|خربان|مو زين)|عائلتي مريضة|العيلة كلها مريضة|العائلة كلها مريضة|عائلة مريضة|ذنبي|غلطتي|خجلان|خجلانة|\b(3ayb|3eib|3ayleen|m7awleen|dam\s*wis5)\b/i;
@@ -405,9 +410,9 @@ const NOT_BROKEN = {
   arF: 'التغيّر الجيني ليس ذنب أحد، وتوجد هذه التغيّرات في كل عائلة وكل مجتمع. وحمل التغيّر ليس مرضاً.',
 };
 const ACKNOWLEDGE = {
-  en: 'It’s completely understandable to feel this way, and you don’t have to work through it alone: a genetic counsellor can talk it through with you.',
-  ar: 'من الطبيعي تماماً أن تشعر بهذا، ولست وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
-  arF: 'من الطبيعي تماماً أن تشعري بهذا، ولستِ وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
+  en: `It’s completely understandable to feel this way, and you don’t have to work through it alone: a genetic counsellor can talk it through with you, and if it ever feels like too much, the ${HELP_LINE.en} is there any time.`,
+  ar: `من الطبيعي تماماً أن تشعر بهذا، ولست وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه، وإن شعرت يوماً أن الأمر فوق طاقتك فـ${HELP_LINE.ar} متاح في أي وقت.`,
+  arF: `من الطبيعي تماماً أن تشعري بهذا، ولستِ وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه، وإن شعرتِ يوماً أن الأمر فوق طاقتك فـ${HELP_LINE.ar} متاح في أي وقت.`,
 };
 /** When the safety checks themselves can't run, show help rather than an unchecked answer. */
 const CHECK_FAILED = {
