@@ -35,15 +35,27 @@ function token(labKey: Uint8Array, session: string, tag: string, gene: string): 
  *   carries it and he has it. Each person's own X-linked result also reaches them as a personal
  *   result (see personalFindings), never only through the pairing.
  */
+/**
+ * Genes matched as one: HBA1 and HBA2 together make alpha globin, so a change in either matches a
+ * change in the other.
+ */
+export const matchGene = (gene: string) => (/^HBA[12]$/i.test(gene) ? 'HBA' : gene.toUpperCase());
+/**
+ * Genes where only the exact pair of changes says how serious it is (HbS with HbC, HbD-Punjab or
+ * beta-zero is serious even though HbC, HbD or HbE alone looks "mild"). Any shared change counts as a
+ * full match until the lab's confirmatory test (HPLC) gives the pair.
+ */
+const PAIR_DECIDES = new Set(['HBB']);
+
 export function sessionTokens(labKey: Uint8Array, session: string, role: Role, findings: Finding[]): LabelledToken[] {
   if (!/^[0-9a-f]{32,64}$/.test(session)) throw new Error('Bad session id.');
   const out: LabelledToken[] = [];
   for (const f of findings) {
-    const g = f.gene.toUpperCase();
+    const g = matchGene(f.gene);
     if (f.inheritance === 'AR') {
       const severeTag = role === 'A' ? 'r1' : 'r2';
       const anyTag = role === 'A' ? 'r2' : 'r1';
-      if (f.severity === 'severe') out.push({ i: out.length, label: g, token: token(labKey, session, severeTag, g) });
+      if (f.severity === 'severe' || PAIR_DECIDES.has(g)) out.push({ i: out.length, label: g, token: token(labKey, session, severeTag, g) });
       out.push({ i: out.length, label: g, token: token(labKey, session, anyTag, g) });
       out.push({ i: out.length, label: g, token: token(labKey, session, 'm', g) });
     } else {
@@ -70,8 +82,22 @@ export function issue(labKey: Uint8Array, session: string, role: Role, findings:
 }
 const toHex0 = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 
-/** strength 2 = both carry a serious change; 1 = one of them carries a milder one; 0 = both milder (low concern). */
-export interface SharedGene { gene: string; inheritance: Inheritance; strength: 0 | 1 | 2 }
+/**
+ * strength 2 = both carry a serious change; 1 = one of them carries a milder one; 0 = both milder (low concern).
+ * kind, for the globin genes, names what the pair means:
+ *   HBB: 'hplc' (a full match until the confirmatory test gives the exact pair);
+ *   alpha globin (severe = both genes lost on one chromosome, α0; mild = one gene lost, α+):
+ *   'bart' (α0 with α0: Hb Bart's hydrops), 'hbh' (α0 with α+: HbH disease), 'trait' (α+ with α+: harmless trait).
+ */
+export interface SharedGene { gene: string; inheritance: Inheritance; strength: 0 | 1 | 2; kind?: 'hplc' | 'bart' | 'hbh' | 'trait' }
+
+function graded(label: string, n: number): SharedGene {
+  if (label.startsWith('X:')) return { gene: label.slice(2), inheritance: 'XL', strength: 2 };
+  const strength = Math.min(2, n - 1) as 0 | 1 | 2;
+  if (label === 'HBB') return { gene: label, inheritance: 'AR', strength: 2, kind: 'hplc' };
+  if (label === 'HBA') return strength === 0 ? { gene: label, inheritance: 'AR', strength: 0, kind: 'trait' } : { gene: label, inheritance: 'AR', strength: 2, kind: strength === 2 ? 'bart' : 'hbh' };
+  return { gene: label, inheritance: 'AR', strength };
+}
 
 /** The lab's own view of what two people share in a session, computed from its records. */
 export function intersection(labKey: Uint8Array, session: string, a: Finding[], b: Finding[]) {
@@ -83,9 +109,7 @@ export function intersection(labKey: Uint8Array, session: string, a: Finding[], 
   const bIdx = tb.filter((t) => inA.has(t.token));
   const counts = new Map<string, number>();
   for (const t of aIdx) counts.set(t.label, (counts.get(t.label) ?? 0) + 1);
-  const genes: SharedGene[] = [...counts.entries()].map(([label, n]) => (
-    label.startsWith('X:') ? { gene: label.slice(2), inheritance: 'XL' as const, strength: 2 as const } : { gene: label, inheritance: 'AR' as const, strength: Math.min(2, n - 1) as 0 | 1 | 2 }
-  )).sort((x, y) => x.gene.localeCompare(y.gene));
+  const genes: SharedGene[] = [...counts.entries()].map(([label, n]) => graded(label, n)).sort((x, y) => x.gene.localeCompare(y.gene));
   return { A: new Set(aIdx.map((t) => t.token)), B: new Set(bIdx.map((t) => t.token)), genes };
 }
 

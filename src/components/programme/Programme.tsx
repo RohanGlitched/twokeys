@@ -40,7 +40,7 @@ export function Programme({ lang }: { lang: Locale }) {
     }).catch(() => setFailed(true));
   }, []);
   if (failed) return <p className="text-[15px] text-ink-2">{t({ en: 'The numbers could not load. Reload the page.', ar: 'تعذّر تحميل الأرقام. أعد تحميل الصفحة.' })}</p>;
-  if (!m || !src) return <div className="h-64 animate-pulse bg-wool-2 motion-reduce:animate-none" />;
+  if (!m || !src) return <div role="status" className="h-64 animate-pulse bg-wool-2 motion-reduce:animate-none"><span className="sr-only">Loading… / جارٍ التحميل…</span></div>;
   const c = m.counselling[src], u = m.understanding[src], f = m.family[src];
   const synthetic = src === 'seededSynthetic';
   const h = (x: number | null) => (x === null ? t({ en: 'hidden', ar: 'محجوب' }) : lang === 'ar' ? `${fmt(lang).format(x)} س` : `${x} h`);

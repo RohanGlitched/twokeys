@@ -11,7 +11,7 @@ import { geneQ } from '@/lib/genefreq';
 import { Mark, Person } from '@/components/glyphs';
 
 type L = { en: string; ar: string };
-const CNV = new Set(['CYP21A2', 'HBA1', 'HBA2', 'SMN1', 'GBA1', 'F8']);
+const CNV = new Set(['CYP21A2', 'HBA', 'HBA1', 'HBA2', 'SMN1', 'GBA1', 'F8']);
 const XL = new Set(['ABCD1', 'AFF2', 'ARX', 'DMD', 'F8', 'F9', 'FMR1', 'GLA', 'L1CAM', 'MID1', 'NR0B1', 'OTC', 'PLP1', 'RPGR', 'RS1', 'SLC6A8', 'G6PD']);
 /** Must match COUNSELLORS in lib/deskauth.ts (server-only). */
 const COUNSELLORS = ['Dr. Fatima Al Hammadi (synthetic)', 'Dr. Yousef Al Marzouqi (synthetic)', 'Judge (demo)'];
@@ -94,12 +94,12 @@ export function Desk({ lang }: { lang: Locale }) {
 
   if (!authed) {
     return (
-      <main className="mx-auto max-w-md px-6 py-16">
-        <div className="flex items-center gap-2"><Mark size={24} /><span className="text-[15px] font-medium">{t({ en: 'Counsellor desk', ar: 'مكتب المستشار' })}</span></div>
+      <main id="main" className="mx-auto max-w-md px-6 py-16">
+        <div className="flex items-center gap-2"><Mark size={24} /><span className="text-[15px] font-medium">{t({ en: 'Counsellor desk', ar: 'مكتب المرشد الوراثي' })}</span></div>
         <h1 className="mt-6 text-[28px] font-semibold tracking-tight">{t({ en: 'Sign in to the desk', ar: 'سجّل الدخول إلى المكتب' })}</h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'In production, counsellors sign in with their health-authority account. Judges: the demo passcode is in the submission notes.', ar: 'في الإنتاج يسجّل المستشارون الدخول بحساب الجهة الصحية. للمحكّمين: رمز مرور العرض موجود في ملاحظات التقديم.' })}</p>
+        <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'In production, counsellors sign in with their health-authority account. Judges: the demo passcode is in the submission notes.', ar: 'في الإنتاج يسجّل المرشد الوراثيون الدخول بحساب الجهة الصحية. للمحكّمين: رمز مرور العرض موجود في ملاحظات التقديم.' })}</p>
         <form className="mt-6 grid gap-3" onSubmit={(e) => { e.preventDefault(); load(); }}>
-          <label className="text-[13px] text-ink-2" htmlFor="who">{t({ en: 'Counsellor account', ar: 'حساب المستشار' })}
+          <label className="text-[13px] text-ink-2" htmlFor="who">{t({ en: 'Counsellor account', ar: 'حساب المرشد الوراثي' })}
             <select id="who" value={user} onChange={(e) => setUser(e.target.value)} className="mt-1 block w-full rounded-[2px] border border-ink bg-paper px-3 py-3 text-[15px] text-ink">
               {COUNSELLORS.map((c) => <option key={c} value={c}>{c}</option>)}
             </select></label>
@@ -117,10 +117,10 @@ export function Desk({ lang }: { lang: Locale }) {
   const overdue = cases.filter((x) => !x.firstContactAt && !done(x) && x.dueBy < now).length;
   const urgentOpen = cases.filter((x) => !x.firstContactAt && !done(x) && x.priority === 'urgent').length;
   return (
-    <main className="mx-auto max-w-7xl px-6 py-8">
+    <main id="main" className="mx-auto max-w-7xl px-6 py-8">
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink pb-4">
         <div>
-          <div className="flex items-center gap-2 text-ink-2"><Mark size={22} /><span className="text-[14px]">{t({ en: 'Two Keys counsellor desk', ar: 'مكتب المستشار في مفتاحان' })}</span>
+          <div className="flex items-center gap-2 text-ink-2"><Mark size={22} /><span className="text-[14px]">{t({ en: 'Two Keys counsellor desk', ar: 'مكتب المرشد الوراثي في مفتاحان' })}</span>
             <span className="ms-3 text-[13px]">{t({ en: `Signed in as ${user}`, ar: `مسجّل باسم ${user}` })}</span>
             <button onClick={() => { setAuthed(false); setCode(''); setCases([]); setDetail(null); setSel(null); }} className="ms-2 text-[13px] underline">{t({ en: 'Sign out', ar: 'خروج' })}</button></div>
           <h1 className="mt-1 text-[30px] font-semibold tracking-tight">{t({ en: 'Couples waiting for a call', ar: 'أزواج بانتظار مكالمة' })}</h1>
@@ -166,7 +166,7 @@ export function Desk({ lang }: { lang: Locale }) {
             <article className="rounded-[3px] border border-ink bg-paper">
               <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-rule px-5 py-4">
                 <h2 className="text-[22px] font-semibold tracking-tight">{c.person.name}</h2>
-                <span className="text-[12px] text-ink-2">{t({ en: 'case', ar: 'حالة' })} <bdi dir="ltr" className="font-mono">{c.id}</bdi>, {t(STATUS[c.status])}{c.priority ? `, ${t(PRIORITY[c.priority])}` : ''}</span>
+                <span className="text-[12px] text-ink-2">{t({ en: 'case', ar: 'حالة' })} <bdi dir="ltr" className="font-mono">{c.id}</bdi>, {t(STATUS[c.status])}{c.priority ? `, ${t(PRIORITY[c.priority])}` : ''}{c.pregnancyWeeks ? t({ en: `, week ${c.pregnancyWeeks}`, ar: `، الأسبوع ${c.pregnancyWeeks}` }) : ''}</span>
               </div>
               <div className="grid gap-5 px-5 py-5">
                 <div>
@@ -225,7 +225,7 @@ export function Desk({ lang }: { lang: Locale }) {
                             );
                           })}
                         </ul>
-                        <p className="mt-1 text-[12px] text-ink-2">{t({ en: 'Counsellor-only estimates. ACMG advises against quoting residual numbers to patients for multi-gene panels.', ar: 'تقديرات للمستشار فقط. لا توصي ACMG بإبلاغ المرضى بأرقام الخطر المتبقي للوحات متعددة الجينات.' })}</p>
+                        <p className="mt-1 text-[12px] text-ink-2">{t({ en: 'Counsellor-only estimates. ACMG advises against quoting residual numbers to patients for multi-gene panels.', ar: 'تقديرات للمرشد الوراثي فقط. لا توصي ACMG بإبلاغ المرضى بأرقام الخطر المتبقي للوحات متعددة الجينات.' })}</p>
                       </div>
                     )}
                   </div>

@@ -9,7 +9,7 @@ const ROWS: [string, L][] = [
   ['route:guard', { en: 'Caught by a keyword guard', ar: 'التقطه حارس الكلمات' }],
   ['route:intent', { en: 'Caught by the intent check', ar: 'التقطه فحص النية' }],
   ['route:fallback', { en: 'Checks failed twice: safe fixed answer', ar: 'فشلت الفحوص مرتين: إجابة ثابتة آمنة' }],
-  ['escalate', { en: 'Offered a counsellor', ar: 'عُرض عليه مستشار' }],
+  ['escalate', { en: 'Offered a counsellor', ar: 'عُرض عليه مرشد وراثي' }],
   ['urgent', { en: 'Distress: offered a same-day call', ar: 'ضيق: عُرضت مكالمة في اليوم نفسه' }],
   ['lang:ar', { en: 'Asked in Arabic', ar: 'سُئل بالعربية' }],
   ['lang:en', { en: 'Asked in English', ar: 'سُئل بالإنجليزية' }],
@@ -20,7 +20,7 @@ export function Monitor({ lang }: { lang: Locale }) {
   const [m, setM] = useState<{ model?: string; totals: Record<string, number> } | null>(null);
   useEffect(() => { fetch('/api/monitor').then((r) => r.json()).then(setM).catch(() => {}); }, []);
   const fmt = new Intl.NumberFormat(lang === 'ar' ? 'ar-AE' : 'en-GB');
-  if (!m) return <div className="mt-6 h-40 animate-pulse bg-wool-2 motion-reduce:animate-none" />;
+  if (!m) return <div role="status" className="mt-6 h-40 animate-pulse bg-wool-2 motion-reduce:animate-none"><span className="sr-only">{lang === 'ar' ? 'جارٍ التحميل…' : 'Loading…'}</span></div>;
   return (
     <>
     <dl className="mt-6 grid gap-px border border-ink bg-ink sm:grid-cols-2 lg:grid-cols-4">

@@ -1,5 +1,5 @@
 {
- "built": "2026-10-17T13:12:23.564Z",
+ "built": "2026-10-17T16:22:14.433Z",
  "couplesPerType": 60000,
  "genesModelled": 128,
  "genesFromLiterature": 89,
@@ -25,54 +25,54 @@
  "byType": {
   "unrelated": {
    "couples": 60000,
-   "atRisk": 1996,
-   "rate": 0.03326666666666667,
+   "atRisk": 1343,
+   "rate": 0.022383333333333335,
    "ci": [
-    0.031861327457027855,
-    0.034731768808995214
+    0.021229894129050852,
+    0.0235979290281918
    ]
   },
   "first-cousins": {
    "couples": 60000,
-   "atRisk": 7951,
-   "rate": 0.13251666666666667,
+   "atRisk": 6898,
+   "rate": 0.11496666666666666,
    "ci": [
-    0.12982720075204673,
-    0.1352531870343246
+    0.11243889488417697,
+    0.11754374009431412
    ]
   },
   "double-first-cousins": {
    "couples": 60000,
-   "atRisk": 13423,
-   "rate": 0.22371666666666667,
+   "atRisk": 11972,
+   "rate": 0.19953333333333334,
    "ci": [
-    0.22039984556811004,
-    0.22706886450194652
+    0.19635475188254764,
+    0.2027503880790244
    ]
   },
   "second-cousins": {
    "couples": 60000,
-   "atRisk": 3497,
-   "rate": 0.05828333333333333,
+   "atRisk": 2755,
+   "rate": 0.04591666666666667,
    "ci": [
-    0.056436841948454185,
-    0.06018638438844088
+    0.044270755653363435,
+    0.0476207208417015
    ]
   }
  },
- "mixedPopulationAtRisk": 0.05426540066006601,
+ "mixedPopulationAtRisk": 0.041984451485148525,
  "sensitivity570": [
   {
    "tailGenes": 442,
    "tailCarrierFreq": 0.001,
    "cumulativeTailCarrierFreq": 0.442,
    "couplesPerType": 20000,
-   "mixed": 0.06360476831683169,
+   "mixed": 0.05156724752475248,
    "byType": {
-    "unrelated": 0.0328,
-    "first-cousins": 0.17575,
-    "double-first-cousins": 0.3011,
-    "second-cousins": 0.0747
+    "unrelated": 0.02225,
+    "first-cousins": 0.1585,
+    "double-first-cousins": 0.2798,
+    "second-cousins": 0.0615
    }
   },
   {
@@ -80,12 +80,12 @@
    "tailCarrierFreq": 0.002,
    "cumulativeTailCarrierFreq": 0.884,
    "couplesPerType": 20000,
-   "mixed": 0.0737550495049505,
+   "mixed": 0.06195985742574258,
    "byType": {
-    "unrelated": 0.03395,
-    "first-cousins": 0.2194,
-    "double-first-cousins": 0.3748,
-    "second-cousins": 0.08815
+    "unrelated": 0.0235,
+    "first-cousins": 0.20295,
+    "double-first-cousins": 0.3551,
+    "second-cousins": 0.07515
    }
   },
   {
@@ -93,12 +93,12 @@
    "tailCarrierFreq": 0.003,
    "cumulativeTailCarrierFreq": 1.326,
    "couplesPerType": 20000,
-   "mixed": 0.08493905346534654,
+   "mixed": 0.07335017425742574,
    "byType": {
-    "unrelated": 0.03675,
-    "first-cousins": 0.26235,
-    "double-first-cousins": 0.43955,
-    "second-cousins": 0.10265
+    "unrelated": 0.0263,
+    "first-cousins": 0.247,
+    "double-first-cousins": 0.42195,
+    "second-cousins": 0.0897
    }
   }
  ],
@@ -143,86 +143,91 @@
  ],
  "geneShare": [
   {
-   "gene": "CYP21A2",
-   "shareOfMatches": 0.246419045610629,
-   "observedM42": 0.14
-  },
-  {
    "gene": "HBB",
-   "shareOfMatches": 0.20559045938297435,
+   "shareOfMatches": 0.26662884484292937,
    "observedM42": null
   },
   {
    "gene": "MEFV",
-   "shareOfMatches": 0.08603240732507537,
+   "shareOfMatches": 0.11157483403162657,
    "observedM42": 0.12
   },
   {
    "gene": "ABCA4",
-   "shareOfMatches": 0.044118291604872927,
+   "shareOfMatches": 0.05721670724582724,
    "observedM42": 0.09
   },
   {
    "gene": "MCCC2",
-   "shareOfMatches": 0.033970214021055795,
+   "shareOfMatches": 0.044055735614798024,
    "observedM42": null
   },
   {
    "gene": "PAH",
-   "shareOfMatches": 0.033373152962688224,
+   "shareOfMatches": 0.04328141125767066,
    "observedM42": null
   },
   {
    "gene": "SGCG",
-   "shareOfMatches": 0.025301964744668223,
+   "shareOfMatches": 0.032813943080697704,
    "observedM42": null
   },
   {
    "gene": "GJB2",
-   "shareOfMatches": 0.022186175601158063,
+   "shareOfMatches": 0.028773097690296033,
    "observedM42": null
   },
   {
    "gene": "CYP1B1",
-   "shareOfMatches": 0.01806222308355722,
+   "shareOfMatches": 0.023424772192823736,
    "observedM42": 0.04
   },
   {
+   "gene": "CYP21A2",
+   "shareOfMatches": 0.022686072264744523,
+   "observedM42": 0.14
+  },
+  {
    "gene": "DONSON",
-   "shareOfMatches": 0.01236989714437105,
+   "shareOfMatches": 0.016042434052280913,
    "observedM42": null
   },
   {
    "gene": "F7",
-   "shareOfMatches": 0.012192036755604322,
+   "shareOfMatches": 0.015811768144229958,
    "observedM42": null
   },
   {
    "gene": "ABCA12",
-   "shareOfMatches": 0.010966944853290727,
+   "shareOfMatches": 0.01422295492925569,
    "observedM42": null
   },
   {
    "gene": "SLC26A4",
-   "shareOfMatches": 0.010854944852543905,
+   "shareOfMatches": 0.014077702902915767,
    "observedM42": null
   },
   {
    "gene": "ITGB3",
-   "shareOfMatches": 0.010302763144340152,
+   "shareOfMatches": 0.013361582264615592,
    "observedM42": null
   },
   {
    "gene": "PKLR",
-   "shareOfMatches": 0.009997709589482534,
+   "shareOfMatches": 0.012965960419170891,
    "observedM42": null
   }
  ],
  "notes": [
   "Carrier frequencies: Emirati exomes (Jain et al. 2025) where published, otherwise gnomAD v4.1 Middle Eastern.",
-  "CYP21A2 frequency includes non-classic and duplicated-haplotype alleles, so it is an overestimate for classic CAH.",
+  "CYP21A2 uses the classic-only carrier rate from UAE newborn screening (classic CAH 1 in 9,030), because the published exome rate includes non-classic and duplicated-haplotype alleles.",
   "Genes are treated as independent and every pathogenic allele as reportable; real reporting rules (mild alleles, variant classification) lower the rate.",
   "The marriage mix uses Dubai 2025 (28% related); Abu Dhabi’s mix is not published and may be higher.",
   "The 11% poster figure and the 4.8% programme figure come from the same programme with different definitions and periods; the poster’s definition of positive is not published."
- ]
+ ],
+ "allCyp21a2Alleles": {
+  "mixedPopulationAtRisk": 0.05426540066006601,
+  "cyp21a2Share": 0.246419045610629,
+  "note": "Same run with the published Emirati CYP21A2 rate (all P/LP alleles, including non-classic), which programmes may report."
+ }
 }

@@ -43,10 +43,19 @@ const told = (r: Relationship) => ({ en: `You told us ${REL[r].en}.`, ar: r === 
 /** Genes where the exact pair of changes decides the chance, so a genetic counsellor confirms with a dedicated test. */
 const CONFIRM: Record<string, L> = {
   CYP21A2: { en: 'For this gene the exact changes matter: many people carry a mild (non-classic) change, and a mild with a classic change rarely causes the classic form. A genetic counsellor will confirm with a dedicated test before you act on this.', ar: 'في هذا الجين تهم التغيّرات الدقيقة: كثيرون يحملون تغيّراً خفيفاً (غير تقليدي)، ونادراً ما يسبب التغيّر الخفيف مع التقليدي الشكلَ التقليدي. وسيؤكد المرشد الوراثي ذلك بفحص مخصص قبل أي قرار.' },
-  HBB: { en: 'For this gene the exact changes matter (for example sickle with beta thalassaemia, or HbC). A genetic counsellor will confirm with a blood test before you act on this.', ar: 'في هذا الجين تهم التغيّرات الدقيقة (مثل المنجلي مع بيتا ثلاسيميا، أو HbC). وسيؤكد المرشد الوراثي ذلك بفحص دم قبل أي قرار.' },
-  HBA1: { en: 'For alpha-globin, how the changes sit on each chromosome decides the chance. A genetic counsellor will confirm with a dedicated test before you act on this.', ar: 'في ألفا غلوبين يحدد موضع التغيّرات على كل كروموسوم الاحتمال. وسيؤكد المرشد الوراثي ذلك بفحص مخصص قبل أي قرار.' },
-  HBA2: { en: 'For alpha-globin, how the changes sit on each chromosome decides the chance. A genetic counsellor will confirm with a dedicated test before you act on this.', ar: 'في ألفا غلوبين يحدد موضع التغيّرات على كل كروموسوم الاحتمال. وسيؤكد المرشد الوراثي ذلك بفحص مخصص قبل أي قرار.' },
+  HBB: { en: 'In this gene only the exact pair of changes says how serious it is: sickle with sickle, beta thalassaemia, HbC or HbD-Punjab is serious; two HbE changes is usually mild. So any shared change is treated as a full match until a blood test (HPLC) shows your exact pair. A genetic counsellor will arrange it before you act on this.', ar: 'في هذا الجين لا يحدد الخطورة إلا زوج التغيّرين بدقة: المنجلي مع المنجلي أو بيتا ثلاسيميا أو HbC أو HbD-Punjab خطير، أما تغيّرا HbE معاً فخفيفان عادة. لذلك يُعامل أي تغيّر مشترك كتطابق كامل حتى يبيّن فحص الدم (HPLC) زوج تغيّراتكما بدقة. وسيرتبه المرشد الوراثي قبل أي قرار.' },
+  HBA: { en: 'For alpha globin, how the lost genes sit on each chromosome decides the chance, and standard sequencing can miss it. A genetic counsellor will confirm with a dedicated test before you act on this.', ar: 'في ألفا غلوبين يحدد موضع الجينات المفقودة على كل كروموسوم الاحتمال، وقد لا يكشفه التسلسل المعتاد. وسيؤكد المرشد الوراثي ذلك بفحص مخصص قبل أي قرار.' },
   SMN1: { en: 'For this gene the number of copies matters, and some carriers are missed by standard tests. A genetic counsellor will confirm with a dedicated test.', ar: 'في هذا الجين يهم عدد النسخ، وقد لا تكشف الفحوص المعتادة بعض الحاملين. وسيؤكد المرشد الوراثي ذلك بفحص مخصص.' },
+};
+
+/** On every result screen: some results are for one partner alone, and reach that person privately. */
+const ALONE: L = { en: 'Some results matter for one partner alone, such as changes on the X chromosome. They go to that person privately, whoever they marry, and are never shown here first.', ar: 'بعض النتائج تخص أحد الشريكين وحده، مثل التغيّرات على الكروموسوم X. تصل إلى صاحبها بخصوصية أياً كان من يتزوج، ولا تظهر هنا أولاً أبداً.' };
+
+/** What a shared globin gene means, when the pair of changes decides it (see lab.ts). */
+const GLOBIN: Partial<Record<NonNullable<SharedGene['kind']>, L>> = {
+  bart: { en: 'You both carry a change where both alpha-globin genes on one chromosome are lost. In each pregnancy there is a 1 in 4 chance the baby inherits both: Hb Bart’s hydrops, a very severe anaemia before birth that most babies don’t survive without treatment in the womb, and that can make the pregnancy dangerous for the mother (for example very high blood pressure). A genetic counsellor will talk with you both before any pregnancy.', ar: 'كلاكما يحمل تغيّراً فُقد فيه جينا ألفا غلوبين على كروموسوم واحد. في كل حمل احتمال 1 من 4 أن يرث الجنين التغيّرين: استسقاء الجنين بخضاب بارت، وهو فقر دم شديد جداً قبل الولادة لا ينجو منه معظم الأجنة دون علاج داخل الرحم، وقد يجعل الحمل خطراً على الأم (مثل ارتفاع شديد في ضغط الدم). وسيتحدث المرشد الوراثي معكما قبل أي حمل.' },
+  hbh: { en: 'In each pregnancy there is a 1 in 4 chance the child inherits both changes and has HbH disease: lifelong anaemia, usually moderate, with some children needing regular blood transfusions.', ar: 'في كل حمل احتمال 1 من 4 أن يرث الطفل التغيّرين ويصاب بمرض الهيموغلوبين H: فقر دم مدى الحياة، متوسط عادة، ويحتاج بعض الأطفال إلى نقل دم منتظم.' },
+  trait: { en: 'You each carry one lost alpha-globin gene. In each pregnancy there is a 1 in 4 chance the child inherits both, which gives alpha-thalassaemia trait: small red cells, like a carrier’s, but not an illness.', ar: 'كل منكما فقد جيناً واحداً من جينات ألفا غلوبين. في كل حمل احتمال 1 من 4 أن يرث الطفل التغيّرين، فتكون لديه سمة ألفا ثلاسيميا: خلايا دم حمراء صغيرة مثل حامل التغيّر، لكنها ليست مرضاً.' },
 };
 
 /** X-linked genes whose chances or carrier health differ from the usual pattern. */
@@ -71,6 +80,8 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
   const [level, setLevel] = useState<Level>('standard');
   const [identity, setIdentity] = useState<string | null>(null);
   const [personal, setPersonal] = useState(0);
+  // A result that is yours alone (X-linked) is read before any pairing, never first on a shared screen.
+  const [seenPersonal, setSeenPersonal] = useState(false);
   const [mine, setMine] = useState<Finding[] | null>(null);
   const [mineScope, setMineScope] = useState<'all' | 'personal'>('all');
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -168,10 +179,12 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
     if (!r.ok) { setError(j.error); return; }
     setMine(j.findings);
     setMineScope(scope);
+    setSeenPersonal(true);
     setView('mine');
   };
 
   const book = (isUrgent: boolean) => { setUrgent(isUrgent); setView('counsellor'); };
+  const mustReadFirst = personal > 0 && !seenPersonal;
   const home: View = result ? 'result' : 'card';
   const words = link ? checkWords(link, lang) : [];
   const genes = result?.genes ?? [];
@@ -214,8 +227,8 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
                 })}
               </div>
             </div>
-            {personal > 0 && <PersonalCallout t={t} sex={me.sex} onOpen={() => openResults('personal')} />}
-            <button onClick={startPairing} disabled={!identity} className="mt-6 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool disabled:opacity-50">
+            {personal > 0 && <PersonalCallout t={t} sex={me.sex} required={mustReadFirst} onOpen={() => openResults('personal')} />}
+            <button onClick={startPairing} disabled={!identity || mustReadFirst} className="mt-6 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool disabled:opacity-50">
               {identity ? t({ en: 'Pair with your partner', ar: 'اقترن بشريكتك', arF: 'اقترني بشريكك' }) : t({ en: 'Signing in…', ar: 'جارٍ تسجيل الدخول…' })}
             </button>
             <div className="mt-6 border-t border-rule pt-4">
@@ -232,7 +245,7 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
             <p className="mt-2 text-[14px] leading-relaxed text-ink-2">
               {mineScope === 'personal'
                 ? t({ en: 'This matters whatever your partner carries, so it doesn’t wait for a pairing. Nobody else sees it unless you share it.', ar: 'يهمّك هذا أياً كان ما تحمله شريكتك، لذلك لا ينتظر الاقتران. ولا يراه أحد غيرك إلا إذا شاركته.', arF: 'يهمّك هذا أياً كان ما يحمله شريكك، لذلك لا ينتظر الاقتران. ولا يراه أحد غيرك إلا إذا شاركتِه.' })
-                : t({ en: 'You carry one changed copy of each gene below. Being a carrier is not an illness: it matters mainly if a partner carries the same gene.', ar: 'لديك نسخة واحدة متغيرة من كل جين أدناه. أن تكون حاملاً للتغيّر لا يعني أنك مريض، ويهم ذلك أساساً إذا كانت شريكتك تحمل الجين نفسه.', arF: 'لديكِ نسخة واحدة متغيرة من كل جين أدناه. أن تكوني حاملةً للتغيّر لا يعني أنك مريضة، ويهم ذلك أساساً إذا كان شريكك يحمل الجين نفسه.' })}
+                : t({ en: 'For most genes below you carry one changed copy. Being a carrier is not an illness: it matters mainly if a partner carries the same gene. A gene marked X is different, and its card says how.', ar: 'في معظم الجينات أدناه لديك نسخة واحدة متغيرة. أن تكون حاملاً للتغيّر لا يعني أنك مريض، ويهم ذلك أساساً إذا كانت شريكتك تحمل الجين نفسه. أما الجين المعلَّم بـ X فمختلف، وتوضح بطاقته كيف.', arF: 'في معظم الجينات أدناه لديكِ نسخة واحدة متغيرة. أن تكوني حاملةً للتغيّر لا يعني أنك مريضة، ويهم ذلك أساساً إذا كان شريكك يحمل الجين نفسه. أما الجين المعلَّم بـ X فمختلف، وتوضح بطاقته كيف.' })}
             </p>
             {mine.length === 0 && <p className="mt-4 text-[15px]">{t({ en: 'No changes were found among the genes screened.', ar: 'لم تُكتشف أي تغيّرات ضمن الجينات التي شملها الفحص.' })}</p>}
             <ul className="mt-4 space-y-3">
@@ -265,7 +278,8 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
               </p>
             </div>
             <p className="mt-5 text-[13px] leading-relaxed text-ink-2">{t(told(relationship))}</p>
-            <button onClick={compare} disabled={!identity} className="mt-5 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool disabled:opacity-50">
+            {mustReadFirst && <PersonalCallout t={t} sex={me.sex} required onOpen={() => openResults('personal')} />}
+            <button onClick={compare} disabled={!identity || mustReadFirst} className="mt-5 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool disabled:opacity-50">
               {t({ en: 'The words match. Compare now', ar: 'الكلمات متطابقة. قارن الآن', arF: 'الكلمات متطابقة. قارني الآن' })}
             </button>
           </section>
@@ -293,6 +307,7 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
                 {h2(t({ en: 'You don’t share a change in any of the genes screened.', ar: 'لا تشتركان في تغيّر في أي من الجينات التي شملها الفحص.' }), 'mt-2 text-[26px] leading-tight')}
                 <div className="mt-4 overflow-hidden rounded-[3px] border border-ink"><Sadu height={52} motifs={9} seed={7} /></div>
                 <p className="mt-4 text-[15px] leading-relaxed text-ink-2">{t({ en: 'This lowers the chance of the conditions tested, but no test can rule out every inherited condition. Some carriers are missed by standard tests (for example some SMA and alpha-thalassaemia carriers); a genetic counsellor can say whether extra tests make sense for you.', ar: 'هذا يخفض احتمال الحالات التي فُحصت، لكن لا يستطيع أي فحص استبعاد كل الحالات الوراثية. وقد لا تكشف الفحوص المعتادة بعض الحاملين (مثل بعض حاملي ضمور العضلات الشوكي وألفا ثلاسيميا)، ويمكن للمرشد الوراثي أن يوضح إن كانت فحوص إضافية مفيدة لكما.' })}</p>
+                <p className="mt-3 text-[14px] leading-relaxed text-ink-2">{t(ALONE)}</p>
               </>
             ) : (
               <>
@@ -302,9 +317,10 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
                     ? t({ en: 'This is about the chance for a future child, not a diagnosis. A genetic counsellor will go through it with you both.', ar: 'هذا عن احتمال لطفل في المستقبل، وليس تشخيصاً. وسيشرحه المرشد الوراثي لكما معاً.' })
                     : t({ en: 'You are both healthy carriers. This is about the chance for a future child, not a diagnosis.', ar: 'كلاكما حامل للتغيّر وبصحة جيدة. هذا عن احتمال لطفل في المستقبل، وليس تشخيصاً.' })}
                 </p>
-                <div className="mt-3 text-[13px] text-ink-2"><DiamondKey lang={lang} /></div>
+                <div className="mt-3 text-[13px] text-ink-2"><DiamondKey lang={lang} mild={arGenes.some((g) => g.strength === 0)} /></div>
                 {arGenes.map((g) => <SharedGeneCard key={g.gene} g={g} lang={lang} t={t} level={level} />)}
                 {xlGenes.map((g) => <XlCoupleCard key={g.gene} g={g} t={t} level={level} />)}
+                <p className="mt-4 text-[13px] leading-relaxed text-ink-2">{t(ALONE)}</p>
               </>
             )}
 
@@ -328,7 +344,7 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
               <button className="rounded-[2px] border border-ink px-3 py-3" onClick={() => setView('family')}>{t({ en: 'Tell relatives', ar: 'أخبر أقاربك', arF: 'أخبري أقاربك' })}</button>
             </div>
 
-            <TeachBack lang={lang} t={t} level={level} kind={arGenes.length ? 'shared' : xlGenes.length ? 'xl' : 'none'} identity={identity} onCounsellor={() => book(false)} />
+            <TeachBack lang={lang} t={t} level={level} kind={xlGenes.length && !arGenes.some((g) => g.strength === 2) ? 'xl' : arGenes.length ? (['low', 'milder', 'shared'] as const)[Math.max(...arGenes.map((g) => g.strength))] : 'none'} identity={identity} onCounsellor={() => book(false)} />
 
             <details className="mt-6 text-[13px] text-ink-2">
               <summary className="cursor-pointer font-medium text-ink">{t({ en: 'What left this phone, and how it was checked', ar: 'ما الذي خرج من هذا الهاتف، وكيف تم التحقق' })}</summary>
@@ -439,9 +455,10 @@ function LevelPicker({ lang, level, setLevel }: { lang: Locale; level: Level; se
   );
 }
 
-function DiamondKey({ lang }: { lang: Locale }) {
-  const items: { f: 'affected' | 'carrier' | 'clear'; l: { en: string; ar: string } }[] = [
+function DiamondKey({ lang, mild }: { lang: Locale; mild?: boolean }) {
+  const items: { f: 'affected' | 'mild' | 'carrier' | 'clear'; l: { en: string; ar: string } }[] = [
     { f: 'affected', l: { en: 'has the condition', ar: 'مصاب بالحالة' } },
+    ...(mild ? [{ f: 'mild' as const, l: { en: 'a mild form at most', ar: 'شكل خفيف على الأكثر' } }] : []),
     { f: 'carrier', l: { en: 'healthy carrier', ar: 'حامل للتغيّر وبصحة جيدة' } },
     { f: 'clear', l: { en: 'no changed copy', ar: 'بلا نسخة متغيرة' } },
   ];
@@ -470,14 +487,15 @@ function StepLine({ s, t, lang }: { s: Step; t: T; lang: Locale }) {
 }
 
 /** An X-linked result matters whoever the partner is, so it never waits for a pairing. */
-function PersonalCallout({ t, sex, onOpen }: { t: T; sex: 'F' | 'M'; onOpen: () => void }) {
+function PersonalCallout({ t, sex, onOpen, required }: { t: T; sex: 'F' | 'M'; onOpen: () => void; required?: boolean }) {
   return (
     <div className="mt-5 rounded-[3px] border border-indigo bg-paper px-4 py-3.5">
       <p className="text-[15px] font-medium text-indigo">{t({ en: 'You have a result that is yours alone.', ar: 'لديك نتيجة تخصّك وحدك.', arF: 'لديكِ نتيجة تخصّك وحدك.' })}</p>
       <p className="mt-1 text-[13px] leading-relaxed text-ink-2">
         {sex === 'F'
-          ? t({ en: 'It matters for any future sons whatever your partner carries, so you may want to see it now. Only you can open it.', ar: '', arF: 'تهم أي أبناء ذكور في المستقبل أياً كان ما يحمله شريكك، فقد ترغبين في رؤيتها الآن. لا يستطيع أحد غيرك فتحها.' })
+          ? t({ en: 'It matters for any future sons whatever your partner carries. Only you can open it.', ar: '', arF: 'تهم أي أبناء ذكور في المستقبل أياً كان ما يحمله شريكك. لا يستطيع أحد غيرك فتحها.' })
           : t({ en: 'It is about your own health, and any daughters you have will carry it. Only you can open it.', ar: 'تخص صحتك أنت، وستكون أي بنات لك حاملاتٍ لهذا التغيّر. لا يستطيع أحد غيرك فتحها.' })}
+        {required && ' ' + t({ en: 'Please read it before you compare with your partner, so you never first meet it on a shared screen.', ar: 'اقرأها قبل المقارنة مع شريكتك، كي لا تراها أول مرة على شاشة مشتركة.', arF: 'اقرئيها قبل المقارنة مع شريكك، كي لا تريها أول مرة على شاشة مشتركة.' })}
       </p>
       <button onClick={onOpen} className="mt-2 text-[14px] font-medium text-indigo underline underline-offset-4">{t({ en: 'Open my personal result', ar: 'افتح نتيجتي الخاصة', arF: 'افتحي نتيجتي الخاصة' })}</button>
     </div>
@@ -497,7 +515,7 @@ function FindingCard({ f, t, sex, level, partner }: { f: Finding; t: T; sex: 'F'
         <p className="mt-2 text-[14px] leading-relaxed">{t({ en: 'This gene is on the X chromosome, so it matters for this person’s own children whoever their partner is. A genetic counsellor can explain what it means for you both.', ar: 'يقع هذا الجين على الكروموسوم X، لذا يهم أطفال هذا الشخص أياً كان شريكه. ويمكن للمرشد الوراثي شرح ما يعنيه لكما.' })}</p>
       )}
       {f.inheritance === 'XL' && sex === 'F' && !partner && (
-        <p className="mt-2 text-[14px] leading-relaxed">{t(XL_NOTE[f.gene] && f.gene === 'FMR1' ? XL_NOTE.FMR1 : { en: 'This gene is on the X chromosome. For each son: a 1 in 2 chance of having the condition. For each daughter: a 1 in 2 chance of carrying it, as you do. This does not depend on your partner.', ar: 'يقع هذا الجين على الكروموسوم X. لكل ابن: احتمال 1 من 2 أن يصاب بالحالة. ولكل ابنة: احتمال 1 من 2 أن تكون حاملةً للتغيّر مثلك. ولا يعتمد ذلك على شريكك.' })}</p>
+        <p className="mt-2 text-[14px] leading-relaxed">{t(XL_NOTE[f.gene] && f.gene === 'FMR1' ? XL_NOTE.FMR1 : { en: 'This gene is on the X chromosome. For each son: a 1 in 2 chance of having the condition, whoever your partner is. For each daughter it depends on your partner: if he doesn’t have the condition, a 1 in 2 chance of carrying it, as you do; if he has it, a 1 in 2 chance of having it, and otherwise she carries it.', ar: 'يقع هذا الجين على الكروموسوم X. لكل ابن: احتمال 1 من 2 أن يصاب بالحالة، أياً كان شريكك. أما البنات فيعتمد الأمر على شريكك: إن لم يكن مصاباً بالحالة فلكل ابنة احتمال 1 من 2 أن تكون حاملةً للتغيّر مثلك، وإن كان مصاباً فلكل ابنة احتمال 1 من 2 أن تصاب بها، وإلا فهي حاملة له.' })}</p>
       )}
       {f.inheritance === 'XL' && sex === 'M' && !partner && (
         <p className="mt-2 text-[14px] leading-relaxed">{t({ en: 'This gene is on the X chromosome, and men have one X, so this result is about your own health. All your daughters will carry it; your sons will not inherit it from you.', ar: 'يقع هذا الجين على الكروموسوم X، وللرجل نسخة واحدة منه، لذا تخص هذه النتيجة صحتك أنت. ستكون بناتك جميعاً حاملاتٍ للتغيّر، ولن يرثه أبناؤك الذكور منك.' })}</p>
@@ -512,14 +530,16 @@ function FindingCard({ f, t, sex, level, partner }: { f: Finding; t: T; sex: 'F'
 function SharedGeneCard({ g, lang, t, level }: { g: SharedGene; lang: Locale; t: T; level: Level }) {
   const c = conditionFor(g.gene);
   const tone = g.strength === 2 ? 'madder' : g.strength === 1 ? 'camel' : 'sage';
-  const odds: L = g.strength === 0
+  const globin = g.kind ? GLOBIN[g.kind] : undefined;
+  const odds: L = globin ? globin : g.strength === 0
     ? { en: 'You both carry a milder change. In each pregnancy there is a 1 in 4 chance the child inherits both, which can cause a mild form of the condition. Counselling is available but often not needed.', ar: 'كلاكما يحمل تغيّراً أخف. في كل حمل احتمال 1 من 4 أن يرث الطفل التغيّرين معاً، وقد يسبب ذلك شكلاً خفيفاً من الحالة. الإرشاد الوراثي متاح، لكنه غالباً غير ضروري.' }
     : g.strength === 1
       ? { en: 'One of you carries a milder change. In each pregnancy there is a 1 in 4 chance the child inherits both changes, which usually causes a milder form of the condition. A genetic counsellor will explain what that means for this gene.', ar: 'أحدكما يحمل تغيّراً أخف. في كل حمل احتمال 1 من 4 أن يرث الطفل التغيّرين معاً، وهذا يسبب عادة شكلاً أخف من الحالة. وسيشرح المرشد الوراثي ما يعنيه ذلك لهذا الجين.' }
       : level === 'simple'
         ? { en: 'If you had four children, on average one might have the condition, two would carry it and be healthy like you, and one would not carry it. The chance is the same in every pregnancy.', ar: 'إذا رُزقتما بأربعة أطفال، فقد يُصاب واحد منهم في المتوسط، ويحمل اثنان التغيّر وهما بصحة جيدة مثلكما، ولا يحمله واحد. ويبقى الاحتمال نفسه في كل حمل.' }
         : { en: 'In each pregnancy: a 1 in 4 chance the child has the condition, 2 in 4 that the child is a healthy carrier like you, and 1 in 4 that the child has no changed copy.', ar: 'في كل حمل: احتمال 1 من 4 أن يصاب الطفل بالحالة، و2 من 4 أن يكون حاملاً للتغيّر وبصحة جيدة مثلكما، و1 من 4 ألا يحمل أي نسخة متغيرة.' };
-  const title = g.strength === 0 ? { en: 'Low concern', ar: 'احتمال منخفض الأثر' } : g.strength === 1 ? { en: 'Milder form possible', ar: 'شكل أخف محتمل' } : null;
+  const title = g.kind === 'trait' ? { en: 'Not an illness', ar: 'ليست مرضاً' } : g.strength === 0 ? { en: 'Low concern', ar: 'احتمال منخفض الأثر' } : g.strength === 1 ? { en: 'Milder form possible', ar: 'شكل أخف محتمل' } : null;
+  const first = g.kind === 'trait' ? 'carrier' : g.strength === 0 ? 'mild' : 'affected';
   return (
     <article className={`mt-5 rounded-[3px] border bg-paper ${tone === 'madder' ? 'border-madder' : tone === 'camel' ? 'border-camel' : 'border-sage'}`}>
       <div className="flex items-baseline justify-between gap-3 border-b border-rule px-4 py-3">
@@ -531,7 +551,7 @@ function SharedGeneCard({ g, lang, t, level }: { g: SharedGene; lang: Locale; t:
       </div>
       <div className="px-4 py-4">
         <div className="flex items-center gap-3" role="img" aria-label={t(odds)}>
-          {(['affected', 'carrier', 'carrier', 'clear'] as const).map((k, i) => <Diamond key={i} fill={k} size={40} color={`var(--${tone})`} />)}
+          {([first, 'carrier', 'carrier', 'clear'] as const).map((k, i) => <Diamond key={i} fill={k} size={40} color={`var(--${tone})`} />)}
         </div>
         <p className="mt-3 text-[15px] leading-relaxed">{t(odds)}</p>
         {level !== 'simple' && <p className="mt-1.5 text-[13px] text-ink-2">{t({ en: 'What happened before doesn’t change it: it is 1 in 4 in every pregnancy.', ar: 'لا يتأثر الاحتمال بما سبق: يبقى 1 من 4 في كل حمل.' })}</p>}

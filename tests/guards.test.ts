@@ -70,3 +70,33 @@ describe('v3 held-out misses, fixed after the run (the reported v3 numbers are f
   it.each(['نحن معيبين وراثياً لأننا نحمل جين CYP21A2', 'her family has bad blood', 'هذا كله غلطتي'])('acknowledges stigma in %s', (q) => expect(expressesWorry(q)).toBe(true));
   it.each(['مش عارف شو يعني هذا', 'ما أقدر أفهم النتيجة'])('leaves %s alone', (q) => { expect(expressesWorry(q)).toBe(false); expect(guardIntent(q)).not.toBe('crisis'); });
 });
+
+describe('round-3 explainer fixes', () => {
+  it.each(['I am 9 weeks pregnant, what now?', 'أنا حامل في الأسبوع التاسع', 'أنا حامل وخايفة', 'ana 7amel w 5ayfa'])('routes %s to a person (pregnant)', (q) => expect(guardIntent(q)).toBe('pregnant'));
+  it.each(['أنا حامل للتغيّر الجيني CYP21A2', 'أنا حامل لجين HBB', 'What if I’m pregnant later?'])('does not treat %s as a pregnancy now', (q) => expect(guardIntent(q)).not.toBe('pregnant'));
+  it('checks faith before decisions', () => expect(guardIntent('شو حكم الدين إنّا نكمل الزواج وإحنا نحمل نفس الجين؟')).toBe('faith'));
+  it('acknowledges "selfish" self-blame', () => expect(expressesWorry('Is it selfish of us to have children?')).toBe(true));
+  it('catches the X-linked daughters error across an Arabic comma', () => {
+    const a = 'لكل ابن لكما احتمال 1 في 2 أن يكون مصاباً، ولكل ابنة احتمال 1 في 2 أن تكون حاملة للتغيّر.';
+    expect(checkAnswer(a, ['xl-affected-father'], [], { lang: 'ar', xl: ['G6PD'] }).xlOk).toBe(false);
+  });
+  it('accepts the correct X-linked daughters wording', () => {
+    const a = 'Each son has a 1 in 2 chance of having the condition. Each daughter has a 1 in 2 chance of having it; otherwise she carries it.';
+    expect(checkAnswer(a, ['xl-affected-father'], [], { lang: 'en', xl: ['G6PD'] }).xlOk).toBe(true);
+  });
+  it('rejects "both milder" when only one change is milder', () => {
+    const a = 'Each pregnancy has a 1 in 4 chance of a milder form, as you both carry milder changes.';
+    expect(checkAnswer(a, ['milder-match'], ['HBB'], { lang: 'en', strengths: { GJB2: 1 } }).strengthOk).toBe(false);
+  });
+  it('rejects unsupported reassurance', () => {
+    expect(checkAnswer('حالتكما ليست خطيرة.', ['milder-match'], [], { lang: 'ar' }).reassureOk).toBe(false);
+  });
+  it('rejects the Arabic plural for the couple and "ظروف"', () => {
+    expect(checkAnswer('يمكنكم التحدث مع مرشد وراثي.', ['counsellor'], [], { lang: 'ar' }).languageOk).toBe(false);
+    expect(checkAnswer('يمكنكما التحدث مع مرشد وراثي.', ['counsellor'], [], { lang: 'ar' }).languageOk).toBe(true);
+    expect(checkAnswer('يزيد الاحتمال لظروف أخرى.', ['consanguinity'], [], { lang: 'ar' }).languageOk).toBe(false);
+  });
+  it('keeps English partner-neutral', () => {
+    expect(checkAnswer('Like your husband, you carry it.', ['carrier'], [], { lang: 'en', question: 'What does it mean?' }).languageOk).toBe(false);
+  });
+});

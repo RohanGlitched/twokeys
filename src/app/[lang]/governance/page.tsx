@@ -9,6 +9,7 @@ import { CONSENT_VERSION } from '@/lib/desk';
 import evalAsk from '../../../../data/eval-ask.json';
 import panel from '../../../../data/panel.json';
 import { Monitor } from '@/components/governance/Monitor';
+import { CLAUSES_AR, FAILURES_AR, FLOWS_AR, RISKS_AR } from './ar';
 
 export const generateMetadata = titled('Governance', 'الحوكمة');
 type L = { en: string; ar: string };
@@ -85,10 +86,28 @@ const FAILURES: string[][] = [
   ['Counsellor misses a clock', 'The case turns overdue on the desk', 'Overdue count in the programme view', 'Operator escalation rota'],
 ];
 
+const CLAUSE_HEAD: L[] = [
+  { en: 'Clause', ar: 'البند' }, { en: 'Requirement', ar: 'المتطلب' }, { en: 'What Two Keys does', ar: 'ما يفعله مفتاحان' },
+  { en: 'Evidence', ar: 'الدليل' }, { en: 'Gap', ar: 'الفجوة' },
+];
+const FLOW_HEAD: L[] = [
+  { en: 'Data', ar: 'البيانات' }, { en: 'Where', ar: 'أين تُحفظ' }, { en: 'Who can read it', ar: 'من يستطيع قراءتها' },
+  { en: 'Basis', ar: 'الأساس القانوني' }, { en: 'Kept for', ar: 'مدة الحفظ' }, { en: 'Location', ar: 'الموقع' },
+];
+const RISK_HEAD: L[] = [
+  { en: 'Risk', ar: 'الخطر' }, { en: 'Controls', ar: 'الضوابط' }, { en: 'Likelihood (1–5)', ar: 'الاحتمال (1–5)' },
+  { en: 'Impact (1–5)', ar: 'الأثر (1–5)' }, { en: 'Residual', ar: 'الخطر المتبقي' }, { en: 'Owner', ar: 'المسؤول' },
+];
+const FAILURE_HEAD: L[] = [
+  { en: 'Failure', ar: 'الإخفاق' }, { en: 'Effect on the person', ar: 'الأثر على الشخص' }, { en: 'Detection', ar: 'الكشف' }, { en: 'Response', ar: 'الاستجابة' },
+];
+
 export default async function GovernancePage({ params }: PageProps<'/[lang]/governance'>) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = (l: L) => l[lang];
+  const ar = lang === 'ar';
+  const dir = ar ? 'rtl' : 'ltr';
   const ev = evalAsk as unknown as {
     version?: number; built: string; models: { product: string; judges?: Record<string, string>; heldoutAuthor?: string };
     summary: Record<string, Record<string, { cases: number; safe: number; helpful: number }>>;
@@ -102,10 +121,9 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
   return (
     <>
       <Nav lang={lang} path="/governance" />
-      <main className="mx-auto max-w-[1240px] px-6 pt-6 md:px-8">
+      <main id="main" className="mx-auto max-w-[1240px] px-6 pt-6 md:px-8">
         <h1 className="max-w-3xl text-[clamp(32px,3.6vw,48px)] font-semibold leading-tight tracking-tight">{t({ en: 'Governance pack', ar: 'ملف الحوكمة' })}</h1>
         <p className="mt-4 max-w-3xl text-[17px] leading-relaxed text-ink-2">{t({ en: 'What a Department of Health reviewer would ask for, mapped to the Abu Dhabi Responsible AI Standard (DoH/ST/DDGO/RAI/V1/2025, October 2025). Where we fall short, the gap is written down next to the clause.', ar: 'ما قد يطلبه مراجع في دائرة الصحة، مرتبطاً بمعيار الذكاء الاصطناعي المسؤول في أبوظبي (DoH/ST/DDGO/RAI/V1/2025، أكتوبر 2025). وحيث نقصّر، تُكتب الفجوة بجانب البند.' })}</p>
-        {lang === 'ar' && <p className="mt-2 max-w-3xl text-[14px] text-ink-2">جداول هذا الملف بالإنجليزية، لغة المعيار المنشور.</p>}
 
         <section id="tier" className="mt-12 grid gap-6 border-t-[1.5px] border-ink pt-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
           <div>
@@ -114,28 +132,31 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
           </div>
           <div className="space-y-3 text-[16px] leading-relaxed text-ink-2">
             <p>{t({ en: 'The explainer talks directly to patients about results that can shape reproductive decisions, in two languages, and could cause harm if it reassured wrongly or missed distress. Even after the controls below, we rate the residual risk high, so we treat it as high risk, which means a conformity assessment with the DoH Data and Digital Governance Office before the pilot and again after it.', ar: 'يتحدث الشارح مباشرة مع المرضى عن نتائج قد تؤثر في قرارات الإنجاب، بلغتين، وقد يسبب ضرراً إن طمأن خطأً أو فاته ضيق. لذلك نعدّه عالي المخاطر، أي تقييم مطابقة مع مكتب حوكمة البيانات والرقمنة في الدائرة قبل التجربة وبعدها.' })}</p>
-            <p>{t({ en: 'The private matching and the counsellor desk are not AI. They fall under the health-data and genetic-testing laws (Decree-Law 49/2023, Federal Law 2/2019) and ADHICS, and are covered by the same DPIA.', ar: 'المطابقة الخاصة ومكتب المستشار ليسا ذكاءً اصطناعياً، ويخضعان لقوانين البيانات الصحية والفحص الجيني (المرسوم بقانون 49/2023 والقانون الاتحادي 2/2019) ولمعيار ADHICS، ويشملهما تقييم الأثر نفسه.' })}</p>
+            <p>{t({ en: 'The private matching and the counsellor desk are not AI. They fall under the health-data and genetic-testing laws (Decree-Law 49/2023, Federal Law 2/2019) and ADHICS, and are covered by the same DPIA.', ar: 'المطابقة الخاصة ومكتب المرشد الوراثي ليسا ذكاءً اصطناعياً، ويخضعان لقوانين البيانات الصحية والفحص الجيني (المرسوم بقانون 49/2023 والقانون الاتحادي 2/2019) ولمعيار ADHICS، ويشملهما تقييم الأثر نفسه.' })}</p>
           </div>
         </section>
 
         <section className="mt-16">
           <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Clause by clause', ar: 'بنداً بنداً' })}</h2>
           <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-[14px]" dir="ltr">
-              <thead><tr className="border-b-[1.5px] border-ink text-left">
-                <th scope="col" className="py-2.5 pr-4 font-semibold">Clause</th><th scope="col" className="py-2.5 pr-4 font-semibold">Requirement</th>
-                <th scope="col" className="py-2.5 pr-4 font-semibold">What Two Keys does</th><th scope="col" className="py-2.5 pr-4 font-semibold">Evidence</th><th scope="col" className="py-2.5 font-semibold">Gap</th>
+            <table className="w-full min-w-[900px] border-collapse text-[14px]" dir={dir}>
+              <thead><tr className="border-b-[1.5px] border-ink text-start">
+                {CLAUSE_HEAD.map((h, i) => <th key={h.en} scope="col" className={`py-2.5 text-start font-semibold ${i < CLAUSE_HEAD.length - 1 ? 'pe-4' : ''}`}>{t(h)}</th>)}
               </tr></thead>
               <tbody>
-                {CLAUSES.map((r) => (
-                  <tr key={r.c} className="border-b border-rule align-top">
-                    <th scope="row" className="whitespace-nowrap py-3 pr-4 text-left font-mono text-[13px] font-medium">{r.c}</th>
-                    <td className="py-3 pr-4 font-medium">{r.req}</td>
-                    <td className="py-3 pr-4 leading-relaxed text-ink-2">{r.does}</td>
-                    <td className="py-3 pr-4">{r.evidence.length ? r.evidence.map(([h, l]) => <Link key={h + l} href={href(h)} className="block text-indigo underline underline-offset-2">{l}</Link>) : <span className="text-ink-2">—</span>}</td>
-                    <td className={`py-3 leading-relaxed ${r.gap ? 'text-madder' : 'text-ink-2'}`}>{r.gap ?? 'None known'}</td>
-                  </tr>
-                ))}
+                {CLAUSES.map((r) => {
+                  const a = ar ? CLAUSES_AR[r.c] : undefined;
+                  const gap = a ? a.gap : r.gap;
+                  return (
+                    <tr key={r.c} className="border-b border-rule align-top">
+                      <th scope="row" className="whitespace-nowrap py-3 pe-4 text-start font-mono text-[13px] font-medium"><span dir="ltr">{r.c}</span></th>
+                      <td className="py-3 pe-4 font-medium">{a ? a.req : r.req}</td>
+                      <td className="py-3 pe-4 leading-relaxed text-ink-2">{a ? a.does : r.does}</td>
+                      <td className="py-3 pe-4">{r.evidence.length ? r.evidence.map(([h, l], i) => <Link key={h + l} href={href(h)} className="block text-indigo underline underline-offset-2">{a ? a.ev[i] : l}</Link>) : <span className="text-ink-2">—</span>}</td>
+                      <td className={`py-3 leading-relaxed ${gap ? 'text-madder' : 'text-ink-2'}`}>{gap ?? t({ en: 'None known', ar: 'لا فجوة معروفة' })}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -144,27 +165,33 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
         <section className="mt-16 grid gap-10 md:grid-cols-2">
           <div className="rounded-[3px] border border-ink bg-paper p-6">
             <h2 className="text-[22px] font-semibold tracking-tight">{t({ en: 'Model card: the explainer', ar: 'بطاقة النموذج: الشارح' })}</h2>
-            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]" dir="ltr">
-              <dt className="text-ink-2">Intended use</dt><dd>Answer a couple’s questions about genes they both carry, from vetted facts, in English or Arabic, at three reading levels.</dd>
-              <dt className="text-ink-2">Out of scope</dt><dd>Diagnosis, recommending a decision, religious rulings, anything about a partner beyond shared genes, emergencies (handed to people).</dd>
-              <dt className="text-ink-2">Model</dt><dd className="font-mono text-[13px]">{ev.models.product}, pinned; temperature 0.1</dd>
-              <dt className="text-ink-2">Safety layers</dt><dd>Keyword guards (EN, MSA, Gulf), model intent check, grounded prompt with {FACTS.length} facts, code checks on numbers, odds, persona, language and framing, fixed fallback.</dd>
-              <dt className="text-ink-2">Held-out result</dt><dd>{tk ? `${tk.safe} of ${tk.cases} judged safe; ${tk.helpful} helpful` : 'see Proof'}{ev.misses ? `; ${ev.misses.length} misses published` : ''}</dd>
-              <dt className="text-ink-2">Judges</dt><dd><span className="font-mono text-[12px]">{ev.models.judges ? Object.values(ev.models.judges).join(', ') : '—'}</span> (language models)</dd>
-              {ev.models.heldoutAuthor && <><dt className="text-ink-2">Held-out author</dt><dd><span className="font-mono text-[12px]">{ev.models.heldoutAuthor}</span>, neither the product model nor a judge; set frozen with its SHA-256 before the run</dd></>}
-              {ev.cost && <><dt className="text-ink-2">Cost</dt><dd>about {Math.round(ev.cost.inputTokensPerAnswer)} input and {Math.round(ev.cost.outputTokensPerAnswer)} output tokens, ≈ ${ev.cost.usdPerAnswer.toFixed(4)} per answer at list price</dd></>}
-              <dt className="text-ink-2">Known limits</dt><dd>Graded by language models; matches genes and change severity, not exact variants; demo hosted outside the UAE.</dd>
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]" dir={dir}>
+              <dt className="text-ink-2">{t({ en: 'Intended use', ar: 'الاستخدام المقصود' })}</dt><dd>{t({ en: 'Answer a couple’s questions about genes they both carry, from vetted facts, in English or Arabic, at three reading levels.', ar: 'الإجابة عن أسئلة الزوجين حول جينات يحمل كلاهما تغيّراً فيها، من معلومات موثَّقة، بالإنجليزية أو العربية، وبثلاثة مستويات للقراءة.' })}</dd>
+              <dt className="text-ink-2">{t({ en: 'Out of scope', ar: 'خارج النطاق' })}</dt><dd>{t({ en: 'Diagnosis, recommending a decision, religious rulings, anything about a partner beyond shared genes, emergencies (handed to people).', ar: 'التشخيص، والتوصية بقرار، والفتاوى الدينية، وأي شيء عن الشريك يتجاوز الجينات المشتركة، والطوارئ (تُحال إلى أشخاص).' })}</dd>
+              <dt className="text-ink-2">{t({ en: 'Model', ar: 'النموذج' })}</dt><dd><bdi className="font-mono text-[13px]">{ev.models.product}</bdi>{t({ en: ', pinned; temperature 0.1', ar: '، نسخة مثبَّتة؛ درجة الحرارة 0.1' })}</dd>
+              <dt className="text-ink-2">{t({ en: 'Safety layers', ar: 'طبقات الأمان' })}</dt><dd>{ar ? `حواجز بالكلمات المفتاحية (الإنجليزية والفصحى والخليجية)، وفحص للنية بالنموذج، وتوجيه مرتكز على معلومات موثَّقة (عددها ${FACTS.length})، وفحوص برمجية للأرقام والاحتمالات والدور الذي يتحدث به واللغة والصياغة، وبديل ثابت.` : `Keyword guards (EN, MSA, Gulf), model intent check, grounded prompt with ${FACTS.length} facts, code checks on numbers, odds, persona, language and framing, fixed fallback.`}</dd>
+              <dt className="text-ink-2">{t({ en: 'Held-out result', ar: 'النتيجة على المجموعة المحجوزة' })}</dt><dd>{ar
+                ? `${tk ? `${tk.safe} من ${tk.cases} آمنة بحكم المقيِّمين؛ و${tk.helpful} مفيدة` : 'انظر صفحة الإثبات'}${ev.misses ? `؛ ونُشرت الأخطاء (عددها ${ev.misses.length})` : ''}`
+                : `${tk ? `${tk.safe} of ${tk.cases} judged safe; ${tk.helpful} helpful` : 'see Proof'}${ev.misses ? `; ${ev.misses.length} misses published` : ''}`}</dd>
+              <dt className="text-ink-2">{t({ en: 'Judges', ar: 'النماذج المقيِّمة' })}</dt><dd><bdi className="font-mono text-[12px]">{ev.models.judges ? Object.values(ev.models.judges).join(', ') : '—'}</bdi> {t({ en: '(language models)', ar: '(نماذج لغوية)' })}</dd>
+              {ev.models.heldoutAuthor && <><dt className="text-ink-2">{t({ en: 'Held-out author', ar: 'كاتب الأسئلة المحجوزة' })}</dt><dd><bdi className="font-mono text-[12px]">{ev.models.heldoutAuthor}</bdi>{t({ en: ', neither the product model nor a judge; set frozen with its SHA-256 before the run', ar: '، ليس نموذج المنتج ولا أحد المقيِّمين؛ وجُمِّدت المجموعة مع بصمة SHA-256 قبل التشغيل' })}</dd></>}
+              {ev.cost && <><dt className="text-ink-2">{t({ en: 'Cost', ar: 'التكلفة' })}</dt><dd>{ar
+                ? `وحدات نصية (tokens) لكل إجابة: نحو ${Math.round(ev.cost.inputTokensPerAnswer)} للإدخال و${Math.round(ev.cost.outputTokensPerAnswer)} للإخراج، أي ≈ ${ev.cost.usdPerAnswer.toFixed(4)} دولار أمريكي لكل إجابة بسعر القائمة`
+                : `about ${Math.round(ev.cost.inputTokensPerAnswer)} input and ${Math.round(ev.cost.outputTokensPerAnswer)} output tokens, ≈ $${ev.cost.usdPerAnswer.toFixed(4)} per answer at list price`}</dd></>}
+              <dt className="text-ink-2">{t({ en: 'Known limits', ar: 'حدود معروفة' })}</dt><dd>{t({ en: 'Graded by language models; matches genes and change severity, not exact variants; demo hosted outside the UAE.', ar: 'تقيّمه نماذج لغوية؛ يطابق الجينات وشدة التغيّر، لا المتغيّرات بعينها؛ والعرض مستضاف خارج الإمارات.' })}</dd>
             </dl>
           </div>
           <div id="data-card" className="rounded-[3px] border border-ink bg-paper p-6">
             <h2 className="text-[22px] font-semibold tracking-tight">{t({ en: 'Data card: what the explainer and result screens say', ar: 'بطاقة البيانات: ما تقوله شاشات الشارح والنتيجة' })}</h2>
-            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]" dir="ltr">
-              <dt className="text-ink-2">Contents</dt><dd>{FACTS.length} bilingual facts; {Object.keys(CONDITIONS).length} condition cards at three reading levels; a {genes}-gene panel with carrier frequencies.</dd>
-              <dt className="text-ink-2">Sources</dt><dd>NSGC, ACMG, MedlinePlus Genetics, Decree-Law 49/2023, Thiqa ART guideline v3.5, Jain et al. 2025, gnomAD v4.1. Each item cites its own.</dd>
-              <dt className="text-ink-2">Version</dt><dd>2026-10-17, in git; every change is a commit with its tests. Independent code review starts in phase 0.</dd>
-              <dt className="text-ink-2">Clinical review</dt><dd>A phase-0 gate: the operator’s genetic counsellors sign off each version before any version reaches patients.</dd>
-              <dt className="text-ink-2">Personal data</dt><dd>None. All people in the demo are synthetic.</dd>
-              <dt className="text-ink-2">Known gaps</dt><dd>Gene-level and severity-level, not exact variants.</dd>
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]" dir={dir}>
+              <dt className="text-ink-2">{t({ en: 'Contents', ar: 'المحتوى' })}</dt><dd>{ar
+                ? `معلومات بلغتين (عددها ${FACTS.length})؛ وبطاقات حالات بثلاثة مستويات للقراءة (عددها ${Object.keys(CONDITIONS).length})؛ ولوحة جينية (عدد جيناتها ${genes}) مع نسبة الحاملين للتغيّر الجيني في كل جين.`
+                : `${FACTS.length} bilingual facts; ${Object.keys(CONDITIONS).length} condition cards at three reading levels; a ${genes}-gene panel with carrier frequencies.`}</dd>
+              <dt className="text-ink-2">{t({ en: 'Sources', ar: 'المصادر' })}</dt><dd>{t({ en: 'NSGC, ACMG, MedlinePlus Genetics, Decree-Law 49/2023, Thiqa ART guideline v3.5, Jain et al. 2025, gnomAD v4.1. Each item cites its own.', ar: 'NSGC وACMG وMedlinePlus Genetics والمرسوم بقانون اتحادي رقم 49 لسنة 2023 ودليل ثقة لتقنيات الإنجاب المساعد (الإصدار 3.5) وJain et al. 2025 وgnomAD v4.1. ويذكر كل بند مصدره.' })}</dd>
+              <dt className="text-ink-2">{t({ en: 'Version', ar: 'النسخة' })}</dt><dd>{t({ en: '2026-10-17, in git; every change is a commit with its tests. Independent code review starts in phase 0.', ar: '\u20662026-10-17\u2069، في git؛ وكل تغيير إيداع (commit) مع اختباراته. تبدأ المراجعة المستقلة للشيفرة في المرحلة 0.' })}</dd>
+              <dt className="text-ink-2">{t({ en: 'Clinical review', ar: 'المراجعة السريرية' })}</dt><dd>{t({ en: 'A phase-0 gate: the operator’s genetic counsellors sign off each version before any version reaches patients.', ar: 'شرط في المرحلة 0: يعتمد المرشدون الوراثيون لدى الجهة المشغِّلة كل نسخة قبل أن تصل أي نسخة إلى المرضى.' })}</dd>
+              <dt className="text-ink-2">{t({ en: 'Personal data', ar: 'البيانات الشخصية' })}</dt><dd>{t({ en: 'None. All people in the demo are synthetic.', ar: 'لا شيء. كل الأشخاص في العرض افتراضيون.' })}</dd>
+              <dt className="text-ink-2">{t({ en: 'Known gaps', ar: 'فجوات معروفة' })}</dt><dd>{t({ en: 'Gene-level and severity-level, not exact variants.', ar: 'على مستوى الجين ومستوى الشدة، لا المتغيّرات بعينها.' })}</dd>
             </dl>
           </div>
         </section>
@@ -172,11 +199,11 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
         <section className="mt-16">
           <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Data protection impact, in one table', ar: 'أثر حماية البيانات في جدول واحد' })}</h2>
           <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[900px] border-collapse text-[14px]" dir="ltr">
-              <thead><tr className="border-b-[1.5px] border-ink text-left">
-                {['Data', 'Where', 'Who can read it', 'Basis', 'Kept for', 'Location'].map((h) => <th key={h} scope="col" className="py-2.5 pr-4 font-semibold">{h}</th>)}
+            <table className="w-full min-w-[900px] border-collapse text-[14px]" dir={dir}>
+              <thead><tr className="border-b-[1.5px] border-ink text-start">
+                {FLOW_HEAD.map((h) => <th key={h.en} scope="col" className="py-2.5 pe-4 text-start font-semibold">{t(h)}</th>)}
               </tr></thead>
-              <tbody>{FLOWS.map((r) => <tr key={r[0]} className="border-b border-rule align-top">{r.map((x, i) => i === 0 ? <th key={i} scope="row" className="py-3 pr-4 text-left font-medium">{x}</th> : <td key={i} className="py-3 pr-4 leading-relaxed text-ink-2">{x}</td>)}</tr>)}</tbody>
+              <tbody>{FLOWS.map((en, ri) => <tr key={en[0]} className="border-b border-rule align-top">{(ar ? FLOWS_AR[ri] : en).map((x, i) => i === 0 ? <th key={i} scope="row" className="py-3 pe-4 text-start font-medium">{x}</th> : <td key={i} className="py-3 pe-4 leading-relaxed text-ink-2">{x}</td>)}</tr>)}</tbody>
             </table>
           </div>
         </section>
@@ -184,11 +211,11 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
         <section id="risks" className="mt-16">
           <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Risk register', ar: 'سجل المخاطر' })}</h2>
           <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[800px] border-collapse text-[14px]" dir="ltr">
-              <thead><tr className="border-b-[1.5px] border-ink text-left">
-                {['Risk', 'Controls', 'Likelihood (1–5)', 'Impact (1–5)', 'Residual', 'Owner'].map((h) => <th key={h} scope="col" className="py-2.5 pr-4 font-semibold">{h}</th>)}
+            <table className="w-full min-w-[800px] border-collapse text-[14px]" dir={dir}>
+              <thead><tr className="border-b-[1.5px] border-ink text-start">
+                {RISK_HEAD.map((h) => <th key={h.en} scope="col" className="py-2.5 pe-4 text-start font-semibold">{t(h)}</th>)}
               </tr></thead>
-              <tbody>{RISKS.map((r) => <tr key={r[0]} className="border-b border-rule align-top"><th scope="row" className="py-3 pr-4 text-left font-medium">{r[0]}</th><td className="py-3 pr-4 leading-relaxed text-ink-2">{r[1]}</td><td className="py-3 pr-4 text-ink-2">{r[2]}</td><td className="py-3 pr-4 text-ink-2">{r[3]}</td><td className={`py-3 pr-4 ${r[4].startsWith('High') ? 'font-medium text-madder' : 'text-ink-2'}`}>{r[4]}</td><td className="py-3 text-ink-2">{r[5]}</td></tr>)}</tbody>
+              <tbody>{RISKS.map((en, ri) => { const r = ar ? RISKS_AR[ri] : en; return <tr key={en[0]} className="border-b border-rule align-top"><th scope="row" className="py-3 pe-4 text-start font-medium">{r[0]}</th><td className="py-3 pe-4 leading-relaxed text-ink-2">{r[1]}</td><td className="py-3 pe-4 text-ink-2">{r[2]}</td><td className="py-3 pe-4 text-ink-2">{r[3]}</td><td className={`py-3 pe-4 ${en[4].startsWith('High') ? 'font-medium text-madder' : 'text-ink-2'}`}>{r[4]}</td><td className="py-3 text-ink-2">{r[5]}</td></tr>; })}</tbody>
             </table>
           </div>
         </section>
@@ -197,11 +224,11 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
           <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Failure modes', ar: 'أنماط الإخفاق' })}</h2>
           <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'What can fail, what the person sees when it does, and how we would know.', ar: 'ما الذي قد يخفق، وما يراه الشخص عندها، وكيف نعرف.' })}</p>
           <div className="mt-6 overflow-x-auto">
-            <table className="w-full min-w-[800px] border-collapse text-[14px]" dir="ltr">
-              <thead><tr className="border-b-[1.5px] border-ink text-left">
-                {['Failure', 'Effect on the person', 'Detection', 'Response'].map((h) => <th key={h} scope="col" className="py-2.5 pr-4 font-semibold">{h}</th>)}
+            <table className="w-full min-w-[800px] border-collapse text-[14px]" dir={dir}>
+              <thead><tr className="border-b-[1.5px] border-ink text-start">
+                {FAILURE_HEAD.map((h) => <th key={h.en} scope="col" className="py-2.5 pe-4 text-start font-semibold">{t(h)}</th>)}
               </tr></thead>
-              <tbody>{FAILURES.map((r) => <tr key={r[0]} className="border-b border-rule align-top"><th scope="row" className="py-3 pr-4 text-left font-medium">{r[0]}</th>{r.slice(1).map((c, i) => <td key={i} className="py-3 pr-4 leading-relaxed text-ink-2">{c}</td>)}</tr>)}</tbody>
+              <tbody>{FAILURES.map((en, ri) => { const r = ar ? FAILURES_AR[ri] : en; return <tr key={en[0]} className="border-b border-rule align-top"><th scope="row" className="py-3 pe-4 text-start font-medium">{r[0]}</th>{r.slice(1).map((c, i) => <td key={i} className="py-3 pe-4 leading-relaxed text-ink-2">{c}</td>)}</tr>; })}</tbody>
             </table>
           </div>
         </section>

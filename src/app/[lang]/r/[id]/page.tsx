@@ -13,7 +13,7 @@ async function Letter({ params }: { params: PageProps<'/[lang]/r/[id]'>['params'
 
 export default function LetterPage({ params }: PageProps<'/[lang]/r/[id]'>) {
   return (
-    <Suspense fallback={<main className="mx-auto max-w-xl px-6 py-10"><div className="h-40 animate-pulse bg-wool-2" /></main>}>
+    <Suspense fallback={<main id="main" className="mx-auto max-w-xl px-6 py-10"><div role="status" className="h-40 animate-pulse bg-wool-2"><span className="sr-only">Loading… / جارٍ التحميل…</span></div></main>}>
       <Letter params={params} />
     </Suspense>
   );

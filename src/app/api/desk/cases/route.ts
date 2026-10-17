@@ -14,7 +14,7 @@ import { seedDesk } from '@/lib/seed';
 
 interface Body {
   pairing?: string; role?: 'A' | 'B'; consent?: { ownResults?: boolean; relationship?: boolean };
-  language?: string; readingLevel?: string; priority?: string; question?: string;
+  language?: string; readingLevel?: string; priority?: string; question?: string; pregnant?: boolean; weeks?: number;
 }
 
 export async function POST(req: Request) {
@@ -31,7 +31,8 @@ export async function POST(req: Request) {
     const pa = s.A ? personById(s.A) : null, pb = s.B ? personById(s.B) : null;
     if ((b.role === 'A' ? s.A : s.B) === p.id && s.confirmed && pa && pb) genes = intersection(labKey(), session, pa.findings, pb.findings).genes.map((g) => g.gene);
   }
-  const priority = b.priority === 'urgent' || b.priority === 'pregnant' ? b.priority : 'routine';
+  const priority = b.priority === 'urgent' || b.priority === 'pregnant' ? b.priority : b.pregnant ? 'pregnant' : 'routine';
+  const weeks = (b.pregnant || priority === 'pregnant') && Number.isInteger(b.weeks) && b.weeks! >= 1 && b.weeks! <= 42 ? b.weeks! : null;
   const now = Date.now();
   const c: DeskCase = {
     id: crypto.randomUUID().replace(/-/g, '').slice(0, 10),
@@ -47,7 +48,8 @@ export async function POST(req: Request) {
     priority,
     question: typeof b.question === 'string' && b.question.trim() ? b.question.trim().slice(0, 600) : null,
     status: 'new',
-    dueBy: dueFor(priority, now),
+    pregnancyWeeks: weeks,
+    dueBy: dueFor(priority, now, weeks),
     firstContactAt: null,
     referral: null,
     notes: [],

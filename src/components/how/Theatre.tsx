@@ -74,7 +74,7 @@ export function Theatre({ lang }: { lang: Locale }) {
     const sortFirst = (xs: string[]) => [...xs.filter((x) => both.has(x)), ...xs.filter((x) => !both.has(x))];
     return { both, abTop: sortFirst(ab).slice(0, shown), baTop: sortFirst(ba).slice(0, shown) };
   }, [r]);
-  if (!r || !view) return <div className="h-[420px] animate-pulse bg-wool-2" />;
+  if (!r || !view) return <div role="status" className="h-[420px] animate-pulse bg-wool-2"><span className="sr-only">Loading… / جارٍ التحميل…</span></div>;
   const named = r.genes.map((g) => g.gene);
   const her = lang === 'ar' ? 'مريم' : 'Mariam';
   const him = lang === 'ar' ? 'سعيد' : 'Saeed';

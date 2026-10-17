@@ -23,7 +23,7 @@ export function Nav({ lang, path = '' }: { lang: Locale; path?: string }) {
       </Link>
       <nav className="hidden items-center gap-7 text-[14px] text-ink-2 md:flex">
         {NAV.map((n) => (
-          <Link key={n.href} href={`/${lang}${n.href}`} className={`hover:text-ink ${path === n.href ? 'text-ink underline underline-offset-[6px]' : ''}`}>{n.label[lang]}</Link>
+          <Link key={n.href} href={`/${lang}${n.href}`} aria-current={path === n.href ? 'page' : undefined} className={`hover:text-ink ${path === n.href ? 'text-ink underline underline-offset-[6px]' : ''}`}>{n.label[lang]}</Link>
         ))}
         <Link href={`/${other}${path}`} lang={other} className="rounded-[2px] border border-rule px-2.5 py-1 hover:border-ink">{other === 'ar' ? 'العربية' : 'English'}</Link>
       </nav>
@@ -48,7 +48,7 @@ export function Footer({ lang }: { lang: Locale }) {
       { href: `/${lang}/how`, label: { en: 'How it works', ar: 'كيف يعمل' } },
       { href: `/${lang}/demo`, label: { en: 'Two-phone demo', ar: 'عرض الهاتفين' } },
       { href: `/${lang}/phone`, label: { en: 'Open the phone app', ar: 'افتح تطبيق الهاتف' } },
-      { href: `/${lang}/desk`, label: { en: 'Counsellor desk', ar: 'مكتب المستشار' } },
+      { href: `/${lang}/desk`, label: { en: 'Counsellor desk', ar: 'مكتب المرشد الوراثي' } },
       { href: `/${lang}/programme`, label: { en: 'Programme view', ar: 'عرض البرنامج' } },
     ] },
     { title: { en: 'Evidence', ar: 'الأدلة' }, links: [

@@ -16,6 +16,7 @@ const gnomad = new Map<string, { carrierFreq: number; error?: string }>(freqs.ge
 // 0.28), and a 49% "any defect" rate is not a carrier frequency. So the fair target is Dubai's rate
 // excluding alpha-thalassaemia; the all-inclusive rates are shown too, with the gap stated.
 const EXCLUDE = new Set(['HBA1', 'HBA2']);
+const CLASSIC_ONLY: Record<string, number> = { CYP21A2: 2 * Math.sqrt(1 / 9030) };
 
 interface GeneRow { gene: string; cf: number; source: 'literature' | 'gnomAD' }
 const rows: GeneRow[] = [];
@@ -24,7 +25,10 @@ for (const g of panel.genes as { gene: string; inheritance: string; literature_c
   if (g.inheritance !== 'AR' || EXCLUDE.has(g.gene)) continue;
   const lit = g.literature_carrier_freq?.value;
   const gn = gnomad.get(g.gene);
-  if (lit && lit > 0) rows.push({ gene: g.gene, cf: lit, source: 'literature' });
+  // CAH: the published Emirati rate counts non-classic and duplicated-haplotype alleles, which inflates
+  // classic CAH; use the classic-only carrier rate from UAE newborn screening (1 in 9,030 → 2q).
+  if (CLASSIC_ONLY[g.gene]) rows.push({ gene: g.gene, cf: CLASSIC_ONLY[g.gene], source: 'literature' });
+  else if (lit && lit > 0) rows.push({ gene: g.gene, cf: lit, source: 'literature' });
   else if (gn && !gn.error && gn.carrierFreq > 0) rows.push({ gene: g.gene, cf: gn.carrierFreq, source: 'gnomAD' });
   else missing.push(g.gene);
 }
@@ -121,7 +125,7 @@ const out = {
   geneShare: geneShare.slice(0, 15).map((g) => ({ ...g, observedM42: observedM42[g.gene] ?? null })),
   notes: [
     'Carrier frequencies: Emirati exomes (Jain et al. 2025) where published, otherwise gnomAD v4.1 Middle Eastern.',
-    'CYP21A2 frequency includes non-classic and duplicated-haplotype alleles, so it is an overestimate for classic CAH.',
+    'CYP21A2 uses the classic-only carrier rate from UAE newborn screening (classic CAH 1 in 9,030), because the published exome rate includes non-classic and duplicated-haplotype alleles.',
     'Genes are treated as independent and every pathogenic allele as reportable; real reporting rules (mild alleles, variant classification) lower the rate.',
     'The marriage mix uses Dubai 2025 (28% related); Abu Dhabi’s mix is not published and may be higher.',
     'The 11% poster figure and the 4.8% programme figure come from the same programme with different definitions and periods; the poster’s definition of positive is not published.',

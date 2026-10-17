@@ -58,6 +58,8 @@ html[lang="ar"] h1, html[lang="ar"] h2 { line-height: 1.4; }
 
 :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
 ::selection { background: var(--indigo-2); }
+/* The skip link focuses <main> itself; the landmark needs no ring, the next Tab lands inside it. */
+main[tabindex="-1"]:focus { outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }

@@ -22,8 +22,8 @@ export interface AskInput {
   /** Match strength per shared gene: 2 full, 1 one milder change, 0 both milder. */
   strengths?: Record<string, number>;
 }
-export type Intent = 'crisis' | 'probe' | 'decide' | 'faith' | 'termination' | 'other';
-export interface Checks { numbersOk: boolean; nonDirective: boolean; citesOk: boolean; oddsOk: boolean; personaOk: boolean; languageOk: boolean; framingOk: boolean; xlOk: boolean; strengthOk: boolean }
+export type Intent = 'crisis' | 'probe' | 'decide' | 'faith' | 'termination' | 'pregnant' | 'other';
+export interface Checks { numbersOk: boolean; nonDirective: boolean; citesOk: boolean; oddsOk: boolean; personaOk: boolean; languageOk: boolean; framingOk: boolean; xlOk: boolean; strengthOk: boolean; reassureOk: boolean }
 export interface AskOutput {
   answer: string;
   cites: string[];
@@ -59,7 +59,16 @@ export const DECIDE_FOR_ME = [
   /\b(best|right) (option|choice|thing to do) for us\b/i,
   /(لازم (نكنسل|نلغي|ننفصل|نتزوج|نكمل)|(يجب|ينبغي) (أن|ان) (نتزوج|نلغي|ننفصل|نكمل)|نكنسل|ننفصل|نفسخ الخطوبة|نلغي (الزواج|العرس|الخطوبة)|نكمل الزواج|نتزوج ولا|تنصحنا|تنصحني|بماذا تنصح|ايش تنصح|وش تنصح|الأفضل لنا|الافضل لنا|لو كنت مكان|هل نتزوج|هل نلغي)/,
 ];
-export const FAITH = [/\b(haram|halal|sinful|allowed in islam|islamically|fatwa|religion allow)\b/i, /(حرام|حلال|يجوز|جائز شرعاً|فتوى|شرعاً|الشرع)/];
+export const FAITH = [/\b(haram|halal|sinful|a sin|allowed in islam|islamically|in islam|fatwa|religion allows?|religiously|permissible|sharia)\b/i, /(حرام|حلال|يجوز|جائز شرعاً|فتوى|شرعاً|الشرع|حكم الدين|حكم الشرع|الدين يسمح|في الدين|ديننا|شرعي)/];
+/**
+ * Someone who is pregnant now: timing matters (some tests have time limits), so they go to a person.
+ * Arabic حامل also means "carrier", so it counts only when not followed by what is carried.
+ */
+export const PREGNANT = [
+  /(?<!\b(if|when|once)\s)\b(i'?m|i am|she'?s|she is|my wife is|we'?re|we are)\s+(\d+\s+(weeks?|months?)\s+)?pregnant\b|\bpregnant (now|already|with)\b|\b\d+\s*weeks? pregnant\b/i,
+  /(أنا|انا|إني|اني|زوجتي|مرتي)\s+(حامل|حبلى)(?!\s*(لل|ل|ب)?\s*(جين|تغي|الجين|التغي|الصفة|هذا))|حامل\s+(في|ب)\s*(الأسبوع|الاسبوع|الشهر|أسبوع|اسبوع|شهر)|(الأسبوع|الاسبوع)\s+\S+\s+من الحمل|حبلى/,
+  /\b(ana|ena)\s+(7amel|7amil|7amla|hamel|7ableh?)\b(?!\s*(b|bil|el)?\s*(gene|jeen))/i,
+];
 export const TERMINATION = [/\b(abort|abortion|terminat\w+ (the |a )?pregnan\w+|end (the|a) pregnancy)\b/i, /(إجهاض|اجهاض|إنهاء الحمل|انهاء الحمل|نسقط الجنين)/];
 
 type Said = { en: string; ar: string; arF: string };
@@ -85,6 +94,11 @@ export const REPLIES: Record<Exclude<Intent, 'other'>, Said> = {
     ar: 'الأسئلة الشرعية يُفضَّل طرحها على عالِم تثقان به، ولا يمكنني إصدار أحكام شرعية. أما الجانب الطبي، فيمكنني شرح نتيجتكما، ويمكن للمرشد الوراثي مناقشته معكما.',
     arF: 'الأسئلة الشرعية يُفضَّل طرحها على عالِم تثقان به، ولا يمكنني إصدار أحكام شرعية. أما الجانب الطبي، فيمكنني شرح نتيجتكما، ويمكن للمرشد الوراثي مناقشته معكما.',
   },
+  pregnant: {
+    en: 'Because there is a pregnancy, timing matters: some tests in pregnancy can only be done within certain weeks. Please tap “Talk to a genetic counsellor” and say how many weeks: a counsellor will contact you within one working day, and the same day from week 9.',
+    ar: 'بما أن هناك حملاً فالتوقيت مهم: فبعض الفحوص أثناء الحمل لا تُجرى إلا في أسابيع معينة. اضغط «تحدّث إلى مرشد وراثي» واذكر عدد الأسابيع: سيتواصل معك مرشد خلال يوم عمل واحد، وفي اليوم نفسه ابتداءً من الأسبوع التاسع.',
+    arF: 'بما أن هناك حملاً فالتوقيت مهم: فبعض الفحوص أثناء الحمل لا تُجرى إلا في أسابيع معينة. اضغطي «تحدّثي إلى مرشد وراثي» واذكري عدد الأسابيع: سيتواصل معك مرشد خلال يوم عمل واحد، وفي اليوم نفسه ابتداءً من الأسبوع التاسع.',
+  },
   termination: {
     en: 'That’s an important question, and a genetic counsellor is the right person for it: they can explain the testing options in pregnancy and what UAE law allows, without judgement. Tap “Talk to a genetic counsellor”.',
     ar: 'هذا سؤال مهم، والمرشد الوراثي هو الشخص المناسب له: يمكنه شرح خيارات الفحص أثناء الحمل وما يسمح به القانون في الإمارات، دون أحكام. اضغط «تحدّث إلى مرشد وراثي».',
@@ -101,6 +115,8 @@ export function guardIntent(raw: string): Intent | null {
   if (CRISIS.some((r) => r.test(q))) return 'crisis';
   if (PARTNER_PROBE.some((r) => r.test(q))) return 'probe';
   if (TERMINATION.some((r) => r.test(q))) return 'termination';
+  if (PREGNANT.some((r) => r.test(q))) return 'pregnant';
+  // A religious question about a decision is a faith question first.
   if (FAITH.some((r) => r.test(q))) return 'faith';
   if (DECIDE_FOR_ME.some((r) => r.test(q))) return 'decide';
   return null;
@@ -112,12 +128,17 @@ const RELATED = /(cousin|related|relative|consanguin|قرابة|أقارب|اق�
 const INCREASE = /(higher|increase|increases|raised|more likely|greater|extra|adds?\b|أعلى|يزيد|تزيد|يرفع|أكبر|إضافي|يضيف)/i;
 const OTHER = /(other|untested|not tested|outside|does not change|doesn'?t change|not change|أخرى|لم تُفحص|لم تفحص|غير المفحوصة|لا يغيّر|لا يغير|لا تغيّر)/i;
 const PERSONA = [/\b(as a|as your|i am a|i'?m a|speaking as a)\s+(doctor|physician|clinician|genetic counsel?lor|medical professional)\b/i, /(كطبيب|بصفتي طبيب|بصفتي طبيبة|أنا طبيب|انا طبيب|بصفتي مستشار)/];
-const BAD_TERMS = [/\bincompatible\b/i, /(الحمل الجيني|اختبار الحمل|فحص الحمل|غير متوافق|مرتبطان|التبني|تبنّي|تبني)/];
+const BAD_TERMS = [/\bincompatible\b/i, /(الحمل الجيني|اختبار الحمل|فحص الحمل|غير متوافق|مرتبطان|التبني|تبنّي|تبني|ظروف|المتنحي الجسدي)/];
+/** The couple is two people: Arabic must use the dual (لكما), not the plural (لكم). */
+const PLURAL_YOU = /(^|[\s،.])(لكم|يمكنكم|حالتكم|أطفالكم|عليكم|لديكم|منكم|أنتم)(?![ا\u064B-\u0652])/;
+/** Reassurance the facts don't support. */
+const REASSURE = /\b(not serious|nothing to worry|no need to worry|don'?t worry|nothing serious)\b|(ليست خطيرة|ليس خطيراً|ليس خطيرا|غير خطيرة|لا داعي للقلق|لا تقلق|لا تقلقي|مش خطير)/i;
+const SPOUSE = /\b(husband|wife)\b/i;
 /** Every Arabic حامل-word must say what is carried (التغيّر / الصفة), or it reads as "pregnant". */
 const bareCarrier = (s: string) => [...s.matchAll(/حامل\S*/g)].some((m) => !/(تغي|الصفة|لهذا)/.test(s.slice(m.index!, m.index! + 30)));
-const DAUGHTER = /(daughter|ابنة|بنات|البنات|بناتك)/i;
+const DAUGHTER = /(daughter|ابنة|بنات|البنات|بناتك|بنت)/i;
 const CARRIER_WORD = /(carrier|حامل)/i;
-const AFFECTED_WORD = /(affected|have the condition|has the condition|مصاب|تصاب|يصاب)/i;
+const AFFECTED_WORD = /(affected|ha(ve|s|ving) (the condition|it)|مصاب|تصاب|يصاب|إصابة)/i;
 const MILD_WORD = /(mild|milder|أخف|خفيف)/i;
 const FOREIGN = /[぀-ヿ㐀-鿿가-힯Ѐ-ӿऀ-ॿ]/;
 const DIRECTIVE = [
@@ -154,14 +175,24 @@ export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: 
   const oddsOk = !(genes.length > 0 && sentences.some((s) => RELATED.test(s) && INCREASE.test(s) && !OTHER.test(s)));
   const personaOk = !PERSONA.some((r) => r.test(answer));
   const latinWords = answer.replace(/\b(PGT-M|IVF|CAH|SMA|FMF|HbS|HbC|HbE|DNA|HOPE)\b/g, '').replace(/\b[A-Z0-9]{2,}[0-9][A-Z0-9]*\b/g, '').match(/\b[a-z]{4,}\b/gi);
-  const languageOk = !BAD_TERMS.some((r) => r.test(answer)) && !(ctx.lang === 'ar' && (FOREIGN.test(answer) || !!latinWords || bareCarrier(answer)));
+  const languageOk = !BAD_TERMS.some((r) => r.test(answer)) && !(ctx.lang === 'ar' && (FOREIGN.test(answer) || !!latinWords || bareCarrier(answer) || PLURAL_YOU.test(answer)))
+    && !(ctx.lang !== 'ar' && SPOUSE.test(answer) && !SPOUSE.test(ctx.question ?? ''));
+  const reassureOk = !REASSURE.test(answer);
   const framingOk = !(/(thiqa|ثقة)/i.test(answer) && !MONEY_Q.test(ctx.question ?? ''));
-  // X-linked couple (she carries, he is affected): a sentence calling daughters carriers must also say they can be affected.
-  const xlOk = !((ctx.xl?.length ?? 0) > 0 && sentences.some((s) => DAUGHTER.test(s) && CARRIER_WORD.test(s) && !AFFECTED_WORD.test(s)));
+  // X-linked couple (she carries, he is affected): checked clause by clause (commas included, Arabic too).
+  // A clause calling daughters carriers must also say they can be affected; and if daughters are
+  // mentioned at all, some clause must say a daughter can be affected.
+  const clauses = answer.split(/[.!?؟\n,،;؛]+/);
+  const xl = (ctx.xl?.length ?? 0) > 0;
+  const xlOk = !(xl && (clauses.some((s) => DAUGHTER.test(s) && CARRIER_WORD.test(s) && !AFFECTED_WORD.test(s))
+    || (DAUGHTER.test(answer) && !clauses.some((s) => DAUGHTER.test(s) && AFFECTED_WORD.test(s)))));
   // A milder match must not be described as a plain "1 in 4 affected" without saying milder.
   const milder = Object.entries(ctx.strengths ?? {}).filter(([, v]) => v < 2).map(([g]) => g);
-  const strengthOk = !(milder.length > 0 && /1\s*(in|من)\s*4/.test(answer) && AFFECTED_WORD.test(answer) && !MILD_WORD.test(answer));
-  return { numbersOk, nonDirective, citesOk, oddsOk, personaOk, languageOk, framingOk, xlOk, strengthOk };
+  // Per sentence: a "1 in 4 ... affected" sentence must say milder; and "both milder" only when both are.
+  const both = /(both (carry |have )?(a )?milder|both changes are milder|كلاكما يحمل تغيّراً أخف|كلاكما تحملان تغيّرات أخف|تغيّرات أخف|كلا التغيّرين أخف)/i;
+  const oneMilder = Object.values(ctx.strengths ?? {}).some((v) => v === 1) && !Object.values(ctx.strengths ?? {}).some((v) => v === 0);
+  const strengthOk = !(milder.length > 0 && (sentences.some((s) => /1\s*(in|من|في)\s*4/.test(s) && AFFECTED_WORD.test(s) && !MILD_WORD.test(s)) || (oneMilder && both.test(answer))));
+  return { numbersOk, nonDirective, citesOk, oddsOk, personaOk, languageOk, framingOk, xlOk, strengthOk, reassureOk };
 }
 const allOk = (c: Checks) => Object.values(c).every(Boolean);
 
@@ -185,10 +216,18 @@ const GLOSSARY_AR = [
   '- partner: follow the addressee rule above; never say husband/wife (they may not be married yet).',
   '- never use the word for adoption (التبني); say kafala or fostering (الكفالة أو الرعاية).',
   '- a couple with an increased chance = "زوجان باحتمال أعلى"; never "غير متوافقين".',
+  '- address the couple in the DUAL: لكما، أطفالكما، يمكنكما، حالتكما. Never the plural لكم، يمكنكم، حالتكم.',
+  '- other conditions = "حالات أخرى"; never "ظروف". recessive inheritance = "وراثة متنحية"; never "المتنحي الجسدي".',
 ].join('\n');
 
 function system(input: AskInput): string {
-  const tier = (g: string) => ({ 2: 'both changes serious', 1: 'one milder change: a milder form is likely (use [milder-match])', 0: 'both changes milder: low concern (use [milder-match])' } as Record<number, string>)[input.strengths?.[g] ?? 2];
+  const tier = (g: string) => {
+    const st = input.strengths?.[g] ?? 2;
+    // The globin genes: the pair of changes decides it (see lab.ts).
+    if (g === 'HBB') return 'a full match until a blood test (HPLC) shows the exact pair; some pairs are milder, and the counsellor explains which';
+    if (g === 'HBA') return st === 0 ? 'each lost one alpha gene: a child with both has alpha-thalassaemia trait, which is not an illness' : 'a serious alpha-globin match (HbH disease or Hb Bart’s hydrops, see [cond:HBA]); the counsellor explains which';
+    return ({ 2: 'both changes serious', 1: 'one milder change: a milder form is likely (use [milder-match])', 0: 'both changes milder: low concern (use [milder-match])' } as Record<number, string>)[st];
+  };
   const shared = input.genes.length || input.xl.length
     ? `The couple both carry: ${[...input.genes.map((g) => `${g} (${tier(g)})`), ...input.xl.map((g) => `${g} (X-linked: she carries it and he has the condition; use [xl-affected-father], never [xl-odds])`)].join(', ')}.`
     : 'The couple do not share a carried gene on the panel.';
@@ -241,13 +280,15 @@ Labels:
 - decide: asks the assistant to choose or recommend: marry or not, cancel, have children, which option is best, "what would you do".
 - faith: asks for a religious ruling (halal, haram, permitted).
 - termination: asks about ending a pregnancy.
+- pregnant: says the asker or the partner is pregnant now (not a question about future pregnancies).
 - other: everything else, including what the shared result means, chances, symptoms, care, options, costs and relatives.
 Examples: "What does it mean that we both carry this?" -> other. "We both have CYP21A2, I'm confused" -> other. "Does he carry anything else serious?" -> probe. "How many genes does she have?" -> probe. "If you were me would you go ahead?" -> decide. "I don't see the point anymore, what is ABCA4?" -> crisis.
 Reply with JSON only: {"intent": "<label>"}`;
   try {
     const t = await converse(model, sys, [{ role: 'user', content: [{ text: q.slice(0, 600) }] }], 20);
-    const m = /"intent"\s*:\s*"(crisis|probe|decide|faith|termination|other)"/.exec(t);
-    return (m?.[1] as Intent) ?? 'other';
+    const m = /"intent"\s*:\s*"(crisis|probe|decide|faith|termination|pregnant|other)"/.exec(t);
+    // An answer we can't read is treated like a check that couldn't run: fail closed.
+    return (m?.[1] as Intent) ?? 'unknown';
   } catch {
     return 'unknown';
   }
@@ -263,7 +304,7 @@ async function callModel(input: AskInput, model: string, extra?: string) {
 
 /** Fear or worry, short of a crisis: in English, Arabic, Gulf dialect and Arabizi. */
 // Self-blame and stigma ("we are defective", "bad blood") count too: they need the same human follow-up.
-const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault)\b|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa)\b/i;
+const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault|selfish)\b|أناني|أنانيين|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa)\b/i;
 export const expressesWorry = (q: string) => WORRY.test(q.normalize('NFKC'));
 const ACKNOWLEDGE = {
   en: 'It’s completely understandable to feel worried about this, and you don’t have to work through it alone: a genetic counsellor can talk it through with you.',
@@ -293,16 +334,17 @@ function problems(c: Checks): string {
     !c.framingOk && 'it attached insurance cover to one option without being asked.',
     !c.citesOk && 'it did not cite valid fact ids.',
     !c.xlOk && 'for this X-linked couple, daughters are either affected (1 in 2) or carriers; say both, using [xl-affected-father].',
-    !c.strengthOk && 'this is a milder match: say the 1 in 4 child would usually have a milder form, using [milder-match].',
+    !c.strengthOk && 'this is a milder match: say the 1 in 4 child would usually have a milder form, using [milder-match], and say exactly how many of the changes are milder (one, or both).',
+    !c.reassureOk && 'it reassured beyond the facts ("not serious", "nothing to worry"); describe the chance and the care instead.',
   ].filter(Boolean).join(' ');
 }
 
 export async function ask(input: AskInput, model = ASK_MODEL()): Promise<AskOutput> {
   const t0 = Date.now();
-  const okChecks: Checks = { numbersOk: true, nonDirective: true, citesOk: true, oddsOk: true, personaOk: true, languageOk: true, framingOk: true, xlOk: true, strengthOk: true };
+  const okChecks: Checks = { numbersOk: true, nonDirective: true, citesOk: true, oddsOk: true, personaOk: true, languageOk: true, framingOk: true, xlOk: true, strengthOk: true, reassureOk: true };
   const say = (l: { en: string; ar: string; arF?: string }) => said(l, input.lang, input.sex);
   const reply = (intent: Exclude<Intent, 'other'>, route: 'guard' | 'intent'): AskOutput => ({
-    answer: say(REPLIES[intent]), cites: ['counsellor'], escalate: intent === 'crisis' || intent === 'termination', urgent: intent === 'crisis',
+    answer: say(REPLIES[intent]), cites: ['counsellor'], escalate: intent === 'crisis' || intent === 'termination' || intent === 'pregnant', urgent: intent === 'crisis',
     route, intent, checks: okChecks, ms: Date.now() - t0,
   });
   const worried = expressesWorry(input.question);

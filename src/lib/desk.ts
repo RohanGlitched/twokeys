@@ -31,8 +31,10 @@ export interface DeskCase {
   sharedGenes: string[];
   ownFindings: Finding[] | null;
   relationship: Relationship | null;
-  /** Priority: 'urgent' (distress) = 4-hour clock; 'pregnant' = 1 working day; otherwise 2 working days. */
+  /** Priority: 'urgent' (distress) = 4-hour clock; 'pregnant' = 1 working day, or 4 hours from week 9; otherwise 2 working days. */
   priority: 'urgent' | 'pregnant' | 'routine';
+  /** Weeks of pregnancy when booked, if the person said so: testing in pregnancy has time windows. */
+  pregnancyWeeks?: number | null;
   question: string | null;
   status: CaseStatus;
   dueBy: number;
@@ -88,7 +90,12 @@ export function workingDaysFrom(t: number, n: number): number {
   return d.getTime();
 }
 export const twoWorkingDaysFrom = (t: number) => workingDaysFrom(t, 2);
-export function dueFor(priority: DeskCase['priority'], t: number) {
+/**
+ * From week 9 a pregnancy gets the same 4-hour clock as distress: chorionic villus sampling is done at
+ * about weeks 10 to 13, and later options have legal time limits, so a day can matter.
+ */
+export function dueFor(priority: DeskCase['priority'], t: number, weeks?: number | null) {
+  if (priority === 'pregnant' && weeks != null && weeks >= 9) return t + 4 * 3_600_000;
   return priority === 'urgent' ? t + 4 * 3_600_000 : priority === 'pregnant' ? workingDaysFrom(t, 1) : workingDaysFrom(t, 2);
 }
 

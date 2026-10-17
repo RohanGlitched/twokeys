@@ -13,7 +13,7 @@ export default async function ProgrammePage({ params }: PageProps<'/[lang]/progr
   return (
     <>
       <Nav lang={lang} path="/programme" />
-      <main className="mx-auto max-w-[1240px] px-6 pb-10 pt-6 md:px-8">
+      <main id="main" className="mx-auto max-w-[1240px] px-6 pb-10 pt-6 md:px-8">
         <p className="text-[13px] text-ink-2">{ar ? 'للجهة الصحية' : 'For the health authority'}</p>
         <h1 className="mt-1 max-w-3xl text-[clamp(30px,3.4vw,44px)] font-semibold leading-tight tracking-tight">
           {ar ? 'هل يفهم الناس نتائجهم ويصلون إلى الرعاية في الوقت؟' : 'Do people understand their results, and reach care in time?'}

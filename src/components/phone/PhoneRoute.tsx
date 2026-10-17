@@ -23,7 +23,7 @@ export function PhoneRoute({ lang, people, couples }: { lang: Locale; people: Pu
   if (!me) {
     const invited = hash.length > 40;
     return (
-      <main className="mx-auto max-w-md px-5 py-10">
+      <main id="main" className="mx-auto max-w-md px-5 py-10">
         <h1 className="text-[28px] font-semibold tracking-tight">{lang === 'ar' ? 'من أنت في هذا العرض؟' : 'Who are you in this demo?'}</h1>
         {invited && <p className="mt-3 border-s-4 border-indigo bg-paper px-3 py-2 text-[14px]">{lang === 'ar' ? 'دعاك شريكك إلى المقارنة. اختر الشخص الذي تمثله، وستصل الدعوة معك.' : 'Your partner invited you to compare. Choose who you are and the invitation comes with you.'}</p>}
         <p className="mt-2 text-[14px] text-ink-2">{lang === 'ar' ? 'كل الأشخاص هنا افتراضيون. في الحياة الحقيقية تفتح بطاقتك بعد تسجيل الدخول عبر الهوية الرقمية.' : 'Everyone here is synthetic. In real life you would open your card after signing in with UAE PASS.'}</p>

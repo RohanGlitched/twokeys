@@ -1,6 +1,7 @@
 // Pedigree-chart glyphs: the notation genetics itself uses. Diamond = a child of either sex;
-// filled = affected, half-filled = carrier, outline = neither. Square = male, circle = female.
-type Fill = 'affected' | 'carrier' | 'clear';
+// filled = affected, half-filled = carrier, outline = neither; a pale dashed fill = a mild form at most.
+// Square = male, circle = female.
+type Fill = 'affected' | 'mild' | 'carrier' | 'clear';
 
 export function Diamond({ fill, size = 40, color = 'var(--madder)', label }: { fill: Fill; size?: number; color?: string; label?: string }) {
   const s = size, h = s / 2;
@@ -8,7 +9,7 @@ export function Diamond({ fill, size = 40, color = 'var(--madder)', label }: { f
   return (
     <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true}>
       {fill === 'carrier' && <path d={`M${h} 2 L${h} ${s - 2} L2 ${h}Z`} fill={color} />}
-      <path d={path} fill={fill === 'affected' ? color : 'none'} stroke={fill === 'clear' ? 'var(--ink-2)' : color} strokeWidth={2} strokeLinejoin="round" />
+      <path d={path} fill={fill === 'affected' ? color : fill === 'mild' ? color : 'none'} fillOpacity={fill === 'mild' ? 0.3 : 1} strokeDasharray={fill === 'mild' ? '4 3' : undefined} stroke={fill === 'clear' ? 'var(--ink-2)' : color} strokeWidth={2} strokeLinejoin="round" />
     </svg>
   );
 }

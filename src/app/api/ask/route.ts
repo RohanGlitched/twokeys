@@ -1,8 +1,14 @@
+import { hmac } from '@noble/hashes/hmac.js';
+import { sha256 } from '@noble/hashes/sha2.js';
 import { ask, type AskInput } from '@/lib/ask';
+import { labKey } from '@/lib/labkey';
 import { CONDITIONS } from '@/lib/conditions';
 import { readJson } from '@/lib/http';
 import { limited } from '@/lib/ratelimit';
 import { store } from '@/lib/store';
+
+/** Answers carry a server signature; only signed answers come back as history, so a client can't put words in the explainer's mouth. */
+const sign = (text: string) => Array.from(hmac(sha256, labKey(), new TextEncoder().encode(`twokeys/ask-history/v1|${text}`)), (b) => b.toString(16).padStart(2, '0')).join('');
 
 export async function POST(req: Request) {
   const b = await readJson<Partial<AskInput>>(req);
@@ -23,7 +29,11 @@ export async function POST(req: Request) {
     strengths: b.strengths && typeof b.strengths === 'object' ? Object.fromEntries(Object.entries(b.strengths).filter(([g, v]) => g in CONDITIONS && [0, 1, 2].includes(Number(v))).map(([g, v]) => [g, Number(v)])) : undefined,
     related: !!b.related,
     question,
-    history: Array.isArray(b.history) ? b.history.filter((h) => h && (h.role === 'user' || h.role === 'assistant') && typeof h.text === 'string').slice(-6) : [],
+    history: Array.isArray(b.history)
+      ? (b.history as { role?: string; text?: unknown; sig?: unknown }[])
+        .filter((h) => h && typeof h.text === 'string' && (h.role === 'user' || (h.role === 'assistant' && typeof h.sig === 'string' && h.sig === sign(h.text as string))))
+        .map((h) => ({ role: h.role as 'user' | 'assistant', text: h.text as string })).slice(-6)
+      : [],
   });
   // Monitoring without content: daily counts of how each answer was produced, never the question.
   const day = new Date().toISOString().slice(0, 10);
@@ -36,5 +46,5 @@ export async function POST(req: Request) {
     out.urgent ? db.incr(`mon:${day}:urgent`, ttl) : null,
     out.model ? db.incr(`mon:${day}:model:${out.model}`, ttl) : null,
   ]).catch((e) => console.error('monitor write failed', e));
-  return Response.json(out, { headers: { 'cache-control': 'no-store' } });
+  return Response.json({ ...out, sig: sign(out.answer) }, { headers: { 'cache-control': 'no-store' } });
 }

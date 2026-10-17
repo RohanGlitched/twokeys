@@ -25,20 +25,20 @@ export const CONDITIONS: Record<string, Condition> = {
     name: { en: 'Congenital adrenal hyperplasia (CAH)', ar: 'تضخم الغدة الكظرية الخلقي' },
     what: {
       simple: {
-        en: 'The body cannot make enough of some hormones from the adrenal glands. Babies are checked for it at birth.',
+        en: 'Small glands above the kidneys cannot make enough of some hormones. A simple test at birth finds it, and a daily medicine treats it.',
         ar: 'غدد صغيرة فوق الكليتين لا تصنع ما يكفي من بعض الهرمونات. يكشفها فحص بسيط عند الولادة، ويعالجها دواء يومي.',
       },
       standard: {
-        en: 'An enzyme the adrenal glands need to make cortisol is missing or weak. Without treatment, salt-wasting crises can be dangerous in the first weeks of life. Lifelong hormone medicine works well.',
-        ar: 'يغيب أو يضعف إنزيم تحتاجه الغدة الكظرية لصنع الكورتيزول. من دون علاج قد تحدث أزمات فقدان الأملاح في الأسابيع الأولى من الحياة، وهي خطيرة. ويفيد الدواء الهرموني مدى الحياة كثيراً.',
+        en: 'An enzyme the adrenal glands need to make cortisol is missing or weak. Without treatment, a salt-wasting crisis can be dangerous, often around the second week of life, which can be before newborn screening results are back. Girls may be born with genitals that look different, which doctors can explain and care for. Lifelong hormone medicine works well.',
+        ar: 'يغيب أو يضعف إنزيم تحتاجه الغدة الكظرية لصنع الكورتيزول. من دون علاج قد تحدث أزمة فقدان الأملاح، وهي خطيرة، وغالباً في الأسبوع الثاني من العمر، وقد يكون ذلك قبل وصول نتيجة فحص حديثي الولادة. وقد تولد البنات بأعضاء تناسلية يختلف مظهرها، ويستطيع الأطباء شرح ذلك ورعايته. ويفيد الدواء الهرموني مدى الحياة كثيراً.',
       },
       detailed: {
-        en: '21-hydroxylase deficiency. Classic forms (salt-wasting and simple virilising) are found by UAE newborn screening; non-classic forms are milder and common. Treatment is glucocorticoid and, if needed, mineralocorticoid replacement.',
-        ar: 'نقص إنزيم 21-هيدروكسيلاز. الأشكال التقليدية (المُضيّعة للملح والمُذكِّرة البسيطة) يكشفها فحص حديثي الولادة في الإمارات، أما الشكل غير التقليدي فأخف وشائع. العلاج بتعويض الغلوكوكورتيكويد، والمينرالوكورتيكويد عند الحاجة.',
+        en: '21-hydroxylase deficiency. Classic forms (salt-wasting and simple virilising) are found by UAE newborn screening, but a salt-wasting crisis can come at days 7 to 14, so a known risk means testing the baby at once. 46,XX infants may have atypical genitalia; prenatal options and their timing are for a genetic counsellor. Non-classic forms are milder and common. Treatment is glucocorticoid and, if needed, mineralocorticoid replacement.',
+        ar: 'نقص إنزيم 21-هيدروكسيلاز. الأشكال التقليدية (المُضيّعة للملح والمُذكِّرة البسيطة) يكشفها فحص حديثي الولادة في الإمارات، لكن أزمة فقدان الملح قد تأتي بين اليوم السابع والرابع عشر، لذا يعني الخطر المعروف فحص المولود فوراً. وقد تكون الأعضاء التناسلية لدى المواليد 46,XX غير نمطية؛ وخيارات ما قبل الولادة وتوقيتها يشرحها المرشد الوراثي. والشكل غير التقليدي أخف وشائع. العلاج بتعويض الغلوكوكورتيكويد، والمينرالوكورتيكويد عند الحاجة.',
       },
     },
     severity: 'severe',
-    care: { en: 'Treatable with daily medicine; found by newborn screening.', ar: 'قابل للعلاج بدواء يومي، ويُكشف بفحص حديثي الولادة.' },
+    care: { en: 'Treatable with daily medicine. If you know of the chance, tell the team at the birth, so the baby is checked in the first days rather than waiting for screening results.', ar: 'قابل للعلاج بدواء يومي. إن كنتما تعرفان بالاحتمال فأخبرا الفريق عند الولادة، ليُفحص المولود في الأيام الأولى دون انتظار نتيجة الفحص.' },
     source: { label: 'MedlinePlus Genetics: congenital adrenal hyperplasia', url: 'https://medlineplus.gov/genetics/condition/21-hydroxylase-deficiency/' },
   },
   HBB: {
@@ -46,7 +46,7 @@ export const CONDITIONS: Record<string, Condition> = {
     name: { en: 'Beta thalassaemia and sickle cell disease', ar: 'الثلاسيميا بيتا وفقر الدم المنجلي' },
     what: {
       simple: {
-        en: 'Red blood cells cannot carry oxygen well. Some children need regular blood transfusions.',
+        en: 'The blood cannot carry oxygen well, so the child tires easily, and some children need a blood transfusion every few weeks.',
         ar: 'لا ينقل الدم الأكسجين جيداً، فيتعب الطفل، ويحتاج بعض الأطفال إلى نقل دم كل بضعة أسابيع.',
       },
       standard: {
@@ -130,25 +130,25 @@ export const CONDITIONS: Record<string, Condition> = {
     care: { en: 'Hearing support; vision care; therapies in trials.', ar: 'دعم السمع ورعاية البصر وعلاجات قيد التجارب.' },
     source: { label: 'MedlinePlus Genetics: Usher syndrome', url: 'https://medlineplus.gov/genetics/condition/usher-syndrome/' },
   },
-  HBA2: {
-    gene: 'HBA2',
+  HBA: {
+    gene: 'HBA',
     name: { en: 'Alpha thalassaemia', ar: 'الثلاسيميا ألفا' },
     what: {
       simple: {
-        en: 'Most changes in this gene cause no illness. A few combinations cause anaemia.',
-        ar: 'غالباً لا يسبب هذا الجين مرضاً، لكن إذا ورث الطفل تغيّرات كثيرة فيه فقد يصاب بفقر الدم.',
+        en: 'Most changes in these genes cause no illness. If a child inherits too many, it can cause anaemia, and when none of the four genes work, a very serious illness before birth.',
+        ar: 'غالباً لا تسبب تغيّرات هذين الجينين مرضاً. لكن إذا ورث الطفل تغيّرات كثيرة فقد يصاب بفقر الدم، وإذا لم يعمل أي من الجينات الأربعة فقد يصاب بمرض خطير جداً قبل الولادة.',
       },
       standard: {
-        en: 'There are four alpha-globin gene copies. Losing one or two is common in the UAE and usually silent. Losing three causes HbH disease; losing all four is very severe.',
-        ar: 'لدى الإنسان أربع نسخ من جين ألفا غلوبين. فقدان نسخة أو اثنتين شائع في الإمارات ولا يسبب أعراضاً غالباً. فقدان ثلاث يسبب مرض HbH، وفقدان الأربع شديد جداً.',
+        en: 'There are four alpha-globin genes (two on each chromosome). Losing one or two is common in the UAE and usually silent. Losing three causes HbH disease, a lifelong anaemia. Losing all four causes Hb Bart’s hydrops before birth, which most babies don’t survive without treatment in the womb, and which can make the pregnancy dangerous for the mother.',
+        ar: 'هناك أربعة جينات لألفا غلوبين (اثنان على كل كروموسوم). فقدان جين أو اثنين شائع في الإمارات ولا يسبب أعراضاً غالباً. وفقدان ثلاثة يسبب مرض الهيموغلوبين H، وهو فقر دم مدى الحياة. وفقدان الأربعة يسبب استسقاء الجنين بخضاب بارت قبل الولادة، ولا ينجو منه معظم الأجنة دون علاج داخل الرحم، وقد يجعل الحمل خطراً على الأم.',
       },
       detailed: {
-        en: 'HBA1/HBA2 deletions (−α3.7, −α4.2, −−MED, −−SEA) and point variants. Risk depends on cis versus trans arrangement, which short-read sequencing can miss; confirmation needs dedicated testing.',
-        ar: 'حذف في HBA1/HBA2 (−α3.7، −α4.2، −−MED، −−SEA) ومتغيرات نقطية. يعتمد الخطر على ترتيب الحذف على الكروموسوم نفسه أو على الكروموسومين، وقد لا يكشفه التسلسل القصير، فيلزم فحص تأكيدي خاص.',
+        en: 'HBA1/HBA2 deletions (−α3.7, −α4.2: α+; −−MED, −−SEA: α0) and point variants such as Hb Constant Spring, which can make HbH disease transfusion-dependent. α0 with α0 gives Hb Bart’s hydrops (with maternal pre-eclampsia risk); α0 with α+ gives HbH disease; α+ with α+ gives trait. Cis versus trans arrangement decides it, and short-read sequencing can miss it; confirmation needs dedicated testing.',
+        ar: 'حذف في HBA1/HBA2 (−α3.7، −α4.2: α+؛ −−MED، −−SEA: α0) ومتغيرات نقطية مثل Hb Constant Spring الذي قد يجعل مرض الهيموغلوبين H معتمداً على نقل الدم. α0 مع α0 يسبب استسقاء الجنين بخضاب بارت (مع خطر تسمم الحمل على الأم)، وα0 مع α+ يسبب مرض الهيموغلوبين H، وα+ مع α+ يسبب السمة فقط. ويحدد ذلك ترتيب الحذف على الكروموسوم نفسه أو على الكروموسومين، وقد لا يكشفه التسلسل القصير، فيلزم فحص تأكيدي خاص.',
       },
     },
     severity: 'variable',
-    care: { en: 'Often silent; severe forms need specialist care.', ar: 'غالباً بلا أعراض، والأشكال الشديدة تحتاج رعاية متخصصة.' },
+    care: { en: 'Often silent. HbH disease needs specialist care; Hb Bart’s hydrops needs specialist care in pregnancy.', ar: 'غالباً بلا أعراض. ويحتاج مرض الهيموغلوبين H إلى رعاية متخصصة، ويحتاج استسقاء الجنين بخضاب بارت إلى رعاية متخصصة أثناء الحمل.' },
     carrierNote: {
       en: 'Carriers can have small red cells and a slightly low blood count, which is harmless; tell your doctor, so it isn’t mistaken for iron deficiency.',
       ar: 'قد تكون خلايا الدم الحمراء أصغر لدى حامل هذا التغيّر، مع انخفاض بسيط في الدم غير ضار؛ أخبر طبيبك كي لا يُظن أنه نقص حديد.',
@@ -225,7 +225,7 @@ export const CONDITIONS: Record<string, Condition> = {
     name: { en: 'Spinal muscular atrophy (SMA)', ar: 'ضمور العضلات الشوكي' },
     what: {
       simple: {
-        en: 'Nerves that move the muscles weaken. New medicines work best when started very early.',
+        en: 'The child’s muscles weaken, and breathing and swallowing can become hard. New medicines help most when started before any sign shows.',
         ar: 'تضعف عضلات الطفل، وقد يصعب عليه التنفس والبلع. تساعد الأدوية الجديدة أكثر إذا بدأت قبل ظهور أي علامة.',
       },
       standard: {
@@ -243,5 +243,6 @@ export const CONDITIONS: Record<string, Condition> = {
   },
 };
 
-export const conditionFor = (gene: string) => CONDITIONS[gene.toUpperCase()] ?? null;
+/** HBA1 and HBA2 share one card: together they make alpha globin. */
+export const conditionFor = (gene: string) => CONDITIONS[/^HBA[12]?$/i.test(gene) ? 'HBA' : gene.toUpperCase()] ?? null;
 export const tr = (l: L, lang: Locale) => l[lang];

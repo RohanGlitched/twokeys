@@ -60,7 +60,7 @@ export default async function HowPage({ params }: PageProps<'/[lang]/how'>) {
   return (
     <>
       <Nav lang={lang} path="/how" />
-      <main className="mx-auto max-w-[1240px] px-6 pt-6 md:px-8">
+      <main id="main" className="mx-auto max-w-[1240px] px-6 pt-6 md:px-8">
         <h1 className="max-w-3xl text-[clamp(32px,3.6vw,48px)] font-semibold leading-tight tracking-tight">{t({ en: 'How two phones and a lab find a shared gene without showing anything else', ar: 'كيف يجد هاتفان ومختبر جيناً مشتركاً دون كشف أي شيء آخر' })}</h1>
         <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-ink-2">{t({ en: 'This runs the real protocol in your browser, with a throwaway lab key. Every value below is the actual value.', ar: 'يشغّل هذا البروتوكول الحقيقي في متصفحك بمفتاح مختبر مؤقت. كل قيمة أدناه هي القيمة الفعلية.' })}</p>
         <section className="mt-10 border-t-[1.5px] border-ink pt-8"><Theatre lang={lang} /></section>
@@ -119,8 +119,8 @@ export default async function HowPage({ params }: PageProps<'/[lang]/how'>) {
             <h2 className="text-[clamp(22px,2.2vw,28px)] font-semibold tracking-tight">{t({ en: 'What it doesn’t do', ar: 'ما لا يفعله' })}</h2>
             <ul className="mt-4 list-disc space-y-3 ps-5 text-[15px] leading-relaxed text-ink-2">
               <li>{t({ en: 'A match is a match: if you share a gene, your partner learns you carry it. That is the information the couple needs.', ar: 'التطابق تطابق: إن تشاركتما جيناً فسيعرف شريكك أنك تحمله. وهذه هي المعلومة التي يحتاجها الزوجان.' })}</li>
-              <li>{t({ en: 'It matches genes, not exact variants. Where the exact pair matters (CAH non-classic alleles, alpha-globin cis or trans, HbS with HbC), the result says so and a counsellor confirms.', ar: 'يطابق الجينات لا المتغيرات بدقة. وحيث يهم الزوج الدقيق (أليلات CAH غير التقليدية، أو ألفا غلوبين على الكروموسوم نفسه أو المقابل، أو HbS مع HbC) تقول النتيجة ذلك ويؤكده المستشار.' })}</li>
-              <li>{t({ en: 'Booking a counsellor stores, on the server, exactly what you tick. You can withdraw it.', ar: 'حجز المستشار يحفظ على الخادم ما تختاره بالضبط، ويمكنك سحبه.' })}</li>
+              <li>{t({ en: 'It matches genes, not exact variants. Where the exact pair matters (CAH non-classic alleles, alpha-globin cis or trans, HbS with HbC), the result says so and a counsellor confirms.', ar: 'يطابق الجينات لا المتغيرات بدقة. وحيث يهم الزوج الدقيق (أليلات CAH غير التقليدية، أو ألفا غلوبين على الكروموسوم نفسه أو المقابل، أو HbS مع HbC) تقول النتيجة ذلك ويؤكده المرشد الوراثي.' })}</li>
+              <li>{t({ en: 'Booking a counsellor stores, on the server, exactly what you tick. You can withdraw it.', ar: 'حجز المرشد الوراثي يحفظ على الخادم ما تختاره بالضبط، ويمكنك سحبه.' })}</li>
               <li>{t({ en: 'It is a prototype and has not been independently audited. A crypto audit and penetration test come before any pilot.', ar: 'إنه نموذج أولي ولم يُدقّق بشكل مستقل. ويسبق أي تجربة تدقيقُ تشفير واختبار اختراق.' })}</li>
             </ul>
           </div>

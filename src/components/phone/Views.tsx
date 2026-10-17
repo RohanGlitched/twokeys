@@ -3,7 +3,7 @@
 // `ar` addresses a man (partner: a woman); `arF` addresses a woman (partner: a man).
 import { useState, type ReactNode } from 'react';
 import type { Locale } from '@/i18n/locales';
-import type { Level } from '@/lib/conditions';
+import { conditionFor, type Level } from '@/lib/conditions';
 import { letterFor, per100, RELATIONS, sealLetter, type Relation } from '@/lib/letters';
 import { RELATION_NAME } from '@/components/family/LetterView';
 import type { L, T } from './PhoneApp';
@@ -66,6 +66,7 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
   const [own, setOwn] = useState(personalGenes.length > 0);
   const [rel, setRel] = useState(related);
   const [pregnant, setPregnant] = useState<boolean | null>(null);
+  const [weeks, setWeeks] = useState('');
   const [question, setQuestion] = useState('');
   const [booked, setBooked] = useState<Booking | null>(null);
   const [withdrawn, setWithdrawn] = useState(false);
@@ -78,7 +79,7 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
     setBusy(true); setError(null);
     // The shared genes are worked out by the lab from the pairing, not taken from this phone.
     const r = await fetch('/api/desk/cases', { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity },
-      body: JSON.stringify({ pairing, role, consent: { ownResults: own, relationship: rel }, language: lang, readingLevel: level, priority, question }) });
+      body: JSON.stringify({ pairing, role, consent: { ownResults: own, relationship: rel }, language: lang, readingLevel: level, priority, question, pregnant: !!pregnant, weeks: pregnant && weeks ? Number(weeks) : undefined }) });
     const j = await r.json().catch(() => ({}));
     setBusy(false);
     if (r.ok) setBooked(j); else setError(j.error ?? t({ en: 'Booking failed. Try again.', ar: 'تعذّر الحجز. حاول مرة أخرى.', arF: 'تعذّر الحجز. حاولي مرة أخرى.' }));
@@ -140,16 +141,23 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
               <span><span className="font-medium">{t({ en: 'That we are related', ar: 'أن بيننا قرابة' })}</span><br /><span className="text-ink-2">{t({ en: 'Helps the counsellor explain your chances.', ar: 'يساعد المرشد على شرح الاحتمالات.' })}</span></span></label>
           </fieldset>
 
-          {!urgent && (
+          {(
             <fieldset className="mt-4 text-[14px]">
               <legend className="font-medium">{t({ en: 'Is there a pregnancy now?', ar: 'هل يوجد حمل الآن؟' })}</legend>
-              <p className="text-[13px] text-ink-2">{t({ en: 'If yes, a counsellor contacts you within one working day, because some tests have time limits.', ar: 'إن كان الجواب نعم يتواصل معك مرشد خلال يوم عمل واحد، لأن لبعض الفحوص مهلاً زمنية.' })}</p>
+              <p className="text-[13px] text-ink-2">{t({ en: 'If yes, a counsellor contacts you within one working day, or the same day from week 9, because some tests have time limits.', ar: 'إن كان الجواب نعم يتواصل معك مرشد خلال يوم عمل واحد، أو في اليوم نفسه ابتداءً من الأسبوع التاسع، لأن لبعض الفحوص مهلاً زمنية.' })}</p>
               <div className="mt-2 flex gap-2" role="radiogroup">
                 {[{ v: true, l: { en: 'Yes', ar: 'نعم' } }, { v: false, l: { en: 'No', ar: 'لا' } }].map((o) => (
                   <button key={String(o.v)} role="radio" aria-checked={pregnant === o.v} onClick={() => setPregnant(o.v)}
                     className={`rounded-[2px] border px-4 py-2 ${pregnant === o.v ? 'border-ink bg-ink text-wool' : 'border-ink-3'}`}>{t(o.l)}</button>
                 ))}
               </div>
+              {pregnant && (
+                <label className="mt-3 flex items-center gap-2">
+                  <span>{t({ en: 'About how many weeks?', ar: 'كم أسبوعاً تقريباً؟' })}</span>
+                  <input type="number" inputMode="numeric" min={1} max={42} value={weeks} onChange={(e) => setWeeks(e.target.value.replace(/\D/g, '').slice(0, 2))} className="w-20 rounded-[2px] border border-ink bg-paper px-2 py-1.5" />
+                  <span className="text-[13px] text-ink-2">{t({ en: '(optional)', ar: '(اختياري)' })}</span>
+                </label>
+              )}
             </fieldset>
           )}
 
@@ -164,7 +172,7 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
               <li>{t({ en: 'Who sees it: the counsellors at your screening centre. Every view is logged, and you can ask for that log.', ar: 'من يراها: المرشدون في مركز الفحص. وكل اطلاع مسجَّل، ويمكنك طلب هذا السجل.' })}</li>
               <li>{t({ en: 'Your partner: if you booked from a pairing, the case is linked to it so the counsellor can see you together if your partner books too. Your partner never sees what you shared.', ar: 'شريكتك: إن حجزت من اقتران فإن الحالة مرتبطة به ليتمكن المرشد من لقائكما معاً إن حجزت شريكتك أيضاً. ولا ترى شريكتك أبداً ما شاركته.', arF: 'شريكك: إن حجزتِ من اقتران فإن الحالة مرتبطة به ليتمكن المرشد من لقائكما معاً إن حجز شريكك أيضاً. ولا يرى شريكك أبداً ما شاركتِه.' })}</li>
               <li>{t({ en: 'How long: this demo keeps cases for 60 days. In service, records follow health-data retention rules. You can withdraw at any time: what you shared is erased, notes are sealed, and the audit keeps only dates and who viewed the case.', ar: 'المدة: يحتفظ هذا العرض بالحالات 60 يوماً، وفي الخدمة الفعلية تتبع السجلات قواعد الاحتفاظ بالبيانات الصحية. ويمكنك السحب في أي وقت: يُمسح ما شاركته، وتُختم الملاحظات، ولا يحتفظ السجل إلا بالتواريخ ومن اطّلع على الحالة.' })}</li>
-              <li>{t({ en: 'Law: UAE Federal Decree-Law 49/2023 on medically assisted reproduction and genetic testing.', ar: 'القانون: المرسوم بقانون اتحادي رقم 49 لسنة 2023.' })}</li>
+              <li>{t({ en: 'Law: UAE Federal Decree-Law 49/2023 on the use of the human genome, which sets consent and privacy rules for genetic data.', ar: 'القانون: المرسوم بقانون اتحادي رقم 49 لسنة 2023 بشأن استخدام الجينوم البشري، الذي يضع قواعد الموافقة والخصوصية للبيانات الجينية.' })}</li>
             </ul>
           </details>
           {error && <p role="alert" className="mt-3 text-[14px] text-madder">{error}</p>}
@@ -183,7 +191,19 @@ function Row({ k, v }: { k: string; v: ReactNode }) {
 
 // ---------------------------------------------------------------- ask
 
-interface Turn { role: 'user' | 'assistant'; text: string; cites?: string[]; route?: string; escalate?: boolean; urgent?: boolean }
+interface Turn { role: 'user' | 'assistant'; text: string; cites?: string[]; route?: string; escalate?: boolean; urgent?: boolean; sig?: string }
+
+/** Readable names for the checked facts an answer used. */
+const CITE: Record<string, L> = {
+  carrier: { en: 'What a carrier is', ar: 'معنى حمل التغيّر' }, 'ar-odds': { en: 'Chances when both carry', ar: 'الاحتمالات عند حمل الاثنين' },
+  'xl-odds': { en: 'X-linked chances', ar: 'احتمالات الكروموسوم X' }, 'xl-affected-father': { en: 'X-linked, father affected', ar: 'الكروموسوم X مع إصابة الأب' },
+  'milder-match': { en: 'Milder matches', ar: 'التطابقات الأخف' }, 'risk-not-diagnosis': { en: 'Chance, not diagnosis', ar: 'احتمال لا تشخيص' },
+  negative: { en: 'What a clear result means', ar: 'معنى عدم التطابق' }, consanguinity: { en: 'Being related', ar: 'القرابة' },
+  'related-known-gene': { en: 'Relatedness and the shared gene', ar: 'القرابة والجين المشترك' }, 'carrier-health': { en: 'Carriers’ own health', ar: 'صحة حامل التغيّر' },
+  options: { en: 'Options', ar: 'الخيارات' }, 'pgt-cover': { en: 'Thiqa cover for PGT-M', ar: 'تغطية ثقة لفحص الأجنة' }, 'law-marriage': { en: 'UAE law on screening', ar: 'القانون الإماراتي للفحص' },
+  'right-own': { en: 'Your right to your results', ar: 'حقك في نتائجك' }, confirm: { en: 'Confirmatory tests', ar: 'الفحوص التأكيدية' }, relatives: { en: 'Relatives', ar: 'الأقارب' },
+};
+const citeName = (c: string, t: T) => (c.startsWith('cond:') ? (conditionFor(c.slice(5)) ? t(conditionFor(c.slice(5))!.name) : c.slice(5)) : CITE[c] ? t(CITE[c]) : c);
 
 const STARTERS: L[] = [
   { en: 'What does it mean that we both carry this?', ar: 'ماذا يعني أننا نحمل هذا معاً؟' },
@@ -201,13 +221,14 @@ export function Ask({ lang, t, sex, onBack, genes, xl, level, related, onCounsel
     const question = text.trim();
     if (!question || busy) return;
     setQ('');
-    const history = turns.map(({ role, text }) => ({ role, text }));
+    // Earlier answers go back with the server's signature, so a forged "assistant" turn is dropped.
+    const history = turns.map(({ role, text, sig }) => ({ role, text, sig }));
     setTurns((x) => [...x, { role: 'user', text: question }]);
     setBusy(true);
     try {
       const r = await fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ lang, sex, level, genes: genes.map((g) => g.gene), strengths: Object.fromEntries(genes.map((g) => [g.gene, g.strength])), xl, related, question, history }) });
       const j = await r.json();
-      setTurns((x) => [...x, r.ok ? { role: 'assistant', text: j.answer, cites: j.cites, route: j.route, escalate: j.escalate, urgent: j.urgent } : { role: 'assistant', text: j.error, escalate: true }]);
+      setTurns((x) => [...x, r.ok ? { role: 'assistant', text: j.answer, cites: j.cites, route: j.route, escalate: j.escalate, urgent: j.urgent, sig: j.sig } : { role: 'assistant', text: j.error, escalate: true }]);
     } catch {
       setTurns((x) => [...x, { role: 'assistant', text: t({ en: 'The connection dropped. A genetic counsellor can answer this.', ar: 'انقطع الاتصال. يمكن للمرشد الوراثي الإجابة عن هذا.' }), escalate: true }]);
     } finally { setBusy(false); }
@@ -225,7 +246,14 @@ export function Ask({ lang, t, sex, onBack, genes, xl, level, related, onCounsel
           <div key={i}>
             <div data-turn={m.role} className={m.role === 'user' ? 'ms-8 rounded-[3px] bg-ink px-3.5 py-2.5 text-[14px] text-wool' : 'me-4 rounded-[3px] border border-rule bg-paper px-3.5 py-2.5 text-[14px] leading-relaxed'}>
               {m.text}
-              {m.cites?.some((c) => c !== 'counsellor') ? <p dir="ltr" className="mt-1.5 font-mono text-[11px] text-ink-2">{m.cites.filter((c) => c !== 'counsellor').join(', ')}</p> : null}
+              {m.role === 'assistant' && m.route && (
+                <p className="mt-1.5 text-[11px] text-ink-2">
+                  {m.route === 'model'
+                    ? t({ en: 'Written by AI from checked facts, then checked', ar: 'كتبه الذكاء الاصطناعي من معلومات موثوقة، ثم فُحص' })
+                    : t({ en: 'A fixed reply, written in advance', ar: 'رد ثابت كُتب مسبقاً' })}
+                  {m.cites?.some((c) => c !== 'counsellor') ? <>{t({ en: ' · From: ', ar: ' · المصدر: ' })}{m.cites.filter((c) => c !== 'counsellor').map((c) => citeName(c, t)).join(lang === 'ar' ? '، ' : ', ')}</> : null}
+                </p>
+              )}
               {m.role === 'assistant' && <ReportProblem t={t} />}
             </div>
             {m.urgent ? (
@@ -238,7 +266,7 @@ export function Ask({ lang, t, sex, onBack, genes, xl, level, related, onCounsel
             ) : null}
           </div>
         ))}
-        {busy && <div className="me-4 h-10 animate-pulse rounded-[3px] bg-wool-2 motion-reduce:animate-none" />}
+        {busy && <div role="status" className="me-4 h-10 animate-pulse rounded-[3px] bg-wool-2 motion-reduce:animate-none"><span className="sr-only">{t({ en: 'Writing an answer…', ar: 'تُكتب الإجابة…' })}</span></div>}
       </div>
       {!turns.length && (
         <div className="mt-2 flex flex-col gap-2">
@@ -319,7 +347,7 @@ export function Family({ lang, t, identity, onBack, genes, headingId }: { lang: 
         <p className="mt-3 text-[14px] leading-relaxed">
           {preview.chance === null
             ? t({ en: 'This change is on the X chromosome: female relatives may carry it and male relatives may have the condition. The note explains this; a genetic counsellor works out each relative’s chance.', ar: 'هذا التغيّر على الكروموسوم X: قد تحمله القريبات، وقد يُصاب به الأقارب الذكور. تشرح الرسالة ذلك، ويحسب المرشد الوراثي احتمال كل قريب.' })
-            : <>{t({ en: `Their chance of carrying it: ${per100(preview.chance, 'en')}.`, ar: `احتمال أن يكون حاملاً لهذا التغيّر: ${per100(preview.chance, 'ar')}.` })}
+            : <>{t({ en: `Their chance of carrying it: ${per100(preview.chance, 'en')}.`, ar: `احتمال حمل هذا القريب أو القريبة للتغيّر: ${per100(preview.chance, 'ar')}.` })}
               {preview.population !== null && <span className="text-ink-2"> {t({ en: `For anyone in the general population: ${per100(preview.population, 'en')}.`, ar: `ولأي شخص من عامة الناس: ${per100(preview.population, 'ar')}.` })}</span>}</>}
         </p>
       )}

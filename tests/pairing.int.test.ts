@@ -31,7 +31,7 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
       runInitiator({ identity: ia, link, base: BASE }),
       runResponder({ identity: ib, link, base: BASE }),
     ]);
-    expect(a.genes).toEqual([{ gene: 'GJB2', inheritance: 'AR', strength: 1 }, { gene: 'HBB', inheritance: 'AR', strength: 2 }]);
+    expect(a.genes).toEqual([{ gene: 'GJB2', inheritance: 'AR', strength: 1 }, { gene: 'HBB', inheritance: 'AR', strength: 2, kind: 'hplc' }]);
     expect(a.personal).toBe(1);
     expect(b.personal).toBe(0);
   }, 60_000);

@@ -11,7 +11,7 @@ type L = { en: string; ar: string };
 const FACTS: { n: L; label: L; src: string; href: string }[] = [
   { n: { en: '1 in 13', ar: '1 من 13' }, label: { en: 'couples in Dubai’s first 1,000 screened carried the same gene (79, or 7.9%, including alpha-thalassaemia)', ar: 'من أول ألف زوج فُحصوا في دبي يحملان الجين نفسه (79 زوجاً أو 7.9%، بما فيه ألفا ثلاسيميا)' }, src: 'Nature Medicine 2026', href: 'https://www.nature.com/articles/s41591-026-04251-7' },
   { n: { en: '565', ar: '565' }, label: { en: 'of 11,748 Abu Dhabi couples screened 2022 to July 2026 had an increased chance (4.8%)', ar: 'من 11,748 زوجاً فُحصوا في أبوظبي بين 2022 ويوليو 2026 كان لديهم احتمال أعلى (4.8%)' }, src: 'DoH, via Gulf News', href: 'https://gulfnews.com/uae/health/abu-dhabi-genetic-screening-flags-565-incompatible-cases-among-couples-1.500697261' },
-  { n: { en: '0.1', ar: '0.1' }, label: { en: 'genetic counsellors per million people in the Arab region (US: 12)', ar: 'مستشار وراثي لكل مليون شخص في المنطقة العربية (الولايات المتحدة: 12)' }, src: 'J Genet Couns 2021', href: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8611926' },
+  { n: { en: '0.1', ar: '0.1' }, label: { en: 'genetic counsellors per million people in the Arab region (US: 12)', ar: 'مرشد وراثي لكل مليون شخص في المنطقة العربية (الولايات المتحدة: 12)' }, src: 'J Genet Couns 2021', href: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8611926' },
 ];
 
 const GAPS: { title: L; body: L }[] = [
@@ -27,7 +27,7 @@ const LEARNS: { who: L; learns: L; never: L }[] = [
   { who: { en: 'Each partner', ar: 'كل شريك' }, learns: { en: 'The genes they both carry, explained', ar: 'الجينات التي يحملانها معاً، مع شرحها' }, never: { en: 'Any other gene the other carries, or how many', ar: 'أي جين آخر يحمله الآخر، أو عددها' } },
   { who: { en: 'The relay server', ar: 'خادم الوسيط' }, learns: { en: 'That two phones exchanged three encrypted messages', ar: 'أن هاتفين تبادلا ثلاث رسائل مشفّرة' }, never: { en: 'Any gene, any token, or the result', ar: 'أي جين أو رمز أو النتيجة' } },
   { who: { en: 'The lab', ar: 'المختبر' }, learns: { en: 'That this couple paired, and the match it confirms (it already holds both results, as today)', ar: 'أن هذين الزوجين اقترنا، والتطابق الذي يؤكده (فهو يملك النتيجتين أصلاً، كما اليوم)' }, never: { en: 'Anything new about either person', ar: 'أي شيء جديد عن أي منهما' } },
-  { who: { en: 'A counsellor', ar: 'المستشار' }, learns: { en: 'Only the items a person ticked when booking', ar: 'البنود التي اختارها الشخص عند الحجز فقط' }, never: { en: 'Anything after consent is withdrawn', ar: 'أي شيء بعد سحب الموافقة' } },
+  { who: { en: 'A counsellor', ar: 'المرشد الوراثي' }, learns: { en: 'Only the items a person ticked when booking', ar: 'البنود التي اختارها الشخص عند الحجز فقط' }, never: { en: 'Anything after consent is withdrawn', ar: 'أي شيء بعد سحب الموافقة' } },
   { who: { en: 'Relatives', ar: 'الأقارب' }, learns: { en: 'A gene and their own chance of carrying it', ar: 'الجين واحتمال أن يحملوه' }, never: { en: 'Who sent the note', ar: 'من أرسل الرسالة' } },
   { who: { en: 'The health system', ar: 'النظام الصحي' }, learns: { en: 'Counts: understanding, uptake, time to referral', ar: 'أعداد: الفهم، والإقبال، وزمن الإحالة' }, never: { en: 'Any individual, or any marriage decision', ar: 'أي فرد، أو أي قرار زواج' } },
 ];
@@ -39,7 +39,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
   return (
     <>
       <Nav lang={lang} />
-      <main>
+      <main id="main">
         {/* hero */}
         <section className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 pb-16 pt-6 md:grid-cols-[5fr_6fr] md:px-8 md:pt-10">
           <div>
@@ -149,12 +149,12 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
           <div>
             <h2 className="text-[clamp(28px,3vw,40px)] font-semibold leading-tight tracking-tight">{t({ en: 'A result people can understand on their own', ar: 'نتيجة يفهمها الناس بأنفسهم' })}</h2>
             <p className="mt-4 text-[16px] leading-relaxed text-ink-2">
-              {t({ en: 'Chances are drawn the way a counsellor sketches them: four pregnancies, one affected, two carriers, one neither. Every explanation comes in simple, standard and detailed versions, in Arabic and English, and says plainly what is risk and what is diagnosis. The words avoid “incompatible”; the couple is “a couple with an increased chance”.', ar: 'تُرسم الاحتمالات كما يرسمها المستشار: أربع حالات حمل: طفل مصاب، وطفلان يحملان التغيّر دون إصابة، وطفل لا يحمل التغيّر. ويأتي كل شرح بمستوى مبسّط وعادي ومفصّل، بالعربية والإنجليزية، ويوضح ما هو احتمال وما هو تشخيص. وتتجنب الكلمات «غير متوافقين»؛ فهما «زوجان باحتمال أعلى».' })}
+              {t({ en: 'Chances are drawn the way a counsellor sketches them: four pregnancies, one affected, two carriers, one neither. Every explanation comes in simple, standard and detailed versions, in Arabic and English, and says plainly what is risk and what is diagnosis. The words avoid “incompatible”; the couple is “a couple with an increased chance”.', ar: 'تُرسم الاحتمالات كما يرسمها المرشد الوراثي: أربع حالات حمل: طفل مصاب، وطفلان يحملان التغيّر دون إصابة، وطفل لا يحمل التغيّر. ويأتي كل شرح بمستوى مبسّط وعادي ومفصّل، بالعربية والإنجليزية، ويوضح ما هو احتمال وما هو تشخيص. وتتجنب الكلمات «غير متوافقين»؛ فهما «زوجان باحتمال أعلى».' })}
             </p>
             <ul className="mt-6 space-y-2 text-[15px]">
               <li>{t({ en: 'Couple-level by default, as Dubai’s own programme reports it. Couples who prefer full openness can choose it together: the lab shows each partner’s full results only once both have asked.', ar: 'على مستوى الزوجين افتراضياً، كما يبلّغ برنامج دبي نفسه. ومن يفضّل الانفتاح الكامل يستطيع اختياره معاً: لا يعرض المختبر النتائج الكاملة لكل منهما إلا بعد أن يطلبها الاثنان.' })}</li>
               <li>{t({ en: 'Your own full results whenever you ask: your right under Decree-Law 49/2023.', ar: 'نتائجك الكاملة متى طلبتها: حقك بموجب المرسوم بقانون 49/2023.' })}</li>
-              <li>{t({ en: 'X-linked findings shown to the woman alone unless she shares them.', ar: 'نتائج الكروموسوم X تُعرض على المرأة وحدها ما لم تشاركها.' })}</li>
+              <li>{t({ en: 'X-linked results go to each person first, privately, before any pairing. Only when hers and his match does the couple see it together, after each has read their own.', ar: 'تصل نتائج الكروموسوم X إلى كل شخص أولاً، بخصوصية، قبل أي اقتران. ولا يراها الزوجان معاً إلا إذا تطابقت نتيجتها ونتيجته، وبعد أن يقرأ كل منهما نتيجته.' })}</li>
             </ul>
           </div>
           <div className="rounded-[3px] border border-madder bg-paper p-6">
@@ -172,7 +172,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
             {[
               { h: { en: 'Options, unranked', ar: 'خيارات بلا ترتيب' }, b: { en: 'Go ahead, test in pregnancy, IVF with embryo testing (Thiqa-covered with approval), reconsider plans together, kafala or no children, or talk first. Equal weight, no advice.', ar: 'المضي، أو الفحص أثناء الحمل، أو أطفال الأنابيب مع فحص الأجنة (يغطيه برنامج ثقة بموافقة مسبقة)، أو إعادة النظر في الخطط معاً، أو الكفالة أو عدم الإنجاب، أو التحدث أولاً. بالوزن نفسه، دون نصيحة.' } },
               { h: { en: 'Questions, answered from sources', ar: 'أسئلة تُجاب من المصادر' }, b: { en: 'An AI explainer answers only from vetted facts, has its numbers checked against them, refuses to probe a partner or decide for anyone, and hands distress to a person the same day. Anyone can ask a person instead.', ar: 'شارح بالذكاء الاصطناعي يجيب من حقائق موثوقة فقط، وتُطابق أرقامه معها، ويرفض التجسس على الشريك أو القرار عن أحد، ويحيل الضيق إلى إنسان في اليوم نفسه. ويمكن لأي شخص أن يسأل إنساناً بدلاً منه.' } },
-              { h: { en: 'A counsellor, on the clock', ar: 'مستشار في الموعد' }, b: { en: 'Booking shares only what you tick. The desk tracks time to first contact, referral and documented closure, with a tamper-evident audit trail.', ar: 'الحجز يشارك ما تختاره فقط. ويتتبع المكتب زمن التواصل الأول والإحالة والإغلاق الموثق، مع سجل تدقيق يكشف أي عبث.' } },
+              { h: { en: 'A counsellor, on the clock', ar: 'مرشد وراثي في الموعد' }, b: { en: 'Booking shares only what you tick. The desk tracks time to first contact, referral and documented closure, with a tamper-evident audit trail.', ar: 'الحجز يشارك ما تختاره فقط. ويتتبع المكتب زمن التواصل الأول والإحالة والإغلاق الموثق، مع سجل تدقيق يكشف أي عبث.' } },
               { h: { en: 'Relatives, without names', ar: 'الأقارب دون أسماء' }, b: { en: 'Sealed notes tell a cousin or sibling their own chance of carrying the same change. The service can’t read them or tell who sent them.', ar: 'رسائل مختومة تخبر ابن العم أو الأخ باحتمال حمله للتغيّر نفسه. ولا تستطيع الخدمة قراءتها أو معرفة مرسلها.' } },
             ].map((s, i) => (
               <article key={i} className="border-t border-ink pt-5">
@@ -182,7 +182,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
             ))}
           </div>
           <div className="mt-10 flex flex-wrap gap-3">
-            <Link href={`/${lang}/desk`} className="rounded-[2px] border-[1.5px] border-ink px-5 py-3 text-[15px] font-medium">{t({ en: 'Open the counsellor desk', ar: 'افتح مكتب المستشار' })}</Link>
+            <Link href={`/${lang}/desk`} className="rounded-[2px] border-[1.5px] border-ink px-5 py-3 text-[15px] font-medium">{t({ en: 'Open the counsellor desk', ar: 'افتح مكتب المرشد الوراثي' })}</Link>
             <Link href={`/${lang}/programme`} className="rounded-[2px] border-[1.5px] border-ink px-5 py-3 text-[15px] font-medium">{t({ en: 'See the programme view', ar: 'شاهد عرض البرنامج' })}</Link>
           </div>
         </section>

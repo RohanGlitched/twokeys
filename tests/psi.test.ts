@@ -35,7 +35,7 @@ describe('session-bound authorised PSI with proofs', () => {
     const truth = intersection(labKey, S, a, b);
     expect(tokensOf(r.aLearns.matched, ia)).toEqual(truth.A);
     expect(tokensOf(r.bLearns.matched, ib)).toEqual(truth.B);
-    expect(truth.genes).toEqual([{ gene: 'GJB2', inheritance: 'AR', strength: 1 }, { gene: 'HBB', inheritance: 'AR', strength: 2 }]);
+    expect(truth.genes).toEqual([{ gene: 'GJB2', inheritance: 'AR', strength: 1 }, { gene: 'HBB', inheritance: 'AR', strength: 2, kind: 'hplc' }]);
   });
 
   it('severity is graded: full, milder and low-concern matches', () => {
@@ -154,5 +154,18 @@ describe('round-3 protocol hardening', () => {
     const a = new Initiator(ia), b = new Responder(ib);
     const reject = () => false;
     expect(() => b.step2(a.step1('00'), undefined, reject)).toThrow(/didn’t attest/);
+  });
+});
+
+describe('globin genes: the pair decides', () => {
+  const g = (a: Finding[], b: Finding[]) => intersection(labKey, S, a, b).genes;
+  it('any shared HBB change is a full match until HPLC (HbS with HbC or HbD is serious)', () => {
+    expect(g([ar('HBB', 'mild')], [ar('HBB')])).toEqual([{ gene: 'HBB', inheritance: 'AR', strength: 2, kind: 'hplc' }]);
+    expect(g([ar('HBB', 'mild')], [ar('HBB', 'mild')])[0].strength).toBe(2);
+  });
+  it('HBA1 and HBA2 match each other, graded as Bart’s, HbH or trait', () => {
+    expect(g([ar('HBA1')], [ar('HBA2')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'bart' }]);
+    expect(g([ar('HBA1')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'hbh' }]);
+    expect(g([ar('HBA2', 'mild')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 0, kind: 'trait' }]);
   });
 });

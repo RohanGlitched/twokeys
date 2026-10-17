@@ -3,6 +3,7 @@ import { Alexandria, IBM_Plex_Mono, Noto_Naskh_Arabic } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import '../globals.css';
 import { hasLocale, LOCALES } from '@/i18n/locales';
+import { SkipLink } from '@/components/site/SkipLink';
 
 const alexandria = Alexandria({ variable: '--font-alexandria', subsets: ['latin', 'arabic'], weight: ['300', '400', '500', '600', '700'] });
 const naskh = Noto_Naskh_Arabic({ variable: '--font-naskh', subsets: ['arabic'], weight: ['400', '500', '600'] });
@@ -28,7 +29,10 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[la
   if (!hasLocale(lang)) notFound();
   return (
     <html lang={lang} dir={lang === 'ar' ? 'rtl' : 'ltr'} className={`${alexandria.variable} ${naskh.variable} ${mono.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        <SkipLink lang={lang} />
+        {children}
+      </body>
     </html>
   );
 }
