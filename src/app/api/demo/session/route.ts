@@ -6,7 +6,7 @@ import { personById, publicPerson } from '@/lib/people';
 import { limited } from '@/lib/ratelimit';
 
 export async function POST(req: Request) {
-  if (await limited(req, 'session', 60)) return Response.json({ error: 'Too many sign-ins. Wait a minute.' }, { status: 429 });
+  if (await limited(req, 'session', 60)) return Response.json({ error: 'Too many sign-ins from here this hour. Try again later.' }, { status: 429 });
   const b = await readJson<{ person?: string }>(req);
   if (b instanceof Response) return b;
   const p = b.person ? personById(b.person) : null;

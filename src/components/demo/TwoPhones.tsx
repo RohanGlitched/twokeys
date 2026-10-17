@@ -83,8 +83,9 @@ export function TwoPhones({ lang, couples, names }: { lang: Locale; couples: Cou
           <p className="text-[14px] font-medium">{t({ en: 'Try it', ar: 'جرّبه' })}</p>
           <ol className="mt-1 list-decimal space-y-0.5 ps-5 text-[13px] text-ink-2">
             <li>{t({ en: 'Check that both phones show the same three words.', ar: 'تحقق من ظهور الكلمات الثلاث نفسها على الهاتفين.' })}</li>
+            <li>{t({ en: 'If a phone shows “a result that is yours alone”, open it first: it must be read before comparing.', ar: 'إذا ظهرت على هاتف «نتيجة تخصّك وحدك» فافتحها أولاً: يجب قراءتها قبل المقارنة.' })}</li>
             <li>{t({ en: 'Tap “Compare now” on both phones, in any order.', ar: 'اضغط «قارن الآن» على الهاتفين، بأي ترتيب.' })}</li>
-            <li>{t({ en: 'Each phone asks “is this your partner?”: tap Yes on both.', ar: 'يسأل كل هاتف «هل هذا شريكك؟»: اضغط نعم على الهاتفين.' })}</li>
+            <li>{t({ en: 'The first phone asks “is this your partner?”; once it says yes, the second phone asks too. Tap Yes on both.', ar: 'يسأل الهاتف الأول «هل هذا شريكك؟»، وبعد موافقته يسأل الهاتف الثاني. اضغط نعم على الهاتفين.' })}</li>
             <li>{t({ en: 'Then try: the Simple reading level, “Ask a question” (try a worried or Gulf-Arabic message), book a counsellor, make a family note, and Hessa’s personal result.', ar: 'ثم جرّب: مستوى القراءة المبسّط، و«اطرح سؤالاً» (جرّب رسالة قلقة أو باللهجة الخليجية)، وحجز مرشد، وإنشاء رسالة للعائلة، ونتيجة حصة الخاصة.' })}</li>
           </ol>
         </div>

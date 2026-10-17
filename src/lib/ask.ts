@@ -307,9 +307,9 @@ async function callModel(input: AskInput, model: string, extra?: string) {
 const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault|selfish)\b|أناني|أنانيين|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa)\b/i;
 export const expressesWorry = (q: string) => WORRY.test(q.normalize('NFKC'));
 const ACKNOWLEDGE = {
-  en: 'It’s completely understandable to feel worried about this, and you don’t have to work through it alone: a genetic counsellor can talk it through with you.',
-  ar: 'من الطبيعي تماماً أن تشعر بالقلق من هذا، ولست وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
-  arF: 'من الطبيعي تماماً أن تشعري بالقلق من هذا، ولستِ وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
+  en: 'It’s completely understandable to feel this way, and you don’t have to work through it alone: a genetic counsellor can talk it through with you.',
+  ar: 'من الطبيعي تماماً أن تشعر بهذا، ولست وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
+  arF: 'من الطبيعي تماماً أن تشعري بهذا، ولستِ وحدك فيه: يمكن لمرشد وراثي أن يتحدث معك عنه.',
 };
 /** When the safety checks themselves can't run, show help rather than an unchecked answer. */
 const CHECK_FAILED = {
@@ -343,11 +343,13 @@ export async function ask(input: AskInput, model = ASK_MODEL()): Promise<AskOutp
   const t0 = Date.now();
   const okChecks: Checks = { numbersOk: true, nonDirective: true, citesOk: true, oddsOk: true, personaOk: true, languageOk: true, framingOk: true, xlOk: true, strengthOk: true, reassureOk: true };
   const say = (l: { en: string; ar: string; arF?: string }) => said(l, input.lang, input.sex);
+  const worried = expressesWorry(input.question);
+  // Worry or self-blame is acknowledged on fixed replies too (crisis has its own words), and offered a person.
   const reply = (intent: Exclude<Intent, 'other'>, route: 'guard' | 'intent'): AskOutput => ({
-    answer: say(REPLIES[intent]), cites: ['counsellor'], escalate: intent === 'crisis' || intent === 'termination' || intent === 'pregnant', urgent: intent === 'crisis',
+    answer: worried && intent !== 'crisis' ? `${say(ACKNOWLEDGE)} ${say(REPLIES[intent])}` : say(REPLIES[intent]), cites: ['counsellor'],
+    escalate: worried || intent === 'crisis' || intent === 'termination' || intent === 'pregnant', urgent: intent === 'crisis',
     route, intent, checks: okChecks, ms: Date.now() - t0,
   });
-  const worried = expressesWorry(input.question);
 
   if (!input.noGuards) {
     const g = guardIntent(input.question);
