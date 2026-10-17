@@ -1,0 +1,4646 @@
+{
+ "version": "2026-10-17",
+ "title": "UAE carrier-screening demo panel",
+ "counts": {
+  "total": 153,
+  "acmg_tier3": 113,
+  "acmg_ar": 97,
+  "acmg_xl": 16,
+  "uae_additions": 40
+ },
+ "sources": [
+  {
+   "id": "acmg2021",
+   "cite": "Gregg AR et al. Screening for autosomal recessive and X-linked conditions during pregnancy and preconception: a practice resource of the ACMG. Genet Med 2021;23:1793-1806",
+   "url": "https://doi.org/10.1038/s41436-021-01203-z"
+  },
+  {
+   "id": "acmg_list_reproduction",
+   "cite": "The DNA Exchange, 'ACMG Carrier Screening Guideline: The Hypothetical Tier 3 Panel' (2022) - reproduction of the 113-gene Tier 3 table used for the gene list",
+   "url": "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/"
+  },
+  {
+   "id": "acmg_ar_crosscheck",
+   "cite": "Thai exome study of the 113 ACMG genes (Supplementary S3 Table genes all fall within the list)",
+   "url": "https://doi.org/10.1186/s12920-023-01771-w"
+  },
+  {
+   "id": "severity",
+   "cite": "Arjunan A et al. Evaluation and classification of severity for 176 genes on an expanded carrier screening panel. Prenat Diagn 2020;40:1246-1257",
+   "url": "https://doi.org/10.1002/pd.5762"
+  },
+  {
+   "id": "emirati_exomes",
+   "cite": "Jain R et al. Pathogenic variation underlying rare diseases in an Arab population. Genet Med Open 2025 (Emirati exome carrier rates, MOHAP 570-gene list)",
+   "url": "https://doi.org/10.1016/j.gimo.2025.103446"
+  },
+  {
+   "id": "dubai_premarital",
+   "cite": "Alblooshi K et al. Citywide premarital genomic screening in a Middle Eastern population. Nat Med 2026 (1,000 Dubai couples, 782 genes)",
+   "url": "https://doi.org/10.1038/s41591-026-04251-7"
+  },
+  {
+   "id": "qatar_genomes",
+   "cite": "Burden of heterozygote carriers for autosomal recessive conditions in the Middle East: a study of 14,392 genomes. HGG Adv 2026",
+   "url": "https://doi.org/10.1016/j.xhgg.2026.100625"
+  },
+  {
+   "id": "emirati_genome_programme",
+   "cite": "Emirati Genome Programme carrier preprint (medRxiv; abstract only accessible)",
+   "url": "https://doi.org/10.1101/2025.09.12.25334546"
+  },
+  {
+   "id": "avdb",
+   "cite": "Arab Variant Database (AVDB) preprint (bioRxiv; aggregate at-risk couple rates only, no per-gene figures)",
+   "url": "https://doi.org/10.1101/2025.08.24.671996"
+  },
+  {
+   "id": "mohap_premarital",
+   "cite": "UAE MOHAP: genetic testing as part of premarital screening for Emiratis (570 genes, ~840 conditions)",
+   "url": "https://mohap.gov.ae/en/w/genetic-testing-as-part-of-premarital-screening-for-emiratis"
+  },
+  {
+   "id": "doh_premarital",
+   "cite": "Abu Dhabi DoH: expansion of premarital screening to 570 genetic conditions (2022)",
+   "url": "https://doh.gov.ae/en/news/doh-to-expand-pre-marital-screening-for-570-genetic-medical-conditions"
+  },
+  {
+   "id": "uae_nbs",
+   "cite": "Shafique et al. UAE newborn screening 2021-2023. Front Pediatr 2026",
+   "url": "https://doi.org/10.3389/fped.2026.1788876"
+  }
+ ],
+ "notes": "Gene list: the 113 ACMG 2021 Tier 3 genes (97 autosomal recessive + 16 X-linked) were taken from a public reproduction of the ACMG table (thednaexchange.com) because the ACMG paper's full text was behind a bot check; the split of 97 AR + 16 X-linked matches the paper's stated counts, and every gene with variants in a Thai study of the same 113 genes falls within the list. Symbols are current HGNC symbols; acmg_symbol keeps the symbol used by ACMG where it changed (GBA->GBA1, G6PC->G6PC1). Severity comes only from Arjunan et al. 2020 (medical-geneticist final call); genes that paper did not classify have no severity field. The ACMG paper's own per-condition severity table could not be accessed. literature_carrier_freq prefers Emirati data. Most Emirati values are from 1,194 exomes of individuals referred for clinical testing (sequence variants only), so they can be biased and they miss deletions, repeats and pseudogene events (see cnv_heavy). SMN1 and HBA1/HBA2 use dedicated Emirati studies instead. literature_carrier_freq_other lists further Gulf estimates (Qatari genomes, Saudi/Kuwaiti/Omani screening programmes). Values are copied as published, with the measure stated; trait prevalence and allele frequency are not the same as carrier frequency. uae_premarital flags membership of the MOHAP 570-gene premarital list (reproduced in Jain 2025 Suppl. Table 6) and the Dubai 782-gene panel (Alblooshi 2026 Suppl. Table 2). treatable, condition names, mild_alleles and cnv notes are short editorial summaries for a demo, not clinical guidance; the per-gene GeneReviews search link is given for checking. condition_ar is included only where an Arabic name was found on a named source (condition_ar_source).",
+ "genes": [
+  {
+   "gene": "ABCA3",
+   "hgnc_id": "HGNC:33",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Surfactant dysfunction (ABCA3-related lung disease)",
+   "treatable": false,
+   "treatable_note": "supportive care; lung transplant in severe cases",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ABCA3"
+   ]
+  },
+  {
+   "gene": "ABCC8",
+   "hgnc_id": "HGNC:59",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Congenital hyperinsulinism (ABCC8-related)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "recessive forms often diazoxide-unresponsive; may need pancreatectomy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ABCC8"
+   ]
+  },
+  {
+   "gene": "ABCD1",
+   "hgnc_id": "HGNC:61",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "X-linked adrenoleukodystrophy",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "adrenal hormone replacement; stem-cell transplant or gene therapy if cerebral disease caught early",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ABCD1"
+   ]
+  },
+  {
+   "gene": "ACADM",
+   "hgnc_id": "HGNC:89",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "MCAD deficiency (fatty-acid oxidation disorder)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "avoid fasting; detected by newborn screening",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.0079,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "mild_alleles": [
+    "c.199T>C (p.Tyr67His, Y42H): mild, often asymptomatic"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ACADM"
+   ]
+  },
+  {
+   "gene": "ACADVL",
+   "hgnc_id": "HGNC:92",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "VLCAD deficiency (fatty-acid oxidation disorder)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "avoid fasting, low long-chain-fat diet, triheptanoin",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00251,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 3,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "p.Val283Ala (V243A): milder later-onset form"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ACADVL"
+   ]
+  },
+  {
+   "gene": "ACAT1",
+   "hgnc_id": "HGNC:93",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Beta-ketothiolase deficiency",
+   "treatable": "partly",
+   "treatable_note": "avoid fasting and treat ketoacidotic crises promptly",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ACAT1"
+   ]
+  },
+  {
+   "gene": "AFF2",
+   "hgnc_id": "HGNC:3776",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Fragile XE intellectual disability (FRAXE)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": true,
+   "cnv_note": "CCG repeat expansion (FRAXE); not seen by SNV calling",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=AFF2"
+   ]
+  },
+  {
+   "gene": "AGA",
+   "hgnc_id": "HGNC:318",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Aspartylglucosaminuria",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=AGA"
+   ]
+  },
+  {
+   "gene": "AGXT",
+   "hgnc_id": "HGNC:341",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Primary hyperoxaluria type 1",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "RNAi therapy (lumasiran/nedosiran), pyridoxine for some variants, transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=AGXT"
+   ]
+  },
+  {
+   "gene": "AHI1",
+   "hgnc_id": "HGNC:21575",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Joubert syndrome (AHI1-related)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=AHI1"
+   ]
+  },
+  {
+   "gene": "AIRE",
+   "hgnc_id": "HGNC:360",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Autoimmune polyendocrine syndrome type 1 (APECED)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "hormone replacement and antifungals",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00251,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 3,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=AIRE"
+   ]
+  },
+  {
+   "gene": "ALDOB",
+   "hgnc_id": "HGNC:417",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Hereditary fructose intolerance",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "lifelong fructose/sucrose/sorbitol avoidance",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ALDOB"
+   ]
+  },
+  {
+   "gene": "ALPL",
+   "hgnc_id": "HGNC:438",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Hypophosphatasia (severe perinatal/infantile forms)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "enzyme replacement (asfotase alfa)",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ALPL"
+   ]
+  },
+  {
+   "gene": "ANO10",
+   "hgnc_id": "HGNC:25519",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Autosomal recessive spinocerebellar ataxia 10",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ANO10"
+   ]
+  },
+  {
+   "gene": "ARSA",
+   "hgnc_id": "HGNC:713",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Metachromatic leukodystrophy",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "gene therapy (atidarsagene) if given before symptoms",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "pseudodeficiency allele c.1055A>G (p.Asn352Ser) with c.*96A>G: benign"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ARSA"
+   ]
+  },
+  {
+   "gene": "ARX",
+   "hgnc_id": "HGNC:18060",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "ARX-related X-linked intellectual disability and epilepsy",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": true,
+   "cnv_note": "polyalanine tract expansions are hard to call",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ARX"
+   ]
+  },
+  {
+   "gene": "ASL",
+   "hgnc_id": "HGNC:746",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Argininosuccinic aciduria (urea cycle disorder)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "protein restriction, arginine, ammonia scavengers",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ASL"
+   ]
+  },
+  {
+   "gene": "ASPA",
+   "hgnc_id": "HGNC:756",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Canavan disease",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ASPA"
+   ]
+  },
+  {
+   "gene": "ATP7B",
+   "hgnc_id": "HGNC:870",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Wilson disease",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "copper chelation or zinc, lifelong",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ATP7B"
+   ]
+  },
+  {
+   "gene": "BBS1",
+   "hgnc_id": "HGNC:966",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Bardet-Biedl syndrome (BBS1)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "symptomatic; setmelanotide for obesity",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=BBS1"
+   ]
+  },
+  {
+   "gene": "BBS2",
+   "hgnc_id": "HGNC:967",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Bardet-Biedl syndrome (BBS2)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "symptomatic; setmelanotide for obesity",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=BBS2"
+   ]
+  },
+  {
+   "gene": "BCKDHB",
+   "hgnc_id": "HGNC:987",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Maple syrup urine disease (type 1B)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "lifelong special diet; liver transplant in some",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=BCKDHB"
+   ]
+  },
+  {
+   "gene": "BLM",
+   "hgnc_id": "HGNC:1058",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Bloom syndrome",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "cancer surveillance",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=BLM"
+   ]
+  },
+  {
+   "gene": "BTD",
+   "hgnc_id": "HGNC:1122",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Biotinidase deficiency",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "oral biotin; detected by newborn screening",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01414,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 17,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "p.Asp444His (D444H): partial deficiency only when in trans with a profound allele"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=BTD"
+   ]
+  },
+  {
+   "gene": "CBS",
+   "hgnc_id": "HGNC:1550",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Homocystinuria (CBS deficiency)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "pyridoxine (responsive forms), methionine-restricted diet, betaine",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "p.Ile278Thr (I278T): pyridoxine-responsive, milder course"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CBS"
+   ]
+  },
+  {
+   "gene": "CC2D2A",
+   "hgnc_id": "HGNC:29253",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Joubert / Meckel syndrome (CC2D2A-related)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CC2D2A"
+   ]
+  },
+  {
+   "gene": "CCDC88C",
+   "hgnc_id": "HGNC:19967",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Congenital hydrocephalus (CCDC88C-related)",
+   "treatable": "partly",
+   "treatable_note": "neurosurgical shunting",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CCDC88C"
+   ]
+  },
+  {
+   "gene": "CEP290",
+   "hgnc_id": "HGNC:29021",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "CEP290-related ciliopathy (Leber congenital amaurosis, Joubert, Meckel)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00418,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 5,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CEP290"
+   ]
+  },
+  {
+   "gene": "CFTR",
+   "hgnc_id": "HGNC:1884",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Cystic fibrosis",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "CFTR modulators for eligible variants, airway and nutrition care",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00668,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 8,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.02947,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    },
+    {
+     "value": 0.0146,
+     "measure": "heterozygotes for founder c.3700A>G (p.Ile1234Val) at optional premarital testing",
+     "population": "Qatari",
+     "n": 35663,
+     "source": "https://doi.org/10.1186/s40246-026-00937-8"
+    }
+   ],
+   "mild_alleles": [
+    "5T poly-T tract (IVS8-5T; penetrance depends on TG repeat): CFTR-related disorder, not classic CF",
+    "p.Arg117His (R117H): mild/variable, phase with 5T/7T matters",
+    "p.Asp1152His (D1152H): mild/CFTR-related disorder"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "notes": "The Emirati exome dataset captured only 3 of 10 CFTR variants reported in Emirati patients (e.g., c.1645A>C p.Ser549Arg); Qatari frequency is driven by founder p.Ile1234Val.",
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1186/s40246-026-00937-8",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CFTR"
+   ]
+  },
+  {
+   "gene": "CHRNE",
+   "hgnc_id": "HGNC:1966",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Congenital myasthenic syndrome (CHRNE-related)",
+   "treatable": "partly",
+   "treatable_note": "pyridostigmine / 3,4-diaminopyridine",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CHRNE"
+   ]
+  },
+  {
+   "gene": "CLCN1",
+   "hgnc_id": "HGNC:2019",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Recessive myotonia congenita (Becker type)",
+   "treatable": "partly",
+   "treatable_note": "mexiletine for myotonia",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CLCN1"
+   ]
+  },
+  {
+   "gene": "CLRN1",
+   "hgnc_id": "HGNC:12605",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Usher syndrome type 3A",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "hearing aids; no therapy for vision loss",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CLRN1"
+   ]
+  },
+  {
+   "gene": "CNGB3",
+   "hgnc_id": "HGNC:2153",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Achromatopsia (CNGB3-related)",
+   "treatable": false,
+   "treatable_note": "low-vision aids",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CNGB3"
+   ]
+  },
+  {
+   "gene": "COL7A1",
+   "hgnc_id": "HGNC:2214",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Recessive dystrophic epidermolysis bullosa",
+   "treatable": "partly",
+   "treatable_note": "topical gene therapy (beremagene geperpavec), wound care",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00251,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 3,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=COL7A1"
+   ]
+  },
+  {
+   "gene": "CPT2",
+   "hgnc_id": "HGNC:2330",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "CPT II deficiency",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "avoid fasting/exertion triggers, diet",
+   "cnv_heavy": false,
+   "mild_alleles": [
+    "p.Ser113Leu (S113L): adult myopathic form"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CPT2"
+   ]
+  },
+  {
+   "gene": "CYP11A1",
+   "hgnc_id": "HGNC:2590",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Congenital adrenal insufficiency (CYP11A1 deficiency)",
+   "treatable": true,
+   "treatable_note": "lifelong steroid replacement",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CYP11A1"
+   ]
+  },
+  {
+   "gene": "CYP21A2",
+   "hgnc_id": "HGNC:2600",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Congenital adrenal hyperplasia (21-hydroxylase deficiency)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "glucocorticoid/mineralocorticoid replacement; newborn screening",
+   "cnv_heavy": true,
+   "cnv_note": "deletions and gene conversions with CYP21A1P pseudogene",
+   "literature_carrier_freq": {
+    "value": 0.10667,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 135,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.06554,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "mild_alleles": [
+    "p.Val282Leu (V281L): nonclassic CAH",
+    "p.Pro31Leu (P30L): nonclassic/mild",
+    "p.Pro454Ser (P453S): nonclassic"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "notes": "Short-read carrier calls are unreliable: c.955C>T (p.Gln319Ter), the top Emirati allele (AF 4.3%), often sits on a duplicated CYP21A2 haplotype that is not pathogenic; Dubai confirms CYP21A2 with an orthogonal test.",
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CYP21A2"
+   ]
+  },
+  {
+   "gene": "CYP27A1",
+   "hgnc_id": "HGNC:2605",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Cerebrotendinous xanthomatosis",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "chenodeoxycholic acid",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CYP27A1"
+   ]
+  },
+  {
+   "gene": "CYP27B1",
+   "hgnc_id": "HGNC:2606",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Vitamin D-dependent rickets type 1A",
+   "treatable": true,
+   "treatable_note": "calcitriol",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CYP27B1"
+   ]
+  },
+  {
+   "gene": "DHCR7",
+   "hgnc_id": "HGNC:2860",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Smith-Lemli-Opitz syndrome",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "cholesterol supplementation of limited benefit",
+   "cnv_heavy": false,
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.0092,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DHCR7"
+   ]
+  },
+  {
+   "gene": "DHDDS",
+   "hgnc_id": "HGNC:20603",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Retinitis pigmentosa (DHDDS-related)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DHDDS"
+   ]
+  },
+  {
+   "gene": "DLD",
+   "hgnc_id": "HGNC:2898",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Dihydrolipoamide dehydrogenase (E3) deficiency",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive / dietary",
+   "cnv_heavy": false,
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.00587,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DLD"
+   ]
+  },
+  {
+   "gene": "DMD",
+   "hgnc_id": "HGNC:2928",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Duchenne / Becker muscular dystrophy",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "steroids, exon-skipping for some deletions, gene therapy",
+   "cnv_heavy": true,
+   "cnv_note": "exon deletions/duplications account for most pathogenic alleles",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DMD"
+   ]
+  },
+  {
+   "gene": "DYNC2H1",
+   "hgnc_id": "HGNC:2962",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Short-rib thoracic dysplasia (DYNC2H1-related)",
+   "treatable": false,
+   "treatable_note": "respiratory support",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00418,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 5,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DYNC2H1"
+   ]
+  },
+  {
+   "gene": "ELP1",
+   "hgnc_id": "HGNC:5959",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Familial dysautonomia",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ELP1"
+   ]
+  },
+  {
+   "gene": "ERCC2",
+   "hgnc_id": "HGNC:3434",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Xeroderma pigmentosum group D / trichothiodystrophy",
+   "treatable": "partly",
+   "treatable_note": "strict sun protection, skin-cancer surveillance",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ERCC2"
+   ]
+  },
+  {
+   "gene": "EVC2",
+   "hgnc_id": "HGNC:19747",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Ellis-van Creveld syndrome (EVC2)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "surgical/supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=EVC2"
+   ]
+  },
+  {
+   "gene": "F8",
+   "hgnc_id": "HGNC:3546",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Hemophilia A",
+   "treatable": true,
+   "treatable_note": "factor VIII replacement, emicizumab, gene therapy",
+   "cnv_heavy": true,
+   "cnv_note": "intron 22 and intron 1 inversions cause ~45% of severe hemophilia A",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=F8"
+   ]
+  },
+  {
+   "gene": "F9",
+   "hgnc_id": "HGNC:3551",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Hemophilia B",
+   "treatable": true,
+   "treatable_note": "factor IX replacement, gene therapy",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=F9"
+   ]
+  },
+  {
+   "gene": "FAH",
+   "hgnc_id": "HGNC:3579",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Tyrosinemia type 1",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "nitisinone plus diet; newborn screening",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "c.1021C>T (p.Arg341Trp): pseudodeficiency allele"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=FAH"
+   ]
+  },
+  {
+   "gene": "FANCC",
+   "hgnc_id": "HGNC:3584",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Fanconi anemia (group C)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "stem-cell transplant for marrow failure",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=FANCC"
+   ]
+  },
+  {
+   "gene": "FKRP",
+   "hgnc_id": "HGNC:17997",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "FKRP-related muscular dystrophy (limb-girdle to congenital)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=FKRP"
+   ]
+  },
+  {
+   "gene": "FKTN",
+   "hgnc_id": "HGNC:3622",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Fukutin-related muscular dystrophy (incl. Fukuyama type)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=FKTN"
+   ]
+  },
+  {
+   "gene": "FMO3",
+   "hgnc_id": "HGNC:3771",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Trimethylaminuria (fish-odour syndrome)",
+   "treatable": "partly",
+   "treatable_note": "diet modification",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=FMO3"
+   ]
+  },
+  {
+   "gene": "FMR1",
+   "hgnc_id": "HGNC:3775",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Fragile X syndrome",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive; premutation carriers also at risk of FXPOI/FXTAS",
+   "cnv_heavy": true,
+   "cnv_note": "CGG repeat expansion; not seen by SNV calling",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "notes": "Repeat sizing (CGG) needed; premutation (55-200) and intermediate (45-54) alleles are reported separately from full mutations.",
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=FMR1"
+   ]
+  },
+  {
+   "gene": "FXN",
+   "hgnc_id": "HGNC:3951",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Friedreich ataxia",
+   "treatable": "partly",
+   "treatable_note": "omaveloxolone slows progression",
+   "cnv_heavy": true,
+   "cnv_note": "intronic GAA repeat expansion; not seen by SNV calling",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=FXN"
+   ]
+  },
+  {
+   "gene": "G6PC1",
+   "acmg_symbol": "G6PC",
+   "hgnc_id": "HGNC:4056",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Glycogen storage disease type Ia (von Gierke)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "frequent feeds, uncooked cornstarch",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=G6PC1"
+   ]
+  },
+  {
+   "gene": "GAA",
+   "hgnc_id": "HGNC:4065",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Pompe disease (glycogen storage disease II)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "enzyme replacement therapy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00834,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 10,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "c.-32-13T>G (IVS1): late-onset Pompe"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GAA"
+   ]
+  },
+  {
+   "gene": "GALT",
+   "hgnc_id": "HGNC:4135",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Classic galactosemia",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "galactose-restricted diet; long-term complications can persist",
+   "cnv_heavy": false,
+   "mild_alleles": [
+    "Duarte D2 allele p.Asn314Asp (N314D) with c.-119_-116delGTCA: Duarte variant galactosemia, generally benign",
+    "p.Ser135Leu (S135L): milder variant galactosemia"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GALT"
+   ]
+  },
+  {
+   "gene": "GBA1",
+   "acmg_symbol": "GBA",
+   "hgnc_id": "HGNC:4177",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Gaucher disease",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "enzyme/substrate-reduction therapy for type 1 and 3; none for type 2",
+   "cnv_heavy": true,
+   "cnv_note": "GBAP1 pseudogene recombinant alleles (e.g., RecNciI) confound short reads",
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "p.Asn409Ser (N370S): non-neuronopathic type 1, often mild",
+    "p.Glu365Lys (E326K) and p.Thr408Met (T369M): Parkinson-risk variants, not Gaucher-causing alone"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GBA1"
+   ]
+  },
+  {
+   "gene": "GBE1",
+   "hgnc_id": "HGNC:4180",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Glycogen storage disease type IV / adult polyglucosan body disease",
+   "treatable": false,
+   "treatable_note": "liver transplant in some",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GBE1"
+   ]
+  },
+  {
+   "gene": "GJB2",
+   "hgnc_id": "HGNC:4284",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Nonsyndromic hearing loss (DFNB1, connexin 26)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "hearing aids, cochlear implants",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.02481,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 30,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.01256,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "mild_alleles": [
+    "p.Val37Ile (c.109G>A): mild/variable hearing loss, low penetrance",
+    "p.Met34Thr (c.101T>C): mild/hypomorphic"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GJB2"
+   ]
+  },
+  {
+   "gene": "GLA",
+   "hgnc_id": "HGNC:4296",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Fabry disease",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "enzyme replacement, migalastat for amenable variants",
+   "cnv_heavy": false,
+   "mild_alleles": [
+    "p.Asp313Tyr (D313Y): pseudodeficiency/low pathogenicity",
+    "p.Asn215Ser (N215S): later-onset cardiac variant"
+   ],
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GLA"
+   ]
+  },
+  {
+   "gene": "GNPTAB",
+   "hgnc_id": "HGNC:29670",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Mucolipidosis II / III alpha-beta",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GNPTAB"
+   ]
+  },
+  {
+   "gene": "GRIP1",
+   "hgnc_id": "HGNC:18708",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Fraser syndrome (GRIP1-related)",
+   "treatable": false,
+   "treatable_note": "surgical/supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GRIP1"
+   ]
+  },
+  {
+   "gene": "HBA1",
+   "hgnc_id": "HGNC:4823",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Alpha-thalassemia (HbH disease, Hb Bart's hydrops)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm) - classified jointly as HBA1/HBA2",
+   "treatable": "partly",
+   "treatable_note": "transfusion; in-utero transfusion for Hb Bart's",
+   "cnv_heavy": true,
+   "cnv_note": "alpha-globin deletions (-a3.7, -a4.2, --SEA, --MED) dominate; SNV calling misses them",
+   "literature_carrier_freq": {
+    "value": 0.49,
+    "measure": "UAE-national newborns with any alpha-thalassemia genotype (carriers plus -a/-a homozygotes); mostly deletional and polyA alleles",
+    "population": "Emirati (newborns)",
+    "n": 419,
+    "source": "https://doi.org/10.3109/03630269.2011.634698"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.02807,
+     "measure": "Emirati exome gene carrier frequency (2pq), sequence variants only",
+     "population": "Emirati",
+     "n": 1194,
+     "source": "https://doi.org/10.1016/j.gimo.2025.103446"
+    },
+    {
+     "value": 0.00613,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    },
+    {
+     "value": 0.2847,
+     "measure": "-alpha3.7 allele (gene) frequency, not carrier frequency",
+     "population": "Emirati newborns",
+     "n": 418,
+     "source": "https://doi.org/10.1159/000040863"
+    },
+    {
+     "value": 0.44,
+     "measure": "phenotype-derived alpha-plus allele frequency (0.34 after tribal/inbreeding adjustment)",
+     "population": "Emirati adults",
+     "n": 1079,
+     "source": "https://doi.org/10.1186/1471-2326-11-1"
+    },
+    {
+     "value": 0.485,
+     "measure": "newborns with alpha-thalassemia (Hb Bart's)",
+     "population": "Omani",
+     "n": 7837,
+     "source": "https://doi.org/10.3109/03630261003677213"
+    }
+   ],
+   "mild_alleles": [
+    "single-gene deletions -a3.7 / -a4.2 (alpha-plus): silent carrier; couple risk is mainly HbH, not Hb Bart's hydrops"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "notes": "Exome/SNV data miss alpha-globin deletions; the Emirati exome figure (SNVs only) is far below the true carrier rate. Dubai screens by CBC/HPLC then long-read sequencing.",
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.3109/03630269.2011.634698",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1159/000040863",
+    "https://doi.org/10.1186/1471-2326-11-1",
+    "https://doi.org/10.3109/03630261003677213",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=HBA1"
+   ]
+  },
+  {
+   "gene": "HBA2",
+   "hgnc_id": "HGNC:4824",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Alpha-thalassemia (HbH disease, Hb Bart's hydrops)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm) - classified jointly as HBA1/HBA2",
+   "treatable": "partly",
+   "treatable_note": "transfusion; in-utero transfusion for Hb Bart's",
+   "cnv_heavy": true,
+   "cnv_note": "alpha-globin deletions (-a3.7, -a4.2, --SEA, --MED) dominate; SNV calling misses them",
+   "literature_carrier_freq": {
+    "value": 0.49,
+    "measure": "UAE-national newborns with any alpha-thalassemia genotype (carriers plus -a/-a homozygotes); mostly deletional and polyA alleles",
+    "population": "Emirati (newborns)",
+    "n": 419,
+    "source": "https://doi.org/10.3109/03630269.2011.634698"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.01826,
+     "measure": "Emirati exome gene carrier frequency (2pq), sequence variants only",
+     "population": "Emirati",
+     "n": 1194,
+     "source": "https://doi.org/10.1016/j.gimo.2025.103446"
+    },
+    {
+     "value": 0.01284,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    },
+    {
+     "value": 0.2847,
+     "measure": "-alpha3.7 allele (gene) frequency, not carrier frequency",
+     "population": "Emirati newborns",
+     "n": 418,
+     "source": "https://doi.org/10.1159/000040863"
+    },
+    {
+     "value": 0.44,
+     "measure": "phenotype-derived alpha-plus allele frequency (0.34 after tribal/inbreeding adjustment)",
+     "population": "Emirati adults",
+     "n": 1079,
+     "source": "https://doi.org/10.1186/1471-2326-11-1"
+    },
+    {
+     "value": 0.485,
+     "measure": "newborns with alpha-thalassemia (Hb Bart's)",
+     "population": "Omani",
+     "n": 7837,
+     "source": "https://doi.org/10.3109/03630261003677213"
+    }
+   ],
+   "mild_alleles": [
+    "single-gene deletions -a3.7 / -a4.2 (alpha-plus): silent carrier; couple risk is mainly HbH, not Hb Bart's hydrops",
+    "Hb Constant Spring c.427T>C: non-deletional alpha-plus (more severe HbH when combined)"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "notes": "Exome/SNV data miss alpha-globin deletions; the Emirati exome figure (SNVs only) is far below the true carrier rate. Dubai screens by CBC/HPLC then long-read sequencing.",
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.3109/03630269.2011.634698",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1159/000040863",
+    "https://doi.org/10.1186/1471-2326-11-1",
+    "https://doi.org/10.3109/03630261003677213",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=HBA2"
+   ]
+  },
+  {
+   "gene": "HBB",
+   "hgnc_id": "HGNC:4827",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Beta-thalassemia and sickle cell disease",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "transfusion and chelation, hydroxyurea, stem-cell transplant, gene therapy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.09621,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 121,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.03317,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    },
+    {
+     "value": 0.0456,
+     "measure": "beta-thalassemia trait prevalence (CBC+HPLC)",
+     "population": "Emirati (Dubai premarital 2007-2010)",
+     "n": 6420,
+     "source": "https://doi.org/10.3109/03630269.2013.791627"
+    },
+    {
+     "value": 0.029,
+     "measure": "HbS trait prevalence (CBC+HPLC)",
+     "population": "Emirati (Dubai premarital 2007-2010)",
+     "n": 6420,
+     "source": "https://doi.org/10.3109/03630269.2013.791627"
+    },
+    {
+     "value": 0.023,
+     "measure": "beta-thalassemia carrier frequency (molecular)",
+     "population": "Emirati (Abu Dhabi premarital)",
+     "n": 5672,
+     "source": "https://doi.org/10.3109/03630269.2013.790827"
+    },
+    {
+     "value": 0.015,
+     "measure": "sickle cell trait in newborns",
+     "population": "Emirati (Abu Dhabi neonatal screening, UAE citizens)",
+     "source": "https://pubmed.ncbi.nlm.nih.gov/16602448/"
+    },
+    {
+     "value": 0.047,
+     "measure": "HbS prevalence at premarital screening",
+     "population": "Saudi (2011-2018)",
+     "n": 1871184,
+     "source": "https://doi.org/10.1007/s44197-024-00281-x"
+    },
+    {
+     "value": 0.012,
+     "measure": "beta-thalassemia prevalence at premarital screening",
+     "population": "Saudi (2011-2018)",
+     "n": 1871184,
+     "source": "https://doi.org/10.1007/s44197-024-00281-x"
+    },
+    {
+     "value": 0.0212,
+     "measure": "beta-thalassemia trait at premarital screening",
+     "population": "Kuwaiti (2009-2020)",
+     "n": 275819,
+     "source": "https://doi.org/10.3390/jpm11100980"
+    },
+    {
+     "value": 0.0181,
+     "measure": "sickle cell trait at premarital screening",
+     "population": "Kuwaiti (2009-2020)",
+     "n": 275819,
+     "source": "https://doi.org/10.3390/jpm11100980"
+    },
+    {
+     "value": 0.048,
+     "measure": "sickle cell trait in newborns",
+     "population": "Omani",
+     "n": 7837,
+     "source": "https://doi.org/10.3109/03630261003677213"
+    },
+    {
+     "value": 0.026,
+     "measure": "beta-thalassemia trait in newborns",
+     "population": "Omani",
+     "n": 7837,
+     "source": "https://doi.org/10.3109/03630261003677213"
+    }
+   ],
+   "mild_alleles": [
+    "HbE p.Glu27Lys (c.79G>A): clinically significant only with a beta-zero/beta-plus allele (HbE/beta-thal)",
+    "HbC p.Glu7Lys (c.19G>A): significant only with HbS (HbSC) or beta-thal",
+    "HbD-Punjab p.Glu122Gln: significant only with HbS (HbSD)",
+    "silent/mild beta-plus promoter alleles (e.g., c.-151C>T, '-101 C>T')"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "notes": "Hemoglobinopathies were 32 of 79 at-risk couples in Dubai's 1,000-couple premarital genomic screen.",
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.3109/03630269.2013.791627",
+    "https://doi.org/10.3109/03630269.2013.790827",
+    "https://pubmed.ncbi.nlm.nih.gov/16602448/",
+    "https://doi.org/10.1007/s44197-024-00281-x",
+    "https://doi.org/10.3390/jpm11100980",
+    "https://doi.org/10.3109/03630261003677213",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=HBB"
+   ]
+  },
+  {
+   "gene": "HEXA",
+   "hgnc_id": "HGNC:4878",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Tay-Sachs disease",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "pseudodeficiency alleles c.739C>T (p.Arg247Trp) and c.745C>T (p.Arg249Trp): benign"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=HEXA"
+   ]
+  },
+  {
+   "gene": "HPS1",
+   "hgnc_id": "HGNC:5163",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Hermansky-Pudlak syndrome type 1",
+   "treatable": false,
+   "treatable_note": "supportive; pulmonary fibrosis risk",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=HPS1"
+   ]
+  },
+  {
+   "gene": "HPS3",
+   "hgnc_id": "HGNC:15597",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Hermansky-Pudlak syndrome type 3",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=HPS3"
+   ]
+  },
+  {
+   "gene": "IDUA",
+   "hgnc_id": "HGNC:5391",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Mucopolysaccharidosis type I (Hurler spectrum)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "enzyme replacement, stem-cell transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=IDUA"
+   ]
+  },
+  {
+   "gene": "L1CAM",
+   "hgnc_id": "HGNC:6470",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "L1 syndrome (X-linked hydrocephalus)",
+   "treatable": false,
+   "treatable_note": "shunting/supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=L1CAM"
+   ]
+  },
+  {
+   "gene": "LRP2",
+   "hgnc_id": "HGNC:6694",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Donnai-Barrow syndrome",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=LRP2"
+   ]
+  },
+  {
+   "gene": "MCCC2",
+   "hgnc_id": "HGNC:6937",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "3-Methylcrotonyl-CoA carboxylase 2 deficiency",
+   "treatable": "partly",
+   "treatable_note": "often asymptomatic; avoid fasting, protein moderation",
+   "cnv_heavy": false,
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.03513,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MCCC2"
+   ]
+  },
+  {
+   "gene": "MCOLN1",
+   "hgnc_id": "HGNC:13356",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Mucolipidosis type IV",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MCOLN1"
+   ]
+  },
+  {
+   "gene": "MCPH1",
+   "hgnc_id": "HGNC:6954",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Primary microcephaly 1",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MCPH1"
+   ]
+  },
+  {
+   "gene": "MID1",
+   "hgnc_id": "HGNC:7095",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "X-linked Opitz G/BBB syndrome",
+   "treatable": false,
+   "treatable_note": "surgical repair of malformations",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MID1"
+   ]
+  },
+  {
+   "gene": "MLC1",
+   "hgnc_id": "HGNC:17082",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Megalencephalic leukoencephalopathy with subcortical cysts",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MLC1"
+   ]
+  },
+  {
+   "gene": "MMACHC",
+   "hgnc_id": "HGNC:24525",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Methylmalonic acidemia with homocystinuria (cblC)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "hydroxocobalamin, betaine",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MMACHC"
+   ]
+  },
+  {
+   "gene": "MMUT",
+   "hgnc_id": "HGNC:7526",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Methylmalonic acidemia (mut type)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "protein-restricted diet, carnitine; liver/kidney transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MMUT"
+   ]
+  },
+  {
+   "gene": "MVK",
+   "hgnc_id": "HGNC:7530",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Mevalonate kinase deficiency",
+   "treatable": "partly",
+   "treatable_note": "IL-1 blockade for inflammatory episodes",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MVK"
+   ]
+  },
+  {
+   "gene": "NAGA",
+   "hgnc_id": "HGNC:7631",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "NAGA deficiency (Schindler / Kanzaki disease)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=NAGA"
+   ]
+  },
+  {
+   "gene": "NEB",
+   "hgnc_id": "HGNC:7720",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Nemaline myopathy (NEB-related)",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "respiratory and supportive care",
+   "cnv_heavy": true,
+   "cnv_note": "triplicate repeat region (exons 82-105) and large deletions",
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.00858,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=NEB"
+   ]
+  },
+  {
+   "gene": "NPHS1",
+   "hgnc_id": "HGNC:7908",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Congenital nephrotic syndrome (Finnish type)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "dialysis and kidney transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00251,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 3,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=NPHS1"
+   ]
+  },
+  {
+   "gene": "NR0B1",
+   "hgnc_id": "HGNC:7960",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "X-linked adrenal hypoplasia congenita",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "lifelong steroid replacement",
+   "cnv_heavy": true,
+   "cnv_note": "whole-gene and contiguous deletions are common",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=NR0B1"
+   ]
+  },
+  {
+   "gene": "OCA2",
+   "hgnc_id": "HGNC:8101",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Oculocutaneous albinism type 2",
+   "treatable": false,
+   "treatable_note": "sun and vision care",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=OCA2"
+   ]
+  },
+  {
+   "gene": "OTC",
+   "hgnc_id": "HGNC:8512",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Ornithine transcarbamylase deficiency",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "protein restriction, ammonia scavengers, liver transplant",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=OTC"
+   ]
+  },
+  {
+   "gene": "PAH",
+   "hgnc_id": "HGNC:8582",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Phenylketonuria",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "phenylalanine-restricted diet, sapropterin, pegvaliase; newborn screening",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.03294,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 40,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.01301,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "mild_alleles": [
+    "p.Ala403Val (A403V): mild hyperphenylalaninemia",
+    "p.Ala300Ser (A300S): mild hyperphenylalaninemia",
+    "p.Tyr414Cys (Y414C): mild PKU"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=PAH"
+   ]
+  },
+  {
+   "gene": "PCDH15",
+   "hgnc_id": "HGNC:14674",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Usher syndrome type 1F",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "cochlear implants; no therapy for vision loss",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.0047,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=PCDH15"
+   ]
+  },
+  {
+   "gene": "PKHD1",
+   "hgnc_id": "HGNC:9016",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Autosomal recessive polycystic kidney disease",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "dialysis/transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00418,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 5,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=PKHD1"
+   ]
+  },
+  {
+   "gene": "PLP1",
+   "hgnc_id": "HGNC:9086",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Pelizaeus-Merzbacher disease",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": true,
+   "cnv_note": "duplications are the most common cause of Pelizaeus-Merzbacher disease",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=PLP1"
+   ]
+  },
+  {
+   "gene": "PMM2",
+   "hgnc_id": "HGNC:9115",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "PMM2-CDG (congenital disorder of glycosylation Ia)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00251,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 3,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=PMM2"
+   ]
+  },
+  {
+   "gene": "POLG",
+   "hgnc_id": "HGNC:9179",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "POLG-related mitochondrial disorders (incl. Alpers)",
+   "treatable": false,
+   "treatable_note": "supportive; avoid valproate",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=POLG"
+   ]
+  },
+  {
+   "gene": "PRF1",
+   "hgnc_id": "HGNC:9360",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Familial hemophagocytic lymphohistiocytosis type 2",
+   "treatable": "partly",
+   "treatable_note": "stem-cell transplant",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=PRF1"
+   ]
+  },
+  {
+   "gene": "RARS2",
+   "hgnc_id": "HGNC:21406",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Pontocerebellar hypoplasia type 6",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00585,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 7,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=RARS2"
+   ]
+  },
+  {
+   "gene": "RNASEH2B",
+   "hgnc_id": "HGNC:25671",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Aicardi-Goutieres syndrome (RNASEH2B)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=RNASEH2B"
+   ]
+  },
+  {
+   "gene": "RPGR",
+   "hgnc_id": "HGNC:10295",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "X-linked retinitis pigmentosa (RPGR)",
+   "treatable": false,
+   "treatable_note": "supportive; gene therapies in trials",
+   "cnv_heavy": true,
+   "cnv_note": "ORF15 repetitive exon poorly covered by short reads",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=RPGR"
+   ]
+  },
+  {
+   "gene": "RS1",
+   "hgnc_id": "HGNC:10457",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "X-linked juvenile retinoschisis",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "low-vision aids",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=RS1"
+   ]
+  },
+  {
+   "gene": "SCO2",
+   "hgnc_id": "HGNC:10604",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "SCO2-related cardioencephalomyopathy (COX deficiency)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SCO2"
+   ]
+  },
+  {
+   "gene": "SLC19A3",
+   "hgnc_id": "HGNC:16266",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Biotin-thiamine-responsive basal ganglia disease",
+   "treatable": true,
+   "treatable_note": "high-dose biotin and thiamine",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SLC19A3"
+   ]
+  },
+  {
+   "gene": "SLC26A2",
+   "hgnc_id": "HGNC:10994",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "SLC26A2-related skeletal dysplasias (diastrophic dysplasia spectrum)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "orthopaedic care",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SLC26A2"
+   ]
+  },
+  {
+   "gene": "SLC26A4",
+   "hgnc_id": "HGNC:8818",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Pendred syndrome / DFNB4 hearing loss",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "hearing aids, cochlear implants, thyroid care",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01579,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 19,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.00748,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SLC26A4"
+   ]
+  },
+  {
+   "gene": "SLC37A4",
+   "hgnc_id": "HGNC:4061",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Glycogen storage disease type Ib",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "cornstarch diet, G-CSF or empagliflozin for neutropenia",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SLC37A4"
+   ]
+  },
+  {
+   "gene": "SLC6A8",
+   "hgnc_id": "HGNC:11055",
+   "inheritance": "XL",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Creatine transporter deficiency",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SLC6A8"
+   ]
+  },
+  {
+   "gene": "SMN1",
+   "hgnc_id": "HGNC:11117",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Spinal muscular atrophy",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "nusinersen, risdiplam, onasemnogene gene therapy; best if presymptomatic",
+   "cnv_heavy": true,
+   "cnv_note": "copy-number (exon 7 deletion/conversion); SMN2 paralog; 2+0 silent carriers undetectable by dosage",
+   "literature_carrier_freq": {
+    "value": 0.013,
+    "measure": "SMN1 deletion carrier frequency (1 in 79); likely an underestimate because 2+0 silent carriers are missed",
+    "population": "Emirati (healthy newborns)",
+    "n": 1502,
+    "source": "https://doi.org/10.1038/s43856-024-00548-1"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.026,
+     "measure": "SMN1 one-copy carrier frequency",
+     "population": "Saudi volunteers",
+     "n": 4198,
+     "source": "https://doi.org/10.1002/mgg3.2049"
+    },
+    {
+     "value": 0.028,
+     "measure": "SMA carrier frequency (copy number)",
+     "population": "Qatari (Qatar Biobank)",
+     "n": 13426,
+     "source": "https://doi.org/10.1002/mgg3.2184"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "notes": "Requires copy-number testing; SNV data cannot detect SMN1 deletion carriers.",
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1038/s43856-024-00548-1",
+    "https://doi.org/10.1002/mgg3.2049",
+    "https://doi.org/10.1002/mgg3.2184",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SMN1"
+   ]
+  },
+  {
+   "gene": "SMPD1",
+   "hgnc_id": "HGNC:11120",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Acid sphingomyelinase deficiency (Niemann-Pick A/B)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "olipudase alfa for non-neurological disease",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.05231,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "mild_alleles": [
+    "p.Arg610del (deltaR608): non-neuronopathic (type B)"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SMPD1"
+   ]
+  },
+  {
+   "gene": "TF",
+   "hgnc_id": "HGNC:11740",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Atransferrinemia",
+   "treatable": "partly",
+   "treatable_note": "plasma or apotransferrin infusions",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=TF"
+   ]
+  },
+  {
+   "gene": "TMEM216",
+   "hgnc_id": "HGNC:25018",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Joubert / Meckel syndrome (TMEM216-related)",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=TMEM216"
+   ]
+  },
+  {
+   "gene": "TNXB",
+   "hgnc_id": "HGNC:11976",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Classic-like Ehlers-Danlos syndrome (tenascin-X deficiency)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": true,
+   "cnv_note": "TNXA pseudogene and CAH-X chimeras with CYP21A2 region",
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=TNXB"
+   ]
+  },
+  {
+   "gene": "TYR",
+   "hgnc_id": "HGNC:12442",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Oculocutaneous albinism type 1",
+   "treatable": false,
+   "treatable_note": "sun and vision care",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01166,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 14,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "mild_alleles": [
+    "p.Arg402Gln (R402Q) and p.Ser192Tyr (S192Y): common hypomorphic alleles, mild OCA1B at most in trans with a null"
+   ],
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=TYR"
+   ]
+  },
+  {
+   "gene": "USH2A",
+   "hgnc_id": "HGNC:12601",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Usher syndrome type 2A / USH2A retinitis pigmentosa",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "hearing aids; no therapy for vision loss",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01083,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 13,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.08968,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=USH2A"
+   ]
+  },
+  {
+   "gene": "XPC",
+   "hgnc_id": "HGNC:12816",
+   "inheritance": "AR",
+   "tier": "ACMG-2021-Tier3",
+   "condition": "Xeroderma pigmentosum group C",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "strict sun protection, skin-cancer surveillance",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "sources": [
+    "https://doi.org/10.1038/s41436-021-01203-z",
+    "https://doi.org/10.1002/pd.5762",
+    "https://thednaexchange.com/2022/03/30/acmg-carrier-screening-guideline-the-hypothetical-tier-3-panel/",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=XPC"
+   ]
+  },
+  {
+   "gene": "CYP1B1",
+   "hgnc_id": "HGNC:2597",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Primary congenital glaucoma",
+   "treatable": "partly",
+   "treatable_note": "early glaucoma surgery preserves vision",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.02236,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 27,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.02122,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.182G>A (p.Gly61Glu) is the top Emirati allele; one of four variants explaining 11/79 at-risk Dubai couples; Gulf founder alleles p.G61E/p.R469W",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://doi.org/10.3390/ijms27083506",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CYP1B1"
+   ]
+  },
+  {
+   "gene": "ABCA4",
+   "hgnc_id": "HGNC:34",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Stargardt disease / ABCA4 retinopathy",
+   "treatable": false,
+   "treatable_note": "no approved therapy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.0434,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 53,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.00503,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "4th-highest Emirati carrier rate (c.5882G>A, AF 1.7%); enriched in Emirati IRD cohort; 3 at-risk Dubai couples",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://doi.org/10.1101/2025.10.14.25337784",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ABCA4"
+   ]
+  },
+  {
+   "gene": "KCNV2",
+   "hgnc_id": "HGNC:19698",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Cone dystrophy with supernormal rod response",
+   "treatable": false,
+   "treatable_note": "no approved therapy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.427G>T is the 2nd most frequently reported variant in Emirati patients (15 individuals); markedly enriched in Emirati IRD genomes; added by Dubai to its 782-gene panel",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1101/2025.10.14.25337784",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=KCNV2"
+   ]
+  },
+  {
+   "gene": "MEFV",
+   "hgnc_id": "HGNC:6998",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Familial Mediterranean fever",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "daily colchicine prevents attacks and amyloidosis",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.05927,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 73,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.0047,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "mild_alleles": [
+    "p.Ala744Ser (c.2230G>T): low penetrance, often no or mild disease",
+    "p.Glu148Gln (E148Q): low penetrance / uncertain"
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "3rd-highest Emirati carrier rate, driven largely by c.2230G>T (p.Ala744Ser), a low-penetrance allele; some MEFV variants act dominantly",
+   "notes": "Most Emirati carrier signal comes from the low-penetrance p.Ala744Ser allele; a demo should not treat it as a severe-risk allele.",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MEFV"
+   ]
+  },
+  {
+   "gene": "DNAH5",
+   "hgnc_id": "HGNC:2950",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Primary ciliary dyskinesia (DNAH5)",
+   "treatable": "partly",
+   "treatable_note": "airway clearance and antibiotics; no disease-modifying therapy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00501,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 6,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.5503C>T (p.Gln1835*) explains 3 at-risk Dubai couples and is one of the four key local variants",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://doi.org/10.3389/fgene.2024.1396797",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DNAH5"
+   ]
+  },
+  {
+   "gene": "CCDC40",
+   "hgnc_id": "HGNC:26090",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Primary ciliary dyskinesia (CCDC40)",
+   "treatable": "partly",
+   "treatable_note": "airway clearance and antibiotics",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00668,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 8,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; on MOHAP premarital list",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CCDC40"
+   ]
+  },
+  {
+   "gene": "CCNO",
+   "hgnc_id": "HGNC:18576",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Primary ciliary dyskinesia with reduced motile cilia (CCNO)",
+   "treatable": "partly",
+   "treatable_note": "airway clearance and antibiotics",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00585,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 7,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "3 Emirati patients in UAE clinical cohort; Emirati carrier rate from exome data",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CCNO"
+   ]
+  },
+  {
+   "gene": "DNAH11",
+   "hgnc_id": "HGNC:2942",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Primary ciliary dyskinesia (DNAH11)",
+   "treatable": "partly",
+   "treatable_note": "airway clearance and antibiotics",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00251,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 3,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.00871,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; Qatari GCF above 1/200",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DNAH11"
+   ]
+  },
+  {
+   "gene": "DONSON",
+   "hgnc_id": "HGNC:2993",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Microcephaly-micromelia syndrome",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01908,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 23,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "named as a high-carrier Emirati gene missing from ACMG; c.1466A>C is one of four key Dubai variants (2 at-risk couples)",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DONSON"
+   ]
+  },
+  {
+   "gene": "ALDH3A2",
+   "hgnc_id": "HGNC:403",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Sjogren-Larsson syndrome",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "skin care; supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01248,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 15,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "named as a high-carrier Emirati gene missing from ACMG",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ALDH3A2"
+   ]
+  },
+  {
+   "gene": "SGCG",
+   "hgnc_id": "HGNC:10809",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Limb-girdle muscular dystrophy R5 (gamma-sarcoglycanopathy)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.02644,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 32,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "all Emirati exome alleles are the c.643delG founder variant",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SGCG"
+   ]
+  },
+  {
+   "gene": "TPO",
+   "hgnc_id": "HGNC:12015",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Congenital hypothyroidism (thyroid peroxidase deficiency)",
+   "treatable": true,
+   "treatable_note": "levothyroxine; detected by newborn screening",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01248,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 15,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.2422del accounts for 73% of Emirati TPO P/LP variants",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=TPO"
+   ]
+  },
+  {
+   "gene": "F7",
+   "hgnc_id": "HGNC:3544",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Factor VII deficiency",
+   "treatable": "partly",
+   "treatable_note": "recombinant factor VIIa for bleeding",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01496,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 18,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; on MOHAP premarital list",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=F7"
+   ]
+  },
+  {
+   "gene": "GALNT3",
+   "hgnc_id": "HGNC:4125",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Hyperphosphatemic familial tumoral calcinosis",
+   "treatable": "partly",
+   "treatable_note": "phosphate-lowering therapy, surgery",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01331,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 16,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; on MOHAP premarital list",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GALNT3"
+   ]
+  },
+  {
+   "gene": "ABCA12",
+   "hgnc_id": "HGNC:14637",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Autosomal recessive congenital ichthyosis (harlequin / lamellar)",
+   "treatable": "partly",
+   "treatable_note": "retinoids and intensive skin care",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01331,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 16,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.2785C>T recurrent in Emirati exomes; added by Dubai to its 782-gene panel",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ABCA12"
+   ]
+  },
+  {
+   "gene": "ITGB3",
+   "hgnc_id": "HGNC:6156",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Glanzmann thrombasthenia",
+   "treatable": "partly",
+   "treatable_note": "platelet transfusion, rFVIIa; stem-cell transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01248,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 15,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.433G>A recurrent in Emirati exomes; added by Dubai to its 782-gene panel",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ITGB3"
+   ]
+  },
+  {
+   "gene": "PKLR",
+   "hgnc_id": "HGNC:9020",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Pyruvate kinase deficiency (hemolytic anemia)",
+   "treatable": "partly",
+   "treatable_note": "transfusion, splenectomy, mitapivat",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01496,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 18,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.006,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; added by Dubai to its 782-gene panel",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=PKLR"
+   ]
+  },
+  {
+   "gene": "EYS",
+   "hgnc_id": "HGNC:21555",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Retinitis pigmentosa (EYS)",
+   "treatable": false,
+   "treatable_note": "no approved therapy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.01248,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 15,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.01443,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; 1 at-risk Dubai couple; Qatari GCF above 1/200",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=EYS"
+   ]
+  },
+  {
+   "gene": "RPGRIP1",
+   "hgnc_id": "HGNC:13436",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Leber congenital amaurosis / cone-rod dystrophy (RPGRIP1)",
+   "treatable": false,
+   "treatable_note": "no approved therapy",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00917,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 11,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; added by Dubai to its 782-gene panel",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=RPGRIP1"
+   ]
+  },
+  {
+   "gene": "CDH23",
+   "hgnc_id": "HGNC:13733",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Usher syndrome type 1D / DFNB12 hearing loss",
+   "treatable": false,
+   "treatable_note": "cochlear implants; no therapy for vision loss",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00917,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 11,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati family with trans CDH23 variants; on MOHAP list",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.3390/genes15111451",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CDH23"
+   ]
+  },
+  {
+   "gene": "ABCC6",
+   "hgnc_id": "HGNC:57",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Pseudoxanthoma elasticum / generalized arterial calcification of infancy",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00917,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 11,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; 1 at-risk Dubai couple",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ABCC6"
+   ]
+  },
+  {
+   "gene": "MPL",
+   "hgnc_id": "HGNC:7217",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Congenital amegakaryocytic thrombocytopenia",
+   "treatable": "partly",
+   "treatable_note": "stem-cell transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00751,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 9,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.01943,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "1 at-risk Dubai couple; Qatari GCF above 1/200",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MPL"
+   ]
+  },
+  {
+   "gene": "NCF1",
+   "hgnc_id": "HGNC:7660",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Chronic granulomatous disease (p47phox)",
+   "treatable": "partly",
+   "treatable_note": "antimicrobial prophylaxis, stem-cell transplant",
+   "cnv_heavy": true,
+   "cnv_note": "NCF1B/NCF1C pseudogenes; common c.75_76delGT arises by pseudogene conversion and is missed by short reads",
+   "literature_carrier_freq": {
+    "value": 0.00668,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 8,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "literature_carrier_freq_other": [
+    {
+     "value": 0.01885,
+     "measure": "gene carrier frequency",
+     "population": "Qatari",
+     "n": 14392,
+     "source": "https://doi.org/10.1016/j.xhgg.2026.100625",
+     "note": "Qatar Genome Programme, 14,392 genomes, ClinVar P/LP SNVs/indels; gene carrier frequency (table lists genes >=1/200 only)"
+    }
+   ],
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data; Qatari GCF above 1/200; added by Dubai to its 782-gene panel",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1016/j.xhgg.2026.100625",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=NCF1"
+   ]
+  },
+  {
+   "gene": "MERTK",
+   "hgnc_id": "HGNC:7027",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Retinitis pigmentosa (MERTK)",
+   "treatable": false,
+   "treatable_note": "no approved therapy",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.2214del in 5 Emirati patients and 1 at-risk Dubai couple",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MERTK"
+   ]
+  },
+  {
+   "gene": "CNGA3",
+   "hgnc_id": "HGNC:2150",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Achromatopsia (CNGA3)",
+   "treatable": false,
+   "treatable_note": "low-vision aids",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00501,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 6,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "9 Emirati patients in UAE clinical cohort",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CNGA3"
+   ]
+  },
+  {
+   "gene": "TMEM67",
+   "hgnc_id": "HGNC:28396",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Meckel / Joubert / COACH syndrome (TMEM67)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": true
+   },
+   "uae_evidence": "1 at-risk Dubai couple; added by Dubai to its 782-gene panel",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1038/s41591-026-04251-7",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=TMEM67"
+   ]
+  },
+  {
+   "gene": "INPP5E",
+   "hgnc_id": "HGNC:21474",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Joubert syndrome 1",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "17 Emirati patients in UAE clinical cohort (mainly c.1543C>T and c.1534C>T)",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=INPP5E"
+   ]
+  },
+  {
+   "gene": "LIFR",
+   "hgnc_id": "HGNC:6597",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Stuve-Wiedemann syndrome",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00251,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 3,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "11 Emirati patients in UAE clinical cohort, all c.653dup",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=LIFR"
+   ]
+  },
+  {
+   "gene": "GLB1",
+   "hgnc_id": "HGNC:4298",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "GM1 gangliosidosis / Morquio B",
+   "severity": "profound",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "supportive",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "11 Emirati patients in UAE clinical cohort (7 with c.1768C>T)",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GLB1"
+   ]
+  },
+  {
+   "gene": "MAN2B1",
+   "hgnc_id": "HGNC:6826",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Alpha-mannosidosis",
+   "severity": "severe",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "enzyme replacement (velmanase alfa), stem-cell transplant",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "UAE series of 9 patients from 6 families with Emirati nonsense variants; authors note high UAE birth prevalence",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1002/jmd2.70001",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MAN2B1"
+   ]
+  },
+  {
+   "gene": "ETFDH",
+   "hgnc_id": "HGNC:3483",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Multiple acyl-CoA dehydrogenase deficiency (glutaric aciduria type 2)",
+   "treatable": "partly",
+   "treatable_note": "riboflavin (responsive forms), avoid fasting, diet",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "c.807A>C is the 3rd most frequently reported variant in Emirati patients (14 individuals); GA2 found by UAE newborn screening",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1007/8904_2015_512",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=ETFDH"
+   ]
+  },
+  {
+   "gene": "GCDH",
+   "hgnc_id": "HGNC:4189",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Glutaric aciduria type 1",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": "partly",
+   "treatable_note": "lysine-restricted diet, carnitine, emergency protocol; newborn screening",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00501,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 6,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "among the disorders found by UAE newborn screening (2011-2014)",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1007/8904_2015_512",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=GCDH"
+   ]
+  },
+  {
+   "gene": "SLC26A3",
+   "hgnc_id": "HGNC:3018",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Congenital chloride diarrhea",
+   "treatable": "partly",
+   "treatable_note": "lifelong salt replacement",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "5 Emirati patients, all c.559G>T (p.Gly187*) Arab founder variant",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=SLC26A3"
+   ]
+  },
+  {
+   "gene": "CYP11B1",
+   "hgnc_id": "HGNC:2591",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Congenital adrenal hyperplasia (11-beta-hydroxylase deficiency)",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": true,
+   "treatable_note": "glucocorticoid replacement",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00334,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 4,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Emirati carrier rate from exome data (c.1179_1180dupGA); on MOHAP list",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=CYP11B1"
+   ]
+  },
+  {
+   "gene": "QDPR",
+   "hgnc_id": "HGNC:9752",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Dihydropteridine reductase deficiency (BH4 deficiency)",
+   "treatable": "partly",
+   "treatable_note": "L-dopa, 5-hydroxytryptophan, folinic acid, diet",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00167,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 2,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "most common BH4 disorder in a Tawam Hospital cohort (5/10 patients)",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1002/jmd2.12468",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=QDPR"
+   ]
+  },
+  {
+   "gene": "MYO7A",
+   "hgnc_id": "HGNC:7606",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Usher syndrome type 1B",
+   "severity": "moderate",
+   "severity_source": "Arjunan et al. 2020 Prenat Diagn, medical-geneticist final classification (Lazarin algorithm)",
+   "treatable": false,
+   "treatable_note": "cochlear implants; no therapy for vision loss",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "most common gene in an Emirati Usher series (Cleveland Clinic Abu Dhabi)",
+   "sources": [
+    "https://doi.org/10.1002/pd.5762",
+    "https://doi.org/10.1080/13816810.2024.2374866",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=MYO7A"
+   ]
+  },
+  {
+   "gene": "RPE65",
+   "hgnc_id": "HGNC:10294",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Leber congenital amaurosis 2 (RPE65 retinopathy)",
+   "treatable": "partly",
+   "treatable_note": "voretigene neparvovec gene therapy",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "Abu Dhabi gene-therapy series of 9 patients from 6 families, 8 Emirati",
+   "sources": [
+    "https://doi.org/10.1016/j.oret.2026.06.012",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=RPE65"
+   ]
+  },
+  {
+   "gene": "DOCK8",
+   "hgnc_id": "HGNC:19191",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "DOCK8 deficiency (combined immunodeficiency, hyper-IgE)",
+   "treatable": "partly",
+   "treatable_note": "stem-cell transplant",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "recurrent gene in UAE inborn-errors-of-immunity cohorts",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1007/s10875-026-02060-8",
+    "https://doi.org/10.3389/fimmu.2022.837243",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=DOCK8"
+   ]
+  },
+  {
+   "gene": "RAG1",
+   "hgnc_id": "HGNC:9831",
+   "inheritance": "AR",
+   "tier": "UAE-addition",
+   "condition": "Severe combined immunodeficiency / Omenn syndrome (RAG1)",
+   "treatable": "partly",
+   "treatable_note": "stem-cell transplant; TREC newborn screening",
+   "cnv_heavy": false,
+   "literature_carrier_freq": {
+    "value": 0.00084,
+    "measure": "gene carrier frequency (2pq) from cumulative P/LP allele frequency",
+    "population": "Emirati",
+    "n": 1194,
+    "allele_count": 1,
+    "source": "https://doi.org/10.1016/j.gimo.2025.103446",
+    "note": "1,194 Emirati exomes from individuals referred for clinical testing; cumulative P/LP gene carrier frequency (2pq), Supplementary Table 4; sequence variants only"
+   },
+   "uae_premarital": {
+    "mohap_570": true,
+    "dubai_782": true
+   },
+   "uae_evidence": "recurrent gene in UAE inborn-errors-of-immunity cohorts",
+   "sources": [
+    "https://doi.org/10.1016/j.gimo.2025.103446",
+    "https://doi.org/10.1007/s10875-026-02060-8",
+    "https://doi.org/10.3389/fimmu.2022.837243",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=RAG1"
+   ]
+  },
+  {
+   "gene": "G6PD",
+   "hgnc_id": "HGNC:4057",
+   "inheritance": "XL",
+   "tier": "UAE-addition",
+   "condition": "G6PD deficiency (favism)",
+   "treatable": true,
+   "treatable_note": "avoid fava beans and oxidant drugs; treat neonatal jaundice",
+   "cnv_heavy": false,
+   "uae_premarital": {
+    "mohap_570": false,
+    "dubai_782": false
+   },
+   "uae_evidence": "the most frequent positive in UAE newborn screening 2021-2023: 1,546 of 29,290 newborns (5.3%); not on the premarital lists (screened at birth)",
+   "sources": [
+    "https://doi.org/10.3389/fped.2026.1788876",
+    "https://doi.org/10.1007/s10875-026-02060-8",
+    "https://www.ncbi.nlm.nih.gov/books/NBK1116/?term=G6PD"
+   ]
+  }
+ ]
+}
