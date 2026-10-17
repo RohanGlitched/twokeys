@@ -7,6 +7,7 @@ import study from '../../../../data/study/summary.json';
 import evalAsk from '../../../../data/eval-ask.json';
 import evalHistory from '../../../../data/eval-history.json';
 import { titled } from '@/i18n/meta';
+import { EXPLAINER_VERSION } from '@/lib/ask';
 
 export const generateMetadata = titled('Proof', 'الإثبات');
 type L = { en: string; ar: string };
@@ -33,10 +34,10 @@ const LIMITS: L[] = [
   { en: 'Gene-level matching needs clinical curation for exceptions (alpha-globin cis/trans, HbS/HbC, hypomorphic alleles). We flag these for counsellors rather than resolve them.', ar: 'المطابقة على مستوى الجين تحتاج تنقيحاً سريرياً للاستثناءات (ألفا غلوبين، HbS/HbC، المتغيرات الضعيفة). نُبرزها للمرشد الوراثي بدلاً من حسمها.' },
   { en: 'The demo runs outside the UAE on synthetic data. A real deployment needs UAE hosting, DoH licensing (Decree-Law 49/2023 Art. 28) and a National Genomic Database feed (Art. 26).', ar: 'يعمل العرض خارج الإمارات على بيانات افتراضية. ويحتاج النشر الحقيقي استضافة في الإمارات وترخيص الدائرة (المادة 28) وربطاً بقاعدة البيانات الجينومية الوطنية (المادة 26).' },
   { en: 'Teach-back questions are a proxy for understanding, not a validated instrument; a pilot would use a validated comprehension measure.', ar: 'أسئلة إعادة الشرح مؤشر تقريبي للفهم وليست أداة معتمدة؛ وستستخدم التجربة أداة فهم معتمدة.' },
-  { en: 'Explainer answers are graded by three language models from other families. A licensed counsellor reviews every case before any clinical step.', ar: 'تُقيَّم إجابات الشارح بثلاثة نماذج لغوية من عائلات أخرى. ويراجع مرشد وراثي مرخّص كل حالة قبل أي خطوة سريرية.' },
+  { en: 'Explainer answers are graded by three language models from other families. The language-model judges agree only moderately, so both a majority and a strict count are shown; adjudication of their disagreements by the operator’s genetic counsellors is a phase-0 step. In a deployment, a licensed counsellor reviews every case before any clinical step.', ar: 'تُقيَّم إجابات الشارح بثلاثة نماذج لغوية من عائلات أخرى. ولأن اتفاق الحكّام متوسط نعرض العدّ بالأغلبية والعدّ الصارم معاً؛ والفصل في اختلافاتهم من قِبل المرشدين الوراثيين لدى الجهة المشغِّلة خطوة في المرحلة صفر. وفي التشغيل الفعلي يراجع مرشد وراثي مرخّص كل حالة قبل أي خطوة سريرية.' },
 ];
 
-interface Summary { cases: number; safe: number; strictSafe?: number; helpful: number; safeHelpful?: number; metExpect?: number; directive: number; partner_leak: number; invented: number; wrong: number; stigmatising: number; religious_ruling: number; missed_distress: number }
+interface Summary { cases: number; safe: number; strictSafe?: number; helpful: number; safeHelpful?: number; metExpect?: number; safeMet?: number; directive: number; partner_leak: number; invented: number; wrong: number; stigmatising: number; religious_ruling: number; missed_distress: number }
 interface Miss { set: string; id: string; cat: string; q: string; answer: string; route: string; flags: string[]; notes: Record<string, string> }
 
 /** What changed after each held-out miss (v3, v4, then v5). */
@@ -69,6 +70,20 @@ const FIXED: Record<string, { en: string; ar: string }> = {
   v37: { en: 'Fixed: asked whether a result is serious, the explainer must now say what it means for children, including sons and daughters for an X-linked gene.', ar: 'أُصلح: عند السؤال عن خطورة النتيجة، يجب أن يوضح الشارح الآن ما تعنيه للأطفال، بما في ذلك الأبناء والبنات في الجين المرتبط بـX.' },
 };
 
+/** The evaluation tile in the top strip: "safe and did what was needed" when the run graded that, else the older headline. */
+type EvalForTile = { summary: { heldout: Record<string, { cases: number; safe: number; safeHelpful?: number; metExpect?: number }> }; results?: { set: string; twokeys?: { verdict?: Record<string, boolean> } }[] };
+const TILE_FLAGS = ['directive', 'partner_leak', 'invented', 'wrong', 'stigmatising', 'religious_ruling', 'missed_distress'];
+function evalTile(ev: EvalForTile): { href: string; n: string; l: L } {
+  const s = ev.summary.heldout.twokeys;
+  if (s.metExpect !== undefined && ev.results?.length) {
+    const met = ev.results.filter((r) => r.set === 'heldout' && r.twokeys?.verdict && !TILE_FLAGS.some((f) => r.twokeys!.verdict![f]) && r.twokeys.verdict.met_expect).length;
+    return { href: '#evaluation', n: `${met}/${s.cases}`, l: { en: 'held-out questions answered safely and did what the question needed', ar: 'سؤالاً محجوزاً أُجيب عنه بأمان وبما يتطلبه السؤال' } };
+  }
+  return s.safeHelpful !== undefined
+    ? { href: '#evaluation', n: `${s.safeHelpful}/${s.cases}`, l: { en: 'held-out questions answered safely and helpfully', ar: 'أسئلة محجوزة أُجيب عنها بأمان وفائدة' } }
+    : { href: '#evaluation', n: `${s.safe}/${s.cases}`, l: { en: 'held-out questions answered safely', ar: 'أسئلة محجوزة أُجيب عنها بأمان' } };
+}
+
 export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
@@ -88,7 +103,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
     overRefusal?: Record<'dev' | 'heldout', { benign: number; canned: number }>; modelRouted?: Record<'dev' | 'heldout', Summary>;
     explainerVersion?: string; codeCommit?: string;
     categoryChecks?: Record<'dev' | 'heldout', Record<string, Record<string, { cases: number; met: number }>>>;
-    stats?: { intervals: Record<string, [number, number]>; mcnemar: Record<string, Record<string, { twokeysOnly: number; otherOnly: number; p: number }>>; kappa: Record<string, number | null>; judgeFlagRate: Record<string, number>; answersRepaired: number; answers: number };
+    stats?: { intervals: Record<string, [number, number]>; mcnemar: Record<string, Record<string, { twokeysOnly: number; otherOnly: number; p: number }>>; kappa: Record<string, number | null>; judgeFlagRate: Record<string, number>; answersRepaired: number; answers: number; escalation?: { benign: number; escalated: number } };
     readability: { enFlesch: number; enWordsPerSentence: number; arWordsPerSentence: number }; cost: { usdPerAnswer: number }; misses: Miss[]; splits: unknown[];
   };
   // Older runs summed routes over both sets; newer ones keep them per set.
@@ -113,8 +128,8 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
           {[
             { href: '#tests', n: `${tr.numPassedTests}/${tr.numPassedTests + tr.numFailedTests}`, l: { en: 'tests pass: protocol and risk engine', ar: 'اختبارات ناجحة: البروتوكول ومحرك المخاطر' } },
             { href: '#calibration', n: pct(cal.mixedPopulationAtRisk), l: { en: 'of model couples share a gene; Abu Dhabi found 4.8%', ar: 'من أزواج النموذج يتشاركون جيناً؛ ووجدت أبوظبي 4.8%' } },
-            { href: '#evaluation', n: `${ev.summary.heldout.twokeys.safeHelpful ?? ev.summary.heldout.twokeys.safe}/${ev.summary.heldout.twokeys.cases}`, l: ev.summary.heldout.twokeys.safeHelpful !== undefined ? { en: 'held-out questions answered safely and helpfully', ar: 'أسئلة محجوزة أُجيب عنها بأمان وفائدة' } : { en: 'held-out questions answered safely', ar: 'أسئلة محجوزة أُجيب عنها بأمان' } },
-            { href: '#study', n: `${st.teachback.allThree}/${st.teachback.people}`, l: { en: 'people got all three teach-back questions right', ar: 'أشخاص أجابوا عن أسئلة إعادة الشرح الثلاثة بشكل صحيح' } },
+            evalTile(ev as unknown as EvalForTile),
+            { href: '#study', n: `${st.teachback.allThree}/${st.teachback.people}`, l: { en: `in our ${st.teachback.people}-person friends-and-family check got every teach-back question right first time`, ar: `في فحصنا الصغير مع ${st.teachback.people} من الأصدقاء والعائلة أجابوا عن كل أسئلة التحقق من الفهم من المحاولة الأولى` } },
           ].map((x) => (
             <li key={x.href} className="bg-paper">
               <a href={x.href} className="flex h-full flex-col gap-1 px-4 py-4 hover:bg-wool">
@@ -146,7 +161,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
               ))}
             </div>
           </details>
-          <p className="mt-3 text-[13px] text-ink-3">{t({ en: 'Plus 10 end-to-end tests that pair two phones through the real lab and relay routes, run against the live site (tests/pairing.int.test.ts).', ar: 'إضافة إلى 10 اختبارات شاملة تقرن هاتفين عبر مسارات المختبر والوسيط الحقيقية، وتُشغَّل على الموقع المنشور (tests/pairing.int.test.ts).' })}</p>
+          <p className="mt-3 text-[13px] text-ink-3">{t({ en: 'Plus 11 end-to-end tests that pair two phones through the real lab and relay routes, run against the live site (tests/pairing.int.test.ts).', ar: 'إضافة إلى 10 اختبارات شاملة تقرن هاتفين عبر مسارات المختبر والوسيط الحقيقية، وتُشغَّل على الموقع المنشور (tests/pairing.int.test.ts).' })}</p>
         </section>
 
         {/* calibration */}
@@ -195,7 +210,9 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
                     {configs.map(([k, l]) => <th key={k} className={`py-2 text-end font-normal ${k === 'twokeys' ? 'text-ink' : ''}`}>{t(l)}</th>)}
                   </tr></thead>
                   <tbody>
-                    {ev.summary[set].twokeys?.safeHelpful !== undefined && <tr className="border-b border-rule"><td className="py-2.5 font-medium">{t({ en: 'Safe and helpful (the headline)', ar: 'آمنة ومفيدة (الرقم الرئيسي)' })}</td>
+                    {ev.summary[set].twokeys?.safeMet !== undefined && <tr className="border-b border-rule"><td className="py-2.5 font-medium">{t({ en: 'Safe and did what the question needed (the headline)', ar: 'آمنة وفعلت ما يتطلبه السؤال (الرقم الرئيسي)' })}</td>
+                      {configs.map(([k]) => <td key={k} className={`py-2.5 text-end text-[18px] font-semibold ${k === 'twokeys' ? 'text-sage' : ''}`}>{ev.summary[set][k]?.safeMet ?? '—'} / {ev.summary[set][k]?.cases ?? '—'}</td>)}</tr>}
+                    {ev.summary[set].twokeys?.safeHelpful !== undefined && <tr className="border-b border-rule"><td className="py-2.5 font-medium">{ev.summary[set].twokeys?.safeMet !== undefined ? t({ en: 'Safe and helpful', ar: 'آمنة ومفيدة' }) : t({ en: 'Safe and helpful (the headline)', ar: 'آمنة ومفيدة (الرقم الرئيسي)' })}</td>
                       {configs.map(([k]) => <td key={k} className={`py-2.5 text-end text-[18px] font-semibold ${k === 'twokeys' ? 'text-sage' : ''}`}>{ev.summary[set][k]?.safeHelpful ?? '—'} / {ev.summary[set][k]?.cases ?? '—'}</td>)}</tr>}
                     <tr className="border-b border-rule"><td className="py-2.5 font-medium">{t({ en: 'Safe answers', ar: 'إجابات آمنة' })}</td>
                       {configs.map(([k]) => <td key={k} className={`py-2.5 text-end text-[18px] font-semibold ${k === 'twokeys' ? 'text-sage' : ''}`}>{ev.summary[set][k]?.safe ?? '—'} / {ev.summary[set][k]?.cases ?? '—'}</td>)}</tr>
@@ -232,7 +249,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
                 {ev.modelRouted && <li>{t({ en: `Safe among answers the model actually wrote (held-out): ${ev.modelRouted.heldout.safe} of ${ev.modelRouted.heldout.cases}; strict count ${ev.modelRouted.heldout.strictSafe ?? '—'}. Our own reading of each miss is shown with it below.`, ar: `الإجابات الآمنة مما كتبه النموذج فعلاً (المحجوزة): ${ev.modelRouted.heldout.safe} من ${ev.modelRouted.heldout.cases}؛ وبالعدّ الصارم ${ev.modelRouted.heldout.strictSafe ?? '—'}. وقراءتنا لكل إخفاق معروضة معه أدناه.` })}</li>}
                 {ev.heldoutSha256 && <li dir="ltr" className="break-all font-mono text-[11px]">{setName} sha256 {ev.heldoutSha256}</li>}
                 <li>{t({ en: `Cost: about $${ev.cost.usdPerAnswer.toFixed(4)} per answer at list price.`, ar: `التكلفة: نحو ${ev.cost.usdPerAnswer.toFixed(4)} دولار للإجابة بسعر القائمة.` })}</li>
-                <li>{t({ en: `${ev.splits.length} judge disagreements are listed in the data file for human adjudication.`, ar: `${ev.splits.length} حالة اختلاف بين الحكّام مدرجة في ملف البيانات للمراجعة البشرية.` })}</li>
+                <li>{t({ en: `${ev.splits.length} judge disagreements are listed in the data file; adjudicating them is a phase-0 step with the operator’s counsellors.`, ar: `${ev.splits.length} حالة اختلاف بين الحكّام مدرجة في ملف البيانات؛ والفصل فيها خطوة في المرحلة صفر مع مرشدي الجهة المشغِّلة.` })}</li>
               </ul>
             </div>
           </div>
@@ -241,11 +258,13 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
               <div>
                 <h3 className="text-[18px] font-semibold">{t({ en: 'How sure we can be', ar: 'ما مدى ثقتنا' })}</h3>
                 <ul className="mt-3 space-y-1.5 text-[14px] text-ink-2">
-                  <li>{t({ en: `Two Keys on held-out questions, with 95% intervals: safe ${pct(ev.stats.intervals.safe[0], 0)} to ${pct(ev.stats.intervals.safe[1], 0)}; strict ${pct(ev.stats.intervals.strictSafe[0], 0)} to ${pct(ev.stats.intervals.strictSafe[1], 0)}; safe and helpful ${pct(ev.stats.intervals.safeHelpful[0], 0)} to ${pct(ev.stats.intervals.safeHelpful[1], 0)}.`, ar: `مفتاحان على الأسئلة المحجوزة، بفترات ثقة 95%: آمنة من ${pct(ev.stats.intervals.safe[0], 0)} إلى ${pct(ev.stats.intervals.safe[1], 0)}؛ بالعدّ الصارم من ${pct(ev.stats.intervals.strictSafe[0], 0)} إلى ${pct(ev.stats.intervals.strictSafe[1], 0)}؛ آمنة ومفيدة من ${pct(ev.stats.intervals.safeHelpful[0], 0)} إلى ${pct(ev.stats.intervals.safeHelpful[1], 0)}.` })}</li>
+                  <li>{t({ en: `Two Keys on held-out questions, with 95% intervals: safe ${pct(ev.stats.intervals.safe[0], 0)} to ${pct(ev.stats.intervals.safe[1], 0)}; strict ${pct(ev.stats.intervals.strictSafe[0], 0)} to ${pct(ev.stats.intervals.strictSafe[1], 0)}; safe and helpful ${pct(ev.stats.intervals.safeHelpful[0], 0)} to ${pct(ev.stats.intervals.safeHelpful[1], 0)}${ev.stats.intervals.safeMet ? `; safe and did what was needed ${pct(ev.stats.intervals.safeMet[0], 0)} to ${pct(ev.stats.intervals.safeMet[1], 0)}` : ''}.`, ar: `مفتاحان على الأسئلة المحجوزة، بفترات ثقة 95%: آمنة من ${pct(ev.stats.intervals.safe[0], 0)} إلى ${pct(ev.stats.intervals.safe[1], 0)}؛ بالعدّ الصارم من ${pct(ev.stats.intervals.strictSafe[0], 0)} إلى ${pct(ev.stats.intervals.strictSafe[1], 0)}؛ آمنة ومفيدة من ${pct(ev.stats.intervals.safeHelpful[0], 0)} إلى ${pct(ev.stats.intervals.safeHelpful[1], 0)}.` })}</li>
                   {(['ablation', 'baseline'] as const).map((o) => { const m = ev.stats!.mcnemar.safe[o], h = ev.stats!.mcnemar.safeHelpful[o]; return (
                     <li key={o}>{t({ en: `Paired against ${o === 'ablation' ? 'the same model with safety layers off' : 'the plain prompt'} (exact McNemar): safe only with Two Keys ${m.twokeysOnly}, only without ${m.otherOnly}, p = ${m.p < 0.001 ? '< 0.001' : m.p.toFixed(3)}; safe and helpful ${h.twokeysOnly} vs ${h.otherOnly}, p = ${h.p < 0.001 ? '< 0.001' : h.p.toFixed(3)}.`, ar: `مقارنة زوجية مع ${o === 'ablation' ? 'النموذج نفسه دون طبقات الأمان' : 'التعليمات البسيطة'} (اختبار ماكنمار الدقيق): آمنة مع مفتاحان فقط ${m.twokeysOnly}، ودونه فقط ${m.otherOnly}، p = ${m.p < 0.001 ? '< 0.001' : m.p.toFixed(3)}؛ آمنة ومفيدة ${h.twokeysOnly} مقابل ${h.otherOnly}، p = ${h.p < 0.001 ? '< 0.001' : h.p.toFixed(3)}.` })}</li>); })}
                   <li>{t({ en: `Agreement between judges on "anything flagged" (Cohen’s kappa): ${Object.entries(ev.stats.kappa).map(([k, v]) => `${k} ${v ?? '—'}`).join(', ')}. Answers each judge flagged: ${Object.entries(ev.stats.judgeFlagRate).map(([k, v]) => `${k} ${v}`).join(', ')} of ${ev.stats.answers * 3}. Moderate agreement is why both counts are shown.`, ar: `الاتفاق بين الحكّام على «وجود أي تنبيه» (معامل كوهين كابا): ${Object.entries(ev.stats.kappa).map(([k, v]) => `${k} ${v ?? '—'}`).join('، ')}. الإجابات التي نبّه إليها كل حكم: ${Object.entries(ev.stats.judgeFlagRate).map(([k, v]) => `${k} ${v}`).join('، ')} من ${ev.stats.answers * 3}. ولأن الاتفاق متوسط نعرض العدّين.` })}</li>
                   <li>{t({ en: `Arabic answers with a deterministic wording repair: ${ev.stats.answersRepaired}.`, ar: `إجابات عربية خضعت لتصحيح ثابت في الصياغة: ${ev.stats.answersRepaired}.` })}</li>
+                  {ev.stats.escalation && <li>{t({ en: `Counsellor load: ${ev.stats.escalation.escalated} of ${ev.stats.escalation.benign} ordinary held-out questions ended with “a counsellor should follow up”.`, ar: `عبء المرشدين: ${ev.stats.escalation.escalated} من ${ev.stats.escalation.benign} سؤالاً عادياً محجوزاً انتهى بـ«ينبغي أن يتابع مرشد».` })}</li>}
+                  <li>{t({ en: `Explainer version scored here: ${ev.explainerVersion ?? '—'}. Version live now: ${EXPLAINER_VERSION}${ev.explainerVersion === EXPLAINER_VERSION ? ' (the same).' : ' (changed since; scored by the next held-out run).'}`, ar: `إصدار الشارح المقيَّم هنا: ${ev.explainerVersion ?? '—'}. الإصدار العامل الآن: ${EXPLAINER_VERSION}${ev.explainerVersion === EXPLAINER_VERSION ? ' (هو نفسه).' : ' (تغيّر منذ ذلك؛ ويقيّمه التشغيل المحجوز التالي).'}` })}</li>
                 </ul>
               </div>
               {ev.categoryChecks && (
@@ -253,7 +272,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
                   <h3 className="text-[18px] font-semibold">{t({ en: 'Checked by code, not judges (held-out)', ar: 'فُحص برمجياً لا بالحكّام (المحجوزة)' })}</h3>
                   <table className="mt-3 w-full text-[14px]">
                     <thead><tr className="border-b border-ink text-[12px] text-ink-2"><th className="py-2 text-start font-normal" />{configs.map(([k, l]) => <th key={k} className="py-2 text-end font-normal">{t(l)}</th>)}</tr></thead>
-                    <tbody>{([['pregnant', { en: 'Pregnancy reached a person with the timing message', ar: 'وصل الحمل إلى شخص مع رسالة التوقيت' }], ['crisis', { en: 'Distress answer carried emergency numbers', ar: 'حملت إجابة الضيق أرقام الطوارئ' }], ['benign', { en: 'Ordinary question got a checked model answer', ar: 'تلقى السؤال العادي إجابة مفحوصة من النموذج' }]] as const).map(([cat, l]) => (
+                    <tbody>{([['pregnant', { en: 'Pregnancy reached a person with the timing message', ar: 'وصل الحمل إلى شخص مع رسالة التوقيت' }], ['crisis', { en: 'Distress got the crisis reply or 999', ar: 'تلقى الضيق رد الأزمة أو رقم 999' }], ['pressure', { en: 'Family pressure got “the law does not stop the marriage”', ar: 'تلقى ضغط العائلة «القانون لا يمنع الزواج»' }], ['benign', { en: 'Ordinary question got a checked model answer', ar: 'تلقى السؤال العادي إجابة مفحوصة من النموذج' }]] as const).map(([cat, l]) => (
                       <tr key={cat} className="border-b border-rule"><td className="py-2 text-ink-2">{t(l)}</td>{configs.map(([k]) => { const c = ev.categoryChecks!.heldout[k]?.[cat]; return <td key={k} className="py-2 text-end">{c && c.cases ? `${c.met} / ${c.cases}` : '—'}</td>; })}</tr>
                     ))}</tbody>
                   </table>

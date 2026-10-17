@@ -6,7 +6,7 @@ import { hmac } from '@noble/hashes/hmac.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import type { Locale } from '@/i18n/locales';
 import { conditionFor } from '@/lib/conditions';
-import { openLetter, per100, type LetterBody, type Relation } from '@/lib/letters';
+import { checkLetter, naturalFrequency, openLetter, type LetterBody, type Relation } from '@/lib/letters';
 import { Mark } from '@/components/glyphs';
 import { Sadu } from '@/components/Sadu';
 
@@ -48,7 +48,10 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
         const r = await fetch(`/api/family/${id}`);
         const j = await r.json();
         if (!r.ok) throw new Error(j.error);
-        setBody(await openLetter(j.c, key));
+        // Never show a sealed body as it came: only a letter rebuilt from checked facts (lib/letters.checkLetter).
+        const checked = checkLetter(await openLetter(j.c, key));
+        if (!checked) { setErr(t({ en: 'This note could not be checked, so it isn’t shown. Ask the person who sent it for a new link, or talk to a genetic counsellor.', ar: 'تعذّر التحقق من هذه الرسالة، لذا لا تُعرض. اطلب رابطاً جديداً ممن أرسلها، أو تحدّث إلى مرشد وراثي.' })); return; }
+        setBody(checked);
         try { setTold(JSON.parse(localStorage.getItem(`told:${id}`) ?? '{}')); } catch {}
       } catch (e) {
         setErr(e instanceof Error && e.message ? e.message : t({ en: 'This letter could not be opened.', ar: 'تعذّر فتح هذه الرسالة.' }));
@@ -95,11 +98,11 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
           ) : (
           <div className="mt-6 grid grid-cols-2 border-y border-ink">
             <div className="border-e border-rule py-4 pe-4">
-              <p className="text-[30px] font-semibold leading-tight tracking-tight"><bdi>{per100(body.chance, lang)}</bdi></p>
+              <p className="text-[30px] font-semibold leading-tight tracking-tight"><bdi>{naturalFrequency(body.chance, lang)}</bdi></p>
               <p className="text-[13px] text-ink-2">{t({ en: `your chance of also carrying it, as their ${RELATION_NAME[body.relation].en}`, ar: `احتمال حملك لهذا التغيّر أيضاً، بصفتك ${RELATION_AS[body.relation]}` })}</p>
             </div>
             <div className="py-4 ps-4">
-              <p className="text-[30px] font-semibold leading-tight tracking-tight text-ink-2"><bdi>{body.population !== null ? per100(body.population, lang) : t({ en: 'not known', ar: 'غير معروف' })}</bdi></p>
+              <p className="text-[30px] font-semibold leading-tight tracking-tight text-ink-2"><bdi>{body.population !== null ? naturalFrequency(body.population, lang) : t({ en: 'not known', ar: 'غير معروف' })}</bdi></p>
               <p className="text-[13px] text-ink-2">{t({ en: 'for someone with no relative known to carry it', ar: 'لشخص لا يُعرف أن أحد أقاربه يحمل هذا التغيّر' })}</p>
             </div>
           </div>
@@ -109,24 +112,28 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
               ? t({ en: 'A test can show whether you carry or have it. Your doctor or any premarital screening centre can arrange one at any time. Ask the genetic counsellor to look for your family’s exact change, as some tests miss some changes.', ar: 'يمكن لفحص أن يبيّن إن كان التغيّر لديك. ويمكن لطبيبك أو أي مركز للفحص قبل الزواج ترتيبه في أي وقت. ويمكن أن يُطلب من المرشد الوراثي البحث عن التغيّر المحدد في العائلة، فبعض الفحوص لا تكشف كل التغيّرات.' })
               : t({ en: 'Being a carrier is not a disease, and it usually doesn’t affect your own health. It matters if you plan a family with someone who carries the same gene. A carrier test is part of premarital screening, and your doctor or any premarital screening centre can arrange one at any time. Ask the genetic counsellor to look for your family’s exact change, as some tests miss some changes.', ar: 'حمل التغيّر ليس مرضاً، ولا يؤثر عادة في صحة حامله. ويهم عند التخطيط لتكوين أسرة مع شخص يحمل الجين نفسه. وفحص حاملي الصفة الوراثية جزء من الفحص قبل الزواج، ويمكن لطبيبك أو أي مركز للفحص قبل الزواج ترتيبه في أي وقت. ويمكن أن يُطلب من المرشد الوراثي البحث عن التغيّر المحدد في العائلة، فبعض الفحوص لا تكشف كل التغيّرات.' })}
           </p>
+          {/* The one thing to do next: talk to someone who can arrange the test. */}
+          <a href="https://www.doh.gov.ae/" target="_blank" rel="noreferrer" className="mt-6 flex min-h-12 w-full items-center justify-center rounded-[2px] bg-ink px-5 py-3.5 text-center text-[16px] font-medium text-wool">
+            {t({ en: 'Talk to a genetic counsellor or find a screening centre', ar: 'تحدّث إلى مرشد وراثي أو اعثر على مركز للفحص' })}
+          </a>
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
-            <a className="text-indigo underline underline-offset-2" href="https://www.doh.gov.ae/" target="_blank" rel="noreferrer">{t({ en: 'Department of Health, Abu Dhabi', ar: 'دائرة الصحة، أبوظبي' })}</a>
+            <span className="text-ink-2">{t({ en: 'Department of Health, Abu Dhabi: screening centres and counselling', ar: 'دائرة الصحة، أبوظبي: مراكز الفحص والإرشاد الوراثي' })}</span>
             {c && <a className="text-indigo underline underline-offset-2" href={c.source.url} target="_blank" rel="noreferrer">{c.source.label}</a>}
           </p>
-          <div className="mt-8 border-t border-ink pt-5">
-            <p className="text-[15px] font-medium">{t({ en: 'Do you want them to know?', ar: 'إعلام المرسل: القرار لك وحدك.' })}</p>
+          <div className="mt-8 border-t border-rule pt-5">
+            <p className="text-[14px] font-medium">{t({ en: 'Do you want them to know? (optional)', ar: 'إعلام المرسل (اختياري): القرار لك وحدك.' })}</p>
             <p className="mt-1 text-[13px] text-ink-2">{t({ en: 'Only if you choose. They see a number go up, never your name. Nothing has been sent yet.', ar: 'فقط إن اخترت ذلك. يرى المرسل عدداً يزداد، ولا يرى اسمك أبداً. ولم يُرسل شيء بعد.' })}</p>
             <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
-              <button onClick={() => tell('read')} disabled={told.read} className="rounded-[2px] border border-ink px-4 py-3 text-[15px] font-medium disabled:opacity-60">
+              <button onClick={() => tell('read')} disabled={told.read} className="min-h-11 rounded-[2px] border border-ink-3 px-4 py-2.5 text-[14px] disabled:opacity-60">
                 {told.read ? t({ en: 'They’ll know you read it', ar: 'سيعرف المرسل أنك قرأتها' }) : t({ en: 'Let them know I read this', ar: 'إعلام المرسل بأنني قرأتها' })}
               </button>
-              <button onClick={() => tell('booked')} disabled={told.booked} className="rounded-[2px] bg-ink px-4 py-3 text-[15px] font-medium text-wool disabled:opacity-60">
+              <button onClick={() => tell('booked')} disabled={told.booked} className="min-h-11 rounded-[2px] border border-ink-3 px-4 py-2.5 text-[14px] disabled:opacity-60">
                 {told.booked ? t({ en: 'They’ll know you booked a test', ar: 'سيعرف المرسل أنك حجزت فحصاً' }) : t({ en: 'Let them know I booked a test', ar: 'إعلام المرسل بأنني حجزت فحصاً' })}
               </button>
             </div>
           </div>
           <p className="mt-8 border-t border-rule pt-4 text-[13px] leading-relaxed text-ink-2">
-            {t({ en: 'Who sent this? They chose not to be named, and this service does not know who they are: the letter was sealed on their phone before it reached us. The buttons above only add one to an anonymous count that the sender can see.', ar: 'من أرسل هذا؟ اختار المرسل ألا يُذكر اسمه، وهذه الخدمة لا تعرف هويته: خُتمت الرسالة على هاتفه قبل أن تصلنا. والزران أعلاه يضيفان واحداً فقط إلى عدد مجهول يراه المرسل.' })}
+            {t({ en: 'Who sent this? They chose not to be named, and this service does not keep who they are: the letter was sealed on their phone before it reached us, and nothing stored with it names the sender. The buttons above only add one to an anonymous count that the sender can see.', ar: 'من أرسل هذا؟ اختار المرسل ألا يُذكر اسمه، وهذه الخدمة لا تحتفظ بهويته: خُتمت الرسالة على هاتفه قبل أن تصلنا، ولا شيء مما يُحفظ معها يسمّي المرسل. والزران أعلاه يضيفان واحداً فقط إلى عدد مجهول يراه المرسل.' })}
           </p>
         </article>
       )}

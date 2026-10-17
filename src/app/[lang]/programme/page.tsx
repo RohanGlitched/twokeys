@@ -20,7 +20,7 @@ export default async function ProgrammePage({ params }: PageProps<'/[lang]/progr
           {ar ? 'هل يفهم الناس نتائجهم ويصلون إلى الرعاية في الوقت؟' : 'Do people understand their results, and reach care in time?'}
         </h1>
         <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-ink-2">
-          {ar ? 'ما يحدث فعلاً عند من يجرّب هذا العرض، وإلى جانبه شهر افتراضي للإمارة كلها موسوم بوضوح يبيّن شكل العرض بحجمه الحقيقي، ثم التجربة التي ستختبره. لا يُظهر أي رقم فرداً بعينه.' : 'What is actually happening as people try this demo, next to a clearly labelled synthetic month for the whole emirate that shows the view at its real scale, then the pilot that would test it. No number shows a person.'}
+          {ar ? 'ما يحدث فعلاً عند من يجرّب هذا العرض، وإلى جانبه شهر افتراضي توضيحي للإمارة كلها بعد التعميم، موسوم بوضوح، يبيّن شكل العرض بحجمه الحقيقي، ثم التجربة التي ستختبره قبل ذلك. لا يُظهر أي رقم فرداً بعينه.' : 'What is actually happening as people try this demo, next to a clearly labelled synthetic month for the whole emirate after rollout that shows the view at its real scale, then the pilot that would test it first. No number shows a person.'}
         </p>
         <div className="mt-10"><Programme lang={lang} /></div>
         <Pilot lang={lang} />

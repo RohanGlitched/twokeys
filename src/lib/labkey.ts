@@ -22,7 +22,9 @@ export function labKey(): Uint8Array {
  * One independent 32-byte key per purpose, HKDF-SHA-256 over the root key with info `twokeys/v2/<label>`,
  * so a leak or misuse in one place never hands over another. Labels in use: 'tokens' (session tokens and
  * their order), 'identity', 'audit', 'lab-signing' (Ed25519), 'dp' (noise), 'ratelimit', 'desk-passcode',
- * 'person' (pseudonyms for per-person markers), 'ask-history' (explainer history signatures).
+ * 'person:<year>' (pseudonyms for per-person markers, rotated each UTC year), 'ask-history' (explainer
+ * history signatures), 'urgent' (the explainer's same-day flag, checked by the desk), 'pairing-ref' (the
+ * keyed pairing code on a booked case).
  */
 const subs = new Map<string, Uint8Array>();
 export function subkey(label: string): Uint8Array {

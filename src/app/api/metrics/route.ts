@@ -1,13 +1,14 @@
 // Programme metrics. Phones send only anonymous teach-back totals (signed-in people); everything else
 // is counted from desk and family-note records.
-// Privacy, per person and for life:
-// - Each person counts once: their first teach-back ever and their first booking ever, and only their
-//   first LETTER_CAP family notes ever (each note count is noised for that many). The markers that
-//   enforce "ever" are keyed by a pseudonym (HMAC of the person) and kept 100 years (dp.FOREVER).
+// Privacy, per person per calendar year:
+// - Each person counts once a year: their first teach-back and first booking of the year, and only their
+//   first LETTER_CAP family notes of the year (each note count is noised for that many). The markers that
+//   enforce this are keyed by a pseudonym whose key rotates every UTC year (identity.pseudonym) and expire
+//   when the year ends (dp.untilYearEnd), so no permanent per-person trace outlives a withdrawal.
 // - Every count gets exact discrete Laplace noise at ε = 1/SCALE per unit. A first booking touches 7
 //   counts, a first teach-back 4, and all of a person's counted notes together at most 3 counts' worth,
-//   so a person's records cost at most ε = 14/SCALE = 2 over every release ever; we publish the looser
-//   bound EPS_PERSON = 3 (a release also never holds more than LIVE_COUNTS counts).
+//   so a person's records cost at most ε = 14/SCALE = 2 per year over every release in it; we publish the
+//   looser bound EPS_PERSON = 3 per person per year (a release also never holds more than LIVE_COUNTS counts).
 // - Each weekly release counts only records from that one week (the last complete week) and is made
 //   once: it is written write-once to an append-only ledger (metrics:ledger:w<week>, with its ε and
 //   count of noised values), never versioned and never deleted, and every later request serves it.
@@ -25,7 +26,7 @@ import { subkey } from '@/lib/labkey';
 import { store } from '@/lib/store';
 import { seedDesk } from '@/lib/seed';
 import { rng } from '@/lib/sim';
-import { dayAligned, dayStart, FOREVER, noisyCount, prf } from '@/lib/dp';
+import { dayStart, FOREVER, noisyCount, prf, untilYearEnd } from '@/lib/dp';
 import { connection } from 'next/server';
 
 const YEAR = 60 * 60 * 24 * 365;
@@ -44,9 +45,9 @@ export async function POST(req: Request) {
   if (!p) return needIdentity();
   const b = await readJson<{ lang?: string; level?: string; correct?: number }>(req);
   if (b instanceof Response) return b;
-  // Only a person's first teach-back ever is counted (the older per-id marker still counts as done).
+  // Only a person's first teach-back of the year is counted (the older per-id marker still counts as done).
   if (await store().get(`tbdone:${p.id}`)) return Response.json({ ok: true, counted: false });
-  if (!(await store().putNew(`dp:tb:${pseudonym(p.id)}`, true, dayAligned(FOREVER)))) return Response.json({ ok: true, counted: false });
+  if (!(await store().putNew(`dp:tb:${pseudonym(p.id)}`, true, untilYearEnd()))) return Response.json({ ok: true, counted: false });
   const lang = b.lang === 'ar' ? 'ar' : 'en';
   const level = LEVELS.includes(b.level ?? '') ? b.level! : 'standard';
   const correct = Math.max(0, Math.min(3, Math.round(Number(b.correct) || 0)));
@@ -180,7 +181,8 @@ async function compute(week: number) {
     release: {
       ...release,
       privacy: {
-        epsilonPerCount: Number((1 / SCALE).toFixed(3)), epsilonThisRelease: Number((counts / SCALE).toFixed(2)), epsilonPerPersonLifetime: EPS_PERSON,
+        // `epsilonPerPersonLifetime` keeps its name for older readers; it is now a per-person, per-year bound.
+        epsilonPerCount: Number((1 / SCALE).toFixed(3)), epsilonThisRelease: Number((counts / SCALE).toFixed(2)), epsilonPerPersonLifetime: EPS_PERSON, epsilonPerPersonPerYear: EPS_PERSON,
         releases: 0, minimumCell: MIN_CELL, letterCap: LETTER_CAP, refreshed: REFRESHED,
       },
     },
@@ -205,5 +207,30 @@ export async function GET() {
     entry = (await store().get<Ledger>(key)) ?? row;
   }
   const releases = (await store().list('metrics:ledger:')).length;
-  return Response.json({ ...entry.release, privacy: { ...entry.release.privacy, releases, refreshed: REFRESHED } }, { headers: { 'cache-control': 'no-store' } });
+  const note = await ledgerNote(entry);
+  return Response.json({ ...entry.release, privacy: { ...entry.release.privacy, epsilonPerPersonPerYear: EPS_PERSON, releases, refreshed: REFRESHED }, ...(note ? { note } : {}) }, { headers: { 'cache-control': 'no-store' } });
+}
+
+/** A part shown larger than its whole (only possible in rows released before consistency checks existed). */
+function inconsistent(r: Release): boolean {
+  const over = (part: { value: number | null }, whole: { value: number | null }) => part.value !== null && whole.value !== null && part.value > whole.value;
+  const f = r.family?.live, c = r.counselling?.live;
+  return !!((f && (over(f.readShared, f.notes) || over(f.booked, f.notes)))
+    || (c && (over(c.contacted, c.booked) || over(c.referred, c.booked) || over(c.withdrawn, c.booked))));
+}
+/**
+ * The ledger is never rewritten. When a released row is internally inconsistent, a write-once correction
+ * note is added beside it (metrics:ledgernote:w<week>) and served with it, so readers are told rather
+ * than shown a silently different number.
+ */
+async function ledgerNote(entry: Ledger): Promise<{ en: string; ar: string } | null> {
+  const key = `metrics:ledgernote:w${entry.week}`;
+  const have = await store().get<{ en: string; ar: string }>(key);
+  if (have || !inconsistent(entry.release)) return have;
+  const note = {
+    en: 'This week’s figures were released before consistency checks existed, so a part may exceed its whole (for example, notes read above notes sent). The release is kept as published; later weeks are checked.',
+    ar: 'نُشرت أرقام هذا الأسبوع قبل إضافة فحوص الاتساق، لذا قد يزيد جزء على مجموعه (مثل رسائل مقروءة أكثر من الرسائل المرسلة). ويبقى الإصدار كما نُشر، وتُفحص الأسابيع اللاحقة.',
+  };
+  await store().putNew(key, note, FOREVER);
+  return (await store().get<{ en: string; ar: string }>(key)) ?? note;
 }

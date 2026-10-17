@@ -1,13 +1,13 @@
 // One case. Counsellors (named accounts) view and act on it, and every view is logged; the signed-in
 // person who booked it can withdraw consent. Every change is a compare-and-swap, so concurrent views
 // keep all their audit entries and nothing can write erased data back after a withdrawal.
-import { audit, deskView, partnerBooked, updateCase, verifyAudit, withdraw, type CaseStatus, type DeskCase } from '@/lib/desk';
+import { audit, clearOpen, deskView, partnerBooked, updateCase, verifyAudit, withdraw, type CaseStatus, type DeskCase } from '@/lib/desk';
 import { deskGate, deskUser } from '@/lib/deskauth';
-import { needIdentity, personFrom } from '@/lib/identity';
+import { fail, needIdentity, personFrom } from '@/lib/identity';
 import { readJson } from '@/lib/http';
 
 const NEXT: Record<string, CaseStatus> = { contact: 'contacted', counsel: 'counselled', refer: 'referred', close: 'closed' };
-const none = () => Response.json({ error: 'No such case.' }, { status: 404 });
+const none = () => fail('not_found', 'No such case.', 404);
 const NO_STORE = { 'cache-control': 'no-store' };
 /** The opened case; the only place the desk learns that the partner booked too (never the pairing itself). */
 const shown = async (c: DeskCase) => Response.json({ case: deskView(c, await partnerBooked(c)), auditIntact: verifyAudit(c) }, { headers: NO_STORE });
@@ -45,6 +45,8 @@ export async function PATCH(req: Request, ctx: RouteContext<'/api/desk/cases/[id
   });
   if (!c) return none();
   if (c instanceof Response) return c;
+  // A closed case frees the person to book again.
+  if (c.status === 'closed') await clearOpen(c);
   return shown(c);
 }
 
@@ -59,5 +61,6 @@ export async function DELETE(req: Request, ctx: RouteContext<'/api/desk/cases/[i
   });
   if (!c) return none();
   if (c instanceof Response) return c;
+  await clearOpen(c);
   return Response.json({ ok: true, sealedNotes: c.sealed }, { headers: NO_STORE });
 }

@@ -36,12 +36,18 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = (l: L) => l[lang];
+  const ctas = (
+    <>
+      <Link href={`/${lang}/demo`} className="rounded-[2px] bg-ink px-5 py-3.5 text-[16px] font-medium text-wool">{t({ en: 'Try it with two phones', ar: 'جرّبه بهاتفين' })}</Link>
+      <Link href={`/${lang}/how`} className="rounded-[2px] border-[1.5px] border-ink px-5 py-3.5 text-[16px] font-medium">{t({ en: 'See how it works', ar: 'شاهد كيف يعمل' })}</Link>
+    </>
+  );
   return (
     <>
       <Nav lang={lang} />
       <main id="main">
         {/* hero */}
-        {/* Phones: headline, the drawing, then the detail and the buttons. Wider: words left, drawing right. */}
+        {/* Phones: headline, buttons, the drawing, then the detail. Wider: words left, drawing right. */}
         <section className="mx-auto grid max-w-[1240px] items-center gap-x-12 gap-y-6 px-6 pb-16 pt-4 md:grid-cols-[5fr_6fr] md:px-8 md:pt-10">
           <div className="md:self-end">
             <h1 className="text-[clamp(36px,4.6vw,64px)] font-semibold leading-[1.04] tracking-[-0.035em]">
@@ -50,16 +56,15 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
             <p className="mt-5 max-w-[30em] text-[19px] leading-relaxed text-ink">
               {t({ en: 'For couples after UAE premarital screening: see only the genes you both carry, in plain Arabic or English, with a counsellor one tap away.', ar: 'للأزواج بعد الفحص قبل الزواج في الإمارات: اعرفا الجينات التي تحملانها معاً فقط، بعربية أو إنجليزية واضحة، والمرشد الوراثي على بُعد ضغطة.' })}
             </p>
+            {/* Phones: the buttons come straight after the promise, above the drawing. */}
+            <div className="mt-6 flex flex-wrap gap-3 md:hidden">{ctas}</div>
           </div>
           <div className="mx-auto w-full max-w-[420px] md:col-start-2 md:row-span-2 md:row-start-1 md:max-w-none"><HeroWeave lang={lang} /></div>
           <div className="md:self-start">
             <p className="max-w-[34em] text-[16px] leading-relaxed text-ink-2">
               {t({ en: 'The two phones compare results privately. Neither partner learns any other gene the other carries, and nothing reaches either family unless you choose to share it. If you wish, relatives can be told that a test may help them, through your counsellor if you’d rather not be named.', ar: 'يقارن الهاتفان النتائج بخصوصية. لا يعرف أي منكما أي جين آخر يحمله الآخر، ولا يصل شيء إلى أي من العائلتين إلا إذا اخترتما مشاركته. وإن شئتما، يمكن إخبار الأقارب بأن فحصاً قد يفيدهم، عبر المرشد الوراثي إن فضّلتما ألا يُذكر اسمكما.' })}
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href={`/${lang}/demo`} className="rounded-[2px] bg-ink px-5 py-3.5 text-[16px] font-medium text-wool">{t({ en: 'Try it with two phones', ar: 'جرّبه بهاتفين' })}</Link>
-              <Link href={`/${lang}/how`} className="rounded-[2px] border-[1.5px] border-ink px-5 py-3.5 text-[16px] font-medium">{t({ en: 'See how it works', ar: 'شاهد كيف يعمل' })}</Link>
-            </div>
+            <div className="mt-7 hidden flex-wrap gap-3 md:flex">{ctas}</div>
           </div>
         </section>
 
@@ -208,7 +213,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
             <div>
               <ul className="grid gap-3 text-[16px] sm:grid-cols-2">
                 {[
-                  { en: 'Understanding, by a three-question teach-back', ar: 'الفهم، بإعادة الشرح في ثلاثة أسئلة' },
+                  { en: 'Understanding, by a validated 8-item knowledge measure (its Arabic version validated first); the in-app teach-back is a process check', ar: 'الفهم، بمقياس معرفة معتمد من 8 بنود (تُعتمد نسخته العربية أولاً)؛ أما أسئلة التحقق داخل التطبيق ففحص للعملية' },
                   { en: 'Counselling uptake and time to first contact', ar: 'الإقبال على الاستشارة وزمن التواصل الأول' },
                   { en: 'Time from result to referral', ar: 'الزمن من النتيجة إلى الإحالة' },
                   { en: 'Relatives who book a test after a note', ar: 'الأقارب الذين يحجزون فحصاً بعد الرسالة' },
@@ -230,7 +235,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
             {[
               { h: { en: 'Inputs it reuses', ar: 'مدخلات يعيد استخدامها' }, b: { en: 'The DoH premarital panel results already flowing through Malaffi; UAE Pass sign-in; the 22 screening centres and their trained physicians.', ar: 'نتائج لوحة الفحص قبل الزواج التي تمر عبر «ملفي»؛ وتسجيل الدخول بالهوية الرقمية؛ ومراكز الفحص الـ22 وأطباؤها المدرّبون.' } },
               { h: { en: 'Where it runs', ar: 'أين يعمل' }, b: { en: 'Demo: Vercel and Amazon Bedrock in Sydney, synthetic data only. Production: hosted in the UAE, as Decree-Law 49/2023 and the health data law require. Amazon Nova Pro is offered in AWS’s UAE region (not yet tested there), and the safety layer works with any model.', ar: 'العرض: Vercel وAmazon Bedrock في سيدني، ببيانات افتراضية فقط. الإنتاج: استضافة داخل الإمارات كما يشترط المرسوم بقانون 49/2023 وقانون البيانات الصحية. ويُتاح Amazon Nova Pro في منطقة AWS في الإمارات (لم يُختبر هناك بعد)، وتعمل طبقة الأمان مع أي نموذج.' } },
-              { h: { en: 'A gated path to a pilot', ar: 'طريق مرحلي إلى التجربة' }, b: { en: 'First the DoH sandbox, ethics approval, a DPIA and an independent crypto audit. Then a pilot of the explainer and family notes with couples already found at increased chance, against a measured baseline. Lab tokens and Malaffi follow at three or four centres. A licensed provider operates it; DoH sees only counts.', ar: 'أولاً بيئة الدائرة التجريبية وموافقة أخلاقيات البحث وتقييم أثر حماية البيانات وتدقيق تشفير مستقل. ثم تجربة للشارح ورسائل العائلة مع أزواج تبيّن أن لديهم احتمالاً أعلى، مقارنة بخط أساس مُقاس. ثم رموز المختبر وملف «ملفي» في ثلاثة أو أربعة مراكز. يشغّله مزوّد مرخّص، ولا ترى الدائرة إلا الأعداد.' } },
+              { h: { en: 'A gated path to a pilot', ar: 'طريق مرحلي إلى التجربة' }, b: { en: 'First the DoH sandbox, ethics approval, a DPIA and an independent crypto audit. Then a randomised pilot of the explainer and family notes with couples newly found at increased chance, against usual care. Months 18–30: lab tokens and Malaffi at three or four centres. A licensed provider operates it; DoH sees only counts.', ar: 'أولاً بيئة الدائرة التجريبية وموافقة أخلاقيات البحث وتقييم أثر حماية البيانات وتدقيق تشفير مستقل. ثم تجربة عشوائية للشارح ورسائل العائلة مع أزواج يتبيّن حديثاً أن لديهم احتمالاً أعلى، مقارنة بالرعاية المعتادة. الأشهر 18–30: رموز المختبر و«ملفي» في ثلاثة أو أربعة مراكز. يشغّله مزوّد مرخّص، ولا ترى الدائرة إلا الأعداد.' } },
             ].map((s, i) => (
               <article key={i} className="rounded-[3px] border border-ink bg-paper p-5">
                 <h3 className="text-[18px] font-semibold">{t(s.h)}</h3>

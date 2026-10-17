@@ -6,6 +6,8 @@
 // Anyone else holding the link could open that outer layer too, so the parts that would let them count
 // matches (the double-locked lists, in m2 and m3) are sealed again under the phones' own key K (psi.ts),
 // which no link holder can compute.
+// The mailbox id is a hash of a write key that is also derived from the secret: the relay checks a write
+// against the box id alone, so someone who only sees the box (in a URL or a log) can't fill or block a slot.
 import { hkdf } from '@noble/hashes/hkdf.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { ed25519 } from '@noble/curves/ed25519.js';
@@ -21,17 +23,21 @@ const unb64u = (s: string) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(
 
 export interface Link { box: string; secret: Uint8Array }
 
+/** The relay write key: sent with every write, never with a read. The box id is the first 16 bytes of its SHA-256. */
+const writeKey = (secret: Uint8Array) => hkdf(sha256, secret, undefined, enc.encode('twokeys/v1/relay-write'), 32);
+const boxFor = (secret: Uint8Array) => hex(sha256(writeKey(secret)).slice(0, 16));
+
 export function newLink(): Link {
-  const b = new Uint8Array(16); crypto.getRandomValues(b);
   const s = new Uint8Array(32); crypto.getRandomValues(s);
-  return { box: hex(b), secret: s };
+  return { box: boxFor(s), secret: s };
 }
 export const linkFragment = (l: Link) => `${l.box}.${b64u(l.secret)}`;
+/** Null for anything malformed, and for a box that doesn't belong to the secret (a link from before write keys, or an edited one). */
 export function parseFragment(f: string): Link | null {
   const m = /^#?([0-9a-f]{32})\.([A-Za-z0-9_-]{43})$/.exec(f.trim());
   if (!m) return null;
   const secret = unb64u(m[2]);
-  return secret.length === 32 ? { box: m[1], secret } : null;
+  return secret.length === 32 && boxFor(secret) === m[1] ? { box: m[1], secret } : null;
 }
 
 const derive = (l: Link, info: string, len = 32) => hkdf(sha256, l.secret, enc.encode(l.box), enc.encode(`twokeys/v1/${info}`), len);
@@ -84,7 +90,30 @@ export async function unwireM2(w: WireM2, key: Uint8Array): Promise<Msg2> {
 }
 export const wireM3 = async (m: Msg3, key: Uint8Array): Promise<WireM3> => ({ k: await sealRaw(key, 'm3/k', m) });
 export const unwireM3 = (w: WireM3, key: Uint8Array) => openRaw<Msg3>(key, 'm3/k', w.k);
-const unreadable = () => new Error('Your partner’s phone sent a message this phone can’t open. Nothing was revealed. Start a new pairing.');
+
+/**
+ * Stable codes for every error a pairing, booking, family note or sign-in can show, so the app can word
+ * each one in Arabic or English. Routes send `{ error, code }`; `error` is English, for logs and tests.
+ */
+export type ErrorCode =
+  | 'sign_in' | 'rate_limited' | 'bad_request' | 'network' | 'not_found' | 'busy'
+  // pairing
+  | 'not_in_pairing' | 'seat_taken' | 'self_pair' | 'link_expired' | 'not_confirmed' | 'partner_not_joined' | 'incomplete'
+  | 'lock_mismatch' | 'already_sent' | 'write_denied' | 'unreadable' | 'mismatch_yours' | 'mismatch_theirs'
+  | 'stopped' // the other person stopped, or the link's creator said this joiner isn't their partner
+  | 'declined' // this person said the other one isn't who they expected
+  | 'cancelled' | 'partner_absent' | 'creator_pending' | 'partner_pending' | 'partner_slow'
+  // booking, family notes, sign-in
+  | 'open_case' | 'letter_cap' | 'link_incomplete' | 'unknown_person' | 'confirm_required';
+
+/** An error with a stable code; `message` is the English text. */
+export class PairingError extends Error {
+  constructor(public code: ErrorCode, message: string) { super(message); this.name = 'PairingError'; }
+}
+const byStatus = (s: number): ErrorCode => (s === 401 ? 'sign_in' : s === 429 ? 'rate_limited' : s === 410 ? 'link_expired' : s === 404 ? 'not_found' : 'bad_request');
+const unreadable = () => new PairingError('unreadable', 'Your partner’s phone sent a message this phone can’t open. Nothing was revealed. Start a new pairing.');
+const stopped = () => new PairingError('stopped', 'Your partner stopped this comparison. Nothing was revealed.');
+const cancelled = () => new PairingError('cancelled', 'Cancelled.');
 
 /** What a finished pairing tells this phone: lab-confirmed shared genes, and whether its own comparison agreed. */
 export interface PairResult { genes: SharedGene[]; agrees: boolean; personal: number; ms: number }
@@ -96,6 +125,8 @@ export type Step =
   | { kind: 'waiting'; for: string }
   | { kind: 'proof'; ok: true }
   | { kind: 'confirmed'; partner: string }
+  /** The comparison ended early: the partner stopped it, or this person did (declined or cancelled). Followed by a PairingError. */
+  | { kind: 'stopped'; by: 'partner' | 'you' }
   | { kind: 'done'; result: PairResult };
 
 export interface RunOptions {
@@ -113,26 +144,45 @@ export interface RunOptions {
 export interface Partner { name: { en: string; ar: string }; sex: 'F' | 'M' }
 
 async function api<T>(base: string, path: string, init?: RequestInit, identity?: string): Promise<T> {
-  const res = await fetch(`${base}${path}`, { ...init, headers: { 'content-type': 'application/json', ...(identity ? { 'x-person': identity } : {}) } });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error((json as { error?: string }).error ?? `Request failed (${res.status}).`);
+  let res: Response;
+  try {
+    res = await fetch(`${base}${path}`, { ...init, headers: { 'content-type': 'application/json', ...(identity ? { 'x-person': identity } : {}) } });
+  } catch {
+    throw new PairingError('network', 'No connection. Check the network and try again.');
+  }
+  const json = (await res.json().catch(() => ({}))) as { error?: string; code?: ErrorCode };
+  if (!res.ok) throw new PairingError(json.code ?? byStatus(res.status), json.error ?? `Request failed (${res.status}).`);
   return json as T;
 }
 
 const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 /** Polls a lab route until it stops answering { waiting: true }. */
-async function poll<T extends { waiting?: boolean }>(o: RunOptions, path: string, body: unknown, waitingFor: string, timeoutMsg: string): Promise<T> {
+async function poll<T extends { waiting?: boolean }>(o: RunOptions, path: string, body: unknown, waitingFor: string, timeout: PairingError): Promise<T> {
   const until = Date.now() + (o.timeoutMs ?? 10 * 60_000);
   let told = false;
   for (let wait = 500; Date.now() < until; wait = Math.min(wait * 1.25, 2000)) {
-    if (o.signal?.aborted) throw new Error('Cancelled.');
+    if (o.signal?.aborted) throw cancelled();
     const r = await api<T>(o.base ?? '', path, { method: 'POST', body: JSON.stringify(body) }, o.identity);
     if (!r.waiting) return r;
     if (!told) { o.onStep?.({ kind: 'waiting', for: waitingFor }); told = true; }
     await sleep(wait);
   }
-  throw new Error(timeoutMsg);
+  throw timeout;
+}
+
+/**
+ * Tells the other phone this comparison is over: a sealed 'stop' in the relay (only link holders can write
+ * or open it) and, with a seat, the lab, which then answers the other phone's next request with 'stopped'.
+ * A creator's "no" frees the joiner's seat instead, and that person can't retake it. Best effort: never
+ * throws. The app can call it from a Cancel button too.
+ */
+export async function stopPairing(o: Pick<RunOptions, 'identity' | 'link' | 'base'>, role?: 'A' | 'B') {
+  const base = o.base ?? '';
+  await Promise.allSettled([
+    seal(o.link, 'stop', { stopped: true }).then((c) => api(base, `/api/relay/${o.link.box}`, { method: 'PUT', body: JSON.stringify({ slot: 'stop', c, w: hex(writeKey(o.link.secret)) }) })),
+    role ? api(base, '/api/lab/confirm', { method: 'POST', body: JSON.stringify({ session: sessionId(o.link), role, ok: false }) }, o.identity) : null,
+  ]);
 }
 
 /** Takes this phone's seat; the lab hands out nothing yet. */
@@ -147,10 +197,14 @@ async function sit(o: RunOptions, role: 'A' | 'B') {
 async function confirm(o: RunOptions, role: 'A' | 'B') {
   const body = (ok?: boolean) => ({ session: sessionId(o.link), role, ok });
   const { partner } = await poll<{ waiting?: boolean; partner?: Partner | null }>(o, '/api/lab/confirm', body(), role === 'A' ? 'partner-join' : 'creator-confirm',
-    role === 'A' ? 'Your partner hasn’t joined yet. Share the link again or start over.' : 'The person who shared the link hasn’t confirmed you yet.');
-  if (!partner) throw new Error('This pairing is incomplete.');
+    role === 'A' ? new PairingError('partner_absent', 'Your partner hasn’t joined yet. Share the link again or start over.') : new PairingError('creator_pending', 'The person who shared the link hasn’t confirmed you yet.'));
+  if (!partner) throw new PairingError('incomplete', 'This pairing is incomplete.');
   const yes = o.confirmPartner ? await o.confirmPartner(partner) : true;
-  if (!yes) throw new Error('Stopped: you didn’t recognise the person who joined. Start a new pairing.');
+  if (!yes) {
+    // A creator's "no" frees the joiner's seat, so runInitiator can wait again on the same link for the right person.
+    await stopPairing(o, role);
+    throw new PairingError('declined', role === 'A' ? 'Stopped: you didn’t recognise the person who joined. Start a new pairing.' : 'Stopped: you didn’t recognise the person who shared the link.');
+  }
   await api(o.base ?? '', '/api/lab/confirm', { method: 'POST', body: JSON.stringify(body(true)) }, o.identity);
   o.onStep?.({ kind: 'confirmed', partner: partner.name.en });
 }
@@ -158,7 +212,7 @@ async function confirm(o: RunOptions, role: 'A' | 'B') {
 /** Once both have confirmed, the lab issues this phone's 64 opaque tokens. */
 async function tokens(o: RunOptions, role: 'A' | 'B'): Promise<{ tokens: Token[]; personal: number }> {
   const r = await poll<{ waiting?: boolean; tokens: Token[]; personal: number }>(o, '/api/lab/tokens', { session: sessionId(o.link), role }, 'partner-confirm',
-    'Your partner hasn’t confirmed yet. Ask them to check their screen, or start over.');
+    new PairingError('partner_pending', 'Your partner hasn’t confirmed yet. Ask them to check their screen, or start over.'));
   o.onStep?.({ kind: 'tokens', count: r.tokens.length });
   return r;
 }
@@ -171,7 +225,7 @@ async function attest(o: RunOptions, role: 'A' | 'B', lock: FirstLock): Promise<
 
 /** Checks the lab's signature on the partner's first lock. */
 async function partnerCheck(o: RunOptions, partnerRole: 'A' | 'B'): Promise<AttCheck> {
-  const { publicKey } = await fetch(`${o.base ?? ''}/api/lab/key`).then((r) => r.json() as Promise<{ publicKey: string }>);
+  const { publicKey } = await api<{ publicKey: string }>(o.base ?? '', '/api/lab/key');
   const session = sessionId(o.link);
   return (list, y, att) => {
     if (!att || !/^[0-9a-f]{128}$/.test(att)) return false;
@@ -183,15 +237,19 @@ const unhex = (h: string) => Uint8Array.from(h.match(/../g)!.map((b) => parseInt
 /** Reports what this phone matched, then waits until the partner has reported too. */
 async function reveal(o: RunOptions, role: 'A' | 'B', matched: string[]) {
   const r = await poll<{ waiting?: boolean; genes?: SharedGene[]; agrees?: boolean; failed?: 'yours' | 'theirs' }>(o, '/api/lab/reveal', { session: sessionId(o.link), role, matched }, 'partner-report',
-    'Your partner’s phone hasn’t finished comparing. Ask them to check their screen, or start over.');
-  if (!r.agrees) throw new Error(r.failed === 'theirs' ? 'Your partner’s phone reported a comparison the lab couldn’t confirm, so nothing was named. Start a new pairing.' : 'This phone’s comparison didn’t match the lab’s records, so nothing was named. Start a new pairing.');
+    new PairingError('partner_slow', 'Your partner’s phone hasn’t finished comparing. Ask them to check their screen, or start over.'));
+  if (!r.agrees) {
+    throw r.failed === 'theirs'
+      ? new PairingError('mismatch_theirs', 'Your partner’s phone reported a comparison the lab couldn’t confirm, so nothing was named. Start a new pairing.')
+      : new PairingError('mismatch_yours', 'This phone’s comparison didn’t match the lab’s records, so nothing was named. Start a new pairing.');
+  }
   return { genes: r.genes ?? [], agrees: true };
 }
 const tokensAt = (all: Token[], idx: number[]) => idx.map((i) => all.find((t) => t.i === i)!.token);
 
 async function send(o: RunOptions, slot: string, msg: unknown, sample: string[]) {
   const c = await seal(o.link, slot, msg);
-  await api(o.base ?? '', `/api/relay/${o.link.box}`, { method: 'PUT', body: JSON.stringify({ slot, c }) });
+  await api(o.base ?? '', `/api/relay/${o.link.box}`, { method: 'PUT', body: JSON.stringify({ slot, c, w: hex(writeKey(o.link.secret)) }) });
   o.onStep?.({ kind: 'sent', slot, bytes: c.length, sample: sample.slice(0, 4), cipher: c.slice(0, 64) });
 }
 
@@ -199,19 +257,40 @@ async function receive<T>(o: RunOptions, slot: string): Promise<T> {
   o.onStep?.({ kind: 'waiting', for: slot });
   const until = Date.now() + (o.timeoutMs ?? 10 * 60_000);
   for (let wait = 400; Date.now() < until; wait = Math.min(wait * 1.25, 1500)) {
-    if (o.signal?.aborted) throw new Error('Cancelled.');
-    const r = await api<{ c: string } | null>(o.base ?? '', `/api/relay/${o.link.box}?slot=${slot}`);
+    if (o.signal?.aborted) throw cancelled();
+    // Every read also returns the box's sealed 'stop', if any; it counts only if it opens under the link key.
+    const r = await api<{ c?: string; stop?: string } | null>(o.base ?? '', `/api/relay/${o.link.box}?slot=${slot}`);
+    if (r?.stop && (await open<{ stopped?: boolean }>(o.link, 'stop', r.stop).then((x) => x.stopped === true, () => false))) throw stopped();
     if (r?.c) {
       o.onStep?.({ kind: 'received', slot, bytes: r.c.length });
       return open<T>(o.link, slot, r.c);
     }
     await new Promise((res) => setTimeout(res, wait));
   }
-  throw new Error('Your partner hasn’t joined yet. Share the link again or start over.');
+  throw new PairingError('partner_absent', 'Your partner hasn’t joined yet. Share the link again or start over.');
 }
 
-/** The person who created the link. */
-export async function runInitiator(o: RunOptions): Promise<PairResult> {
+/** Runs one side; on cancel, tells the other phone that this one stopped. */
+async function guarded(o: RunOptions, role: 'A' | 'B', run: (o: RunOptions) => Promise<PairResult>): Promise<PairResult> {
+  try {
+    return await run(o);
+  } catch (e) {
+    if (e instanceof PairingError) {
+      if (e.code === 'cancelled') void stopPairing(o, role);
+      if (e.code === 'stopped') o.onStep?.({ kind: 'stopped', by: 'partner' });
+      if (e.code === 'declined' || e.code === 'cancelled') o.onStep?.({ kind: 'stopped', by: 'you' });
+    }
+    throw e;
+  }
+}
+
+/**
+ * The person who created the link. Throws a PairingError: 'stopped' when the partner stopped, 'declined'
+ * when this person said the joiner isn't their partner (that seat is freed; running again on the same
+ * link waits for someone else), 'cancelled' on abort (the partner is told), or another ErrorCode.
+ */
+export const runInitiator = (o: RunOptions) => guarded(o, 'A', initiate);
+async function initiate(o: RunOptions): Promise<PairResult> {
   const t0 = performance.now();
   await sit(o, 'A');
   await confirm(o, 'A');
@@ -232,8 +311,9 @@ export async function runInitiator(o: RunOptions): Promise<PairResult> {
   return result;
 }
 
-/** The person who opened the link. */
-export async function runResponder(o: RunOptions): Promise<PairResult> {
+/** The person who opened the link. Throws a PairingError ('stopped' when the creator stopped or said no to them). */
+export const runResponder = (o: RunOptions) => guarded(o, 'B', respond);
+async function respond(o: RunOptions): Promise<PairResult> {
   const t0 = performance.now();
   await sit(o, 'B');
   await confirm(o, 'B');

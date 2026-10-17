@@ -53,7 +53,7 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
       runInitiator({ identity: ia, link, base: BASE }),
       runResponder({ identity: ib, link, base: BASE }),
     ]);
-    await expect(runResponder({ identity: ic, link, base: BASE, timeoutMs: 2000 })).rejects.toThrow(/seat/);
+    await expect(runResponder({ identity: ic, link, base: BASE, timeoutMs: 2000 })).rejects.toMatchObject({ code: 'seat_taken', message: expect.stringMatching(/seat/) });
   }, 60_000);
 
   it('full disclosure only when both partners choose it', async () => {
@@ -119,6 +119,11 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
     // The desk passcode is "counsellor" on a local server without DESK_PASSCODE; pass DESK_PASSCODE otherwise.
     const desk = (id: string) => fetch(`${BASE}/api/desk/cases/${id}`, { headers: { 'x-desk': process.env.DESK_PASSCODE ?? 'counsellor', 'x-desk-user': encodeURIComponent('Judge (demo)') } }).then((r) => r.json());
     const withdraw = (id: string, identity: string) => fetch(`${BASE}/api/desk/cases/${id}`, { method: 'DELETE', headers: { 'x-person': identity } });
+    // One open case per person: clear anything a demo visitor left open for these two first.
+    await Promise.all([[ia, 'A'], [ib, 'B']].map(async ([identity, role]) => {
+      const j = await (await book(identity, role as 'A' | 'B')).json(); // a new case, or the 409 naming the open one
+      if (j.id) await withdraw(j.id, identity);
+    }));
     await post('/api/lab/tokens', ia, { role: 'A' });
     await post('/api/lab/tokens', ib, { role: 'B' });
     await post('/api/lab/confirm', ia, { role: 'A', ok: true });
@@ -131,8 +136,10 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
     const seenEarly = await desk(e.id);
     expect(seenEarly.case.sharedGenes).toEqual([]);
     expect(seenEarly.case.pairing).toBeNull();
-    // One open request per person per pairing.
-    expect((await book(ia, 'A')).status).toBe(409);
+    // One open request per person, and the refusal says which case is open.
+    const again = await book(ia, 'A');
+    expect(again.status).toBe(409);
+    expect(await again.json()).toMatchObject({ code: 'open_case', id: e.id });
     // The phones compare, the lab agrees, and only then does a booking carry the genes it released.
     await Promise.all([runInitiator({ identity: ia, link, base: BASE }), runResponder({ identity: ib, link, base: BASE })]);
     const late = await (await book(ib, 'B')).json();
@@ -150,8 +157,74 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
       runInitiator({ identity: ia, link, base: BASE, timeoutMs: 8000, confirmPartner: async () => false }),
       runResponder({ identity: ib, link, base: BASE, timeoutMs: 8000 }),
     ]);
-    expect(results[0].status).toBe('rejected');
-    expect(results[1].status).toBe('rejected');
+    expect(results[0]).toMatchObject({ status: 'rejected', reason: { code: 'declined' } });
+    // The joiner is told at once that the comparison was stopped, rather than waiting for a timeout.
+    expect(results[1]).toMatchObject({ status: 'rejected', reason: { code: 'stopped' } });
+  }, 60_000);
+
+  it('a creator’s no frees the seat: the rejected person can’t sit again, the right partner can', async () => {
+    const link = newLink();
+    const [ia, ix, ib] = await Promise.all([as('noura'), as('rashid'), as('khalid')]);
+    const post = (path: string, identity: string, body: object) => fetch(`${BASE}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session: sessionId(link), ...body }) });
+    await post('/api/lab/tokens', ia, { role: 'A' });
+    await post('/api/lab/tokens', ix, { role: 'B' });
+    expect((await post('/api/lab/confirm', ia, { role: 'A', ok: false })).status).toBe(200);
+    expect(await (await post('/api/lab/confirm', ix, { role: 'B' })).json()).toMatchObject({ code: 'stopped' });
+    expect(await (await post('/api/lab/tokens', ix, { role: 'B' })).json()).toMatchObject({ code: 'stopped' });
+    expect(await (await post('/api/lab/tokens', ib, { role: 'B' })).json()).toEqual({ waiting: true });
+    expect((await (await post('/api/lab/confirm', ia, { role: 'A', ok: true })).json()).partner.name.en).toBe('Khalid');
+  }, 60_000);
+
+  it('a cancel mid-way tells the other phone through the relay', async () => {
+    const link = newLink();
+    const [ia, ib] = await Promise.all([as('noura'), as('khalid')]);
+    const ac = new AbortController();
+    const steps: Step[] = [];
+    const a = runInitiator({ identity: ia, link, base: BASE, signal: ac.signal, onStep: (s) => { if (s.kind === 'waiting' && s.for === 'm2') ac.abort(); } });
+    const b = runResponder({ identity: ib, link, base: BASE, timeoutMs: 20_000, onStep: (s) => steps.push(s) });
+    // B may finish m2 before A notices the abort; either way B never gets a result and is told it was stopped.
+    const [ra, rb] = await Promise.allSettled([a, b]);
+    expect(ra).toMatchObject({ status: 'rejected', reason: { code: 'cancelled' } });
+    expect(rb).toMatchObject({ status: 'rejected', reason: { code: 'stopped' } });
+    expect(steps.some((s) => s.kind === 'stopped' && s.by === 'partner')).toBe(true);
+  }, 60_000);
+
+  it('the relay refuses writes without the link’s write key', async () => {
+    const link = newLink();
+    const put = (body: object) => fetch(`${BASE}/api/relay/${link.box}`, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ slot: 'm1', c: 'AAAA', ...body }) });
+    const r = await put({});
+    expect(r.status).toBe(403);
+    expect(await r.json()).toMatchObject({ code: 'write_denied' });
+    expect((await put({ w: 'ab'.repeat(32) })).status).toBe(403);
+    expect((await fetch(`${BASE}/api/relay/${link.box}?slot=hello`)).status).toBe(400);
+  });
+
+  it('a self-declared same-day booking counts once a day; more fall back to the normal clock', async () => {
+    const ih = await as('hessa');
+    const book = () => fetch(`${BASE}/api/desk/cases`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': ih }, body: JSON.stringify({ priority: 'urgent', urgentSig: '0'.repeat(64) }) });
+    const withdraw = (id: string) => fetch(`${BASE}/api/desk/cases/${id}`, { method: 'DELETE', headers: { 'x-person': ih } });
+    // A case a demo visitor left open is withdrawn first (one open case per person).
+    const fresh = async () => { let r = await book(); if (r.status === 409) { await withdraw((await r.json()).id); r = await book(); } return r.json(); };
+    const f = await fresh();
+    await withdraw(f.id);
+    const second = await fresh();
+    expect(second.priority).toBe('routine');
+    await withdraw(second.id);
+  }, 60_000);
+
+  it('a new family note needs its acknowledgement hash, and no response is cached', async () => {
+    const ih = await as('hessa');
+    const send = (body: object) => fetch(`${BASE}/api/family`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': ih }, body: JSON.stringify({ c: 'AAAA', ...body }) });
+    const bare = await send({});
+    expect(bare.status).toBe(400);
+    expect(bare.headers.get('cache-control')).toBe('no-store');
+    const ok = await send({ ack: 'ab'.repeat(32) });
+    if (ok.status === 429) return; // today's demo cap for this shared identity is spent
+    expect(ok.status).toBe(200);
+    expect(ok.headers.get('cache-control')).toBe('no-store');
+    const { id, manage } = await ok.json();
+    expect((await fetch(`${BASE}/api/family/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'read' }) })).status).toBe(403);
+    await fetch(`${BASE}/api/family/${id}`, { method: 'DELETE', headers: { 'x-manage': manage } });
   }, 60_000);
 
   it('the lab refuses tokens without a signed identity', async () => {

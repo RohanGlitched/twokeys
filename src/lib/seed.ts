@@ -1,7 +1,8 @@
 // Synthetic desk history, so a judge opening the desk sees a working queue: cases of different ages
 // and priorities, one overdue, one referred, one with the person's own results and relationship
 // shared (so the counsellor-only estimates show). Re-seeded with fresh random ids whenever fewer than
-// three seeded cases are still open, so nobody can empty the demo for everyone else.
+// three seeded cases are still open, so nobody can empty the demo for everyone else, and pinned to the
+// top of the queue (desk.queue), so visitors' bookings can't push them out of sight.
 import 'server-only';
 import { audit, dueFor, listCases, saveCase, type DeskCase } from './desk';
 import { store } from './store';
@@ -10,13 +11,13 @@ import { CONSENT_VERSION } from './desk';
 const H = 3_600_000;
 const rid = () => 's' + crypto.randomUUID().replace(/-/g, '').slice(0, 9);
 
-function mk(hoursAgo: number, p: { id: string; name: string; sex: 'F' | 'M' }, genes: string[], extra: Partial<DeskCase>): DeskCase {
+function mk(hoursAgo: number, p: DeskCase['person'], genes: string[], extra: Partial<DeskCase>): DeskCase {
   const at = Date.now() - hoursAgo * H;
   const priority = extra.priority ?? 'routine';
   const c: DeskCase = {
     id: rid(), createdAt: at, pairing: null, person: p, language: 'ar', readingLevel: 'standard',
     consent: { sharedGenes: true, ownResults: false, relationship: true, version: CONSENT_VERSION }, sharedGenes: genes, ownFindings: null,
-    relationship: 'first-cousins', priority, question: null, status: 'new', dueBy: dueFor(priority, at), firstContactAt: null, referral: null,
+    relationship: 'first-cousins', priority, question: null, status: 'new', dueBy: dueFor(priority, at, extra.pregnancyWeeks, genes.includes('SMN1')), firstContactAt: null, referral: null,
     notes: [], sealed: false, audit: [],
     ...extra,
   };
@@ -30,14 +31,16 @@ export async function seedDesk() {
   if (!(await store().putNew(`seeding:${Math.floor(Date.now() / 60_000)}`, true, 120))) return; // one seeder at a time
   const pair = 'synthpair' + crypto.randomUUID().replace(/-/g, '').slice(0, 7);
   const cases: DeskCase[] = [
-    mk(2, { id: 'synthetic-amna', name: 'Amna (synthetic)', sex: 'F' }, ['HBB'], { pairing: pair, priority: 'pregnant', question: 'We found out today and I am 9 weeks pregnant. What can we do now?' }),
-    mk(3, { id: 'synthetic-sultan', name: 'Sultan (synthetic)', sex: 'M' }, ['HBB'], { pairing: pair, language: 'en' }),
-    mk(80, { id: 'synthetic-maitha', name: 'Maitha (synthetic)', sex: 'F' }, ['CYP21A2', 'ABCA4'], { relationship: 'double-first-cousins', readingLevel: 'simple',
+    // Amna booked in Arabic, so her question is in Arabic; her weeks match what she wrote.
+    mk(2, { id: 'synthetic-amna', name: 'Amna (synthetic)', nameAr: 'آمنة (افتراضية)', sex: 'F' }, ['HBB'], { pairing: pair, priority: 'pregnant', pregnancyWeeks: 9,
+      question: 'عرفنا النتيجة اليوم، وأنا حامل في الأسبوع التاسع. ماذا يمكننا أن نفعل الآن؟' }),
+    mk(3, { id: 'synthetic-sultan', name: 'Sultan (synthetic)', nameAr: 'سلطان (افتراضي)', sex: 'M' }, ['HBB'], { pairing: pair, language: 'en' }),
+    mk(80, { id: 'synthetic-maitha', name: 'Maitha (synthetic)', nameAr: 'ميثاء (افتراضية)', sex: 'F' }, ['CYP21A2', 'ABCA4'], { relationship: 'double-first-cousins', readingLevel: 'simple',
       consent: { sharedGenes: true, ownResults: true, relationship: true, version: CONSENT_VERSION },
       ownFindings: [{ gene: 'CYP21A2', inheritance: 'AR', severity: 'severe' }, { gene: 'ABCA4', inheritance: 'AR', severity: 'severe' }, { gene: 'HBB', inheritance: 'AR', severity: 'severe' }] }),
-    mk(30, { id: 'synthetic-obaid', name: 'Obaid (synthetic)', sex: 'M' }, ['MEFV'], { relationship: null, consent: { sharedGenes: true, ownResults: true, relationship: false, version: CONSENT_VERSION },
+    mk(30, { id: 'synthetic-obaid', name: 'Obaid (synthetic)', nameAr: 'عبيد (افتراضي)', sex: 'M' }, ['MEFV'], { relationship: null, consent: { sharedGenes: true, ownResults: true, relationship: false, version: CONSENT_VERSION },
       ownFindings: [{ gene: 'MEFV', inheritance: 'AR', severity: 'severe' }, { gene: 'GJB2', inheritance: 'AR', severity: 'mild' }] }),
-    mk(140, { id: 'synthetic-shamma', name: 'Shamma (synthetic)', sex: 'F' }, ['SMN1'], { relationship: 'unrelated', language: 'en' }),
+    mk(140, { id: 'synthetic-shamma', name: 'Shamma (synthetic)', nameAr: 'شمّا (افتراضية)', sex: 'F' }, ['SMN1'], { relationship: 'unrelated', language: 'en' }),
   ];
   const referred = cases[4];
   referred.firstContactAt = referred.createdAt + 20 * H;

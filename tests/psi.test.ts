@@ -3,6 +3,9 @@ import { Initiator, proveDleq, randomScalar, Responder, runLocally, SET_SIZE, ve
 import { intersection, issue, sessionTokens, type Finding } from '../src/lib/lab';
 import { linkFragment, newLink, open, parseFragment, seal, sessionId, unwireM2, unwireM3, wireM2, wireM3, type WireM2, type WireM3 } from '../src/lib/pairing';
 import { ristretto255 } from '@noble/curves/ed25519.js';
+import panel from '../data/panel.json';
+import { conditionFor } from '../src/lib/conditions';
+import { PANEL_CARDS } from '../src/lib/panelcards';
 
 const labKey = new Uint8Array(32).fill(7);
 const otherLab = new Uint8Array(32).fill(9);
@@ -208,25 +211,99 @@ describe('globin genes: the pair decides', () => {
     expect(g([ar('HBB', 'mild')], [ar('HBB')])).toEqual([{ gene: 'HBB', inheritance: 'AR', strength: 2, kind: 'hplc' }]);
     expect(g([ar('HBB', 'mild')], [ar('HBB', 'mild')])[0].strength).toBe(2);
   });
-  it('HBA1 and HBA2 match each other, graded as Bart’s, HbH or trait', () => {
-    expect(g([ar('HBA1')], [ar('HBA2')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'bart' }]);
-    expect(g([ar('HBA1')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'hbh' }]);
-    expect(g([ar('HBA2', 'mild')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 0, kind: 'trait' }]);
+  const hba = (kind: string, chance: string, strength = kind === 'trait' ? 0 : 2) => [{ gene: 'HBA', inheritance: 'AR', strength, kind, chance }];
+  it('HBA1 and HBA2 match each other, graded as Bart’s, HbH or trait, with the chance per pregnancy', () => {
+    expect(g([ar('HBA1')], [ar('HBA2')])).toEqual(hba('bart', 'quarter'));
+    expect(g([ar('HBA1')], [ar('HBA2', 'mild')])).toEqual(hba('hbh', 'quarter'));
+    expect(g([ar('HBA2', 'mild')], [ar('HBA2', 'mild')])).toEqual(hba('trait', 'quarter'));
   });
-  // Judge round 4: each person has two alpha haplotypes; the pair that can meet in a child decides.
+  // Judge rounds 4 and 5: each person has two alpha haplotypes, and both people's pairs set the chance.
   const nd = (gene: string): Finding => ({ gene, inheritance: 'AR', severity: 'mild', alpha: 'nondeletional' });
-  it('homozygous -α/-α with an α0 carrier is HbH at worst, never Bart’s', () => {
-    expect(g([ar('HBA1', 'mild'), ar('HBA2', 'mild')], [ar('HBA1')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'hbh' }]);
+  const homPlus = [ar('HBA1', 'mild'), ar('HBA2', 'mild')]; // -α/-α
+  it('-α/-α with --/αα: HbH in 1 in 2, never Bart’s', () => {
+    expect(g(homPlus, [ar('HBA1')])).toEqual(hba('hbh', 'half'));
+    expect(g([ar('HBA1')], homPlus)).toEqual(hba('hbh', 'half'));
   });
-  it('homozygous -α/-α with an α+ carrier is trait only', () => {
-    expect(g([ar('HBA1', 'mild'), ar('HBA2', 'mild')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 0, kind: 'trait' }]);
+  it('-α/-α with -α/αα: trait in 1 in 2', () => {
+    expect(g(homPlus, [ar('HBA2', 'mild')])).toEqual(hba('trait', 'half'));
   });
-  it('non-deletional changes (αT-Saudi) can give HbH with each other or with a deletional α+', () => {
-    expect(g([nd('HBA2')], [nd('HBA2')])[0].kind).toBe('hbh');
-    expect(g([nd('HBA2')], [ar('HBA2', 'mild')])[0].kind).toBe('hbh');
+  it('-α/-α with -α/-α: every child has the trait', () => {
+    expect(g(homPlus, [ar('HBA1', 'mild'), ar('HBA2', 'mild')])).toEqual(hba('trait', 'all'));
   });
-  it('a homozygous person gets distinct tokens, so pairing still works', () => {
-    const t = issue(labKey, S, 'A', [ar('HBA1', 'mild'), ar('HBA2', 'mild'), ar('CFTR')]);
-    expect(new Set(t.map((x) => x.token)).size).toBe(t.length);
+  it('--/αα with --/αα: Hb Bart’s in 1 in 4; --/-α with --/αα still names Bart’s first', () => {
+    expect(g([ar('HBA1')], [ar('HBA2')])).toEqual(hba('bart', 'quarter'));
+    expect(g([ar('HBA1'), ar('HBA2', 'mild')], [ar('HBA1')])).toEqual(hba('bart', 'quarter'));
+  });
+  it('a non-deletional α+ (αT-Saudi, Hb Constant Spring) meeting α0 is severe HbH, with its chance', () => {
+    expect(g([nd('HBA2')], [ar('HBA1')])).toEqual(hba('hbh-severe', 'quarter'));
+    expect(g([ar('HBA1')], [nd('HBA2'), nd('HBA2')])).toEqual(hba('hbh-severe', 'half'));
+  });
+  it('αT with αT or with -α is HbH; deletional α+ with α+ only is trait', () => {
+    expect(g([nd('HBA2')], [nd('HBA2')])).toEqual(hba('hbh', 'quarter'));
+    expect(g([nd('HBA2')], [ar('HBA2', 'mild')])).toEqual(hba('hbh', 'quarter'));
+    expect(g([nd('HBA2'), ar('HBA1', 'mild')], [nd('HBA2'), ar('HBA1', 'mild')])).toEqual(hba('hbh', 'three-quarters'));
+    expect(g([ar('HBA2', 'mild')], [ar('HBA1', 'mild')])[0].kind).toBe('trait');
+  });
+  it('alpha tokens are unique, and exactly one matches whatever each person carries', () => {
+    const people: Finding[][] = [[ar('HBA1')], [ar('HBA2', 'mild')], homPlus, [nd('HBA2')], [ar('HBA1'), ar('HBA2', 'mild')], [nd('HBA2'), nd('HBA2')]];
+    for (const a of people) {
+      const t = issue(labKey, S, 'A', [...a, ar('CFTR')]);
+      expect(new Set(t.map((x) => x.token)).size).toBe(t.length);
+      for (const b of people) {
+        const ta = sessionTokens(labKey, S, 'A', a), tb = new Set(sessionTokens(labKey, S, 'B', b).map((x) => x.token));
+        expect(ta.filter((x) => tb.has(x.token))).toHaveLength(1);
+      }
+    }
+  });
+  it('pairing still finds alpha globin for a homozygous person, and the phones agree with the lab', () => {
+    const a = [...homPlus, ar('CFTR')], b = [ar('HBA1'), ar('CFTR')];
+    const r = pair(a, b);
+    expect(r.aGenes).toEqual(['CFTR', 'HBA:a+/a+|a0/aa']);
+    expect(r.bGenes).toEqual(r.aGenes);
+    const ia = issue(labKey, S, 'A', a), ib = issue(labKey, S, 'B', b);
+    const run = runLocally(ia, ib), truth = intersection(labKey, S, a, b);
+    expect(tokensOf(run.aLearns.matched, ia)).toEqual(truth.A);
+    expect(tokensOf(run.bLearns.matched, ib)).toEqual(truth.B);
+    // Four matches in all: three for CFTR (both serious) and one for alpha globin, whatever the genotypes.
+    expect(run.aLearns.matched).toHaveLength(4);
+  });
+  it('no alpha match when only one partner carries an alpha change', () => {
+    expect(g(homPlus, [ar('CFTR')])).toEqual([]);
+  });
+});
+
+describe('condition cards cover the whole panel', () => {
+  const panelGenes = (panel as { genes: { gene: string; inheritance: string; severity?: string }[] }).genes;
+  it('every panel gene has a card with English and Arabic text at every level', () => {
+    expect(panelGenes).toHaveLength(153);
+    for (const p of panelGenes) {
+      const c = conditionFor(p.gene);
+      expect(c, p.gene).not.toBeNull();
+      for (const l of [c!.name, c!.care, c!.what.simple, c!.what.standard, c!.what.detailed]) {
+        expect(l.en.length, p.gene).toBeGreaterThan(5);
+        expect(l.ar, p.gene).toMatch(/\p{Script=Arabic}/u);
+        expect(l.en, p.gene).not.toMatch(/\p{Script=Arabic}/u);
+      }
+      expect(c!.name.ar, p.gene).not.toBe(p.gene);
+      expect(c!.source.url, p.gene).toMatch(/^https:\/\//);
+    }
+  });
+  it('panel cards keep the panel’s inheritance and severity, and X-linked cards say how it is inherited', () => {
+    for (const p of panelGenes) {
+      const c = PANEL_CARDS[p.gene];
+      if (!c) continue;
+      expect(c.severity, p.gene).toBe(p.severity ?? 'variable');
+      const xl = /X chromosome/.test(c.what.standard.en);
+      expect(xl, p.gene).toBe(p.inheritance === 'XL');
+      if (xl) expect(c.what.standard.ar, p.gene).toMatch(/الكروموسوم X/);
+    }
+  });
+  it('X-linked conditions that show early in boys ask for a re-check in a healthy man; ABCD1 asks for adrenal testing', () => {
+    for (const g of ['DMD', 'ARX', 'L1CAM', 'PLP1', 'SLC6A8', 'OTC']) expect(conditionFor(g)!.maleNote?.en, g).toMatch(/re-checked by the lab before anything else/);
+    expect(conditionFor('ABCD1')!.maleNote?.en).toMatch(/adrenal function testing/);
+  });
+  it('HBA1 and HBA2 share the alpha-globin card', () => {
+    expect(conditionFor('HBA1')).toBe(conditionFor('HBA2'));
+    expect(conditionFor('HBA')!.gene).toBe('HBA');
   });
 });

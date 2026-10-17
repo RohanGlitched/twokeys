@@ -4,6 +4,8 @@ import 'server-only';
 import type { AskInput } from './ask';
 import { canonical, isXLinked, onPanel } from './cards';
 
+const KINDS = new Set(['hplc', 'bart', 'hbh', 'hbh-severe', 'trait']);
+
 export type Verify = (role: 'user' | 'assistant', text: string, sig: unknown) => boolean;
 
 export function parseAskBody(b: Record<string, unknown>, verify: Verify): AskInput | { error: string } {
@@ -22,6 +24,12 @@ export function parseAskBody(b: Record<string, unknown>, verify: Verify): AskInp
     xl: [...new Set(all.filter(isXLinked))],
     sex: b.sex === 'F' || b.sex === 'M' ? b.sex : undefined,
     strengths,
+    kinds: b.kinds && typeof b.kinds === 'object'
+      ? Object.fromEntries(Object.entries(b.kinds as Record<string, unknown>).filter(([g, v]) => onPanel(g) && typeof v === 'string' && KINDS.has(v)).map(([g, v]) => [canonical(g), v as string]))
+      : undefined,
+    chances: b.chances && typeof b.chances === 'object'
+      ? Object.fromEntries(Object.entries(b.chances as Record<string, unknown>).filter(([g, v]) => onPanel(g) && (v === 'quarter' || v === 'half' || v === 'three-quarters' || v === 'all')).map(([g, v]) => [canonical(g), v as 'quarter' | 'half' | 'three-quarters' | 'all']))
+      : undefined,
     related: !!b.related,
     question,
     history: Array.isArray(b.history)

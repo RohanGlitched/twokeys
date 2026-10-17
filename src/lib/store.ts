@@ -10,13 +10,20 @@ export interface Store {
   /** Write only if the key doesn't exist yet. Returns false if it did. */
   putNew<T>(key: string, value: T, ttlSeconds: number): Promise<boolean>;
   del(key: string): Promise<void>;
-  /** Items whose key starts with `prefix` (small collections only: queues, notes). */
+  /**
+   * Every live item whose key starts with `prefix`, paging through the whole result (small collections
+   * only: queues, notes). Past LIST_LIMIT items it throws rather than return a silently truncated list;
+   * the desk queue gets a status/due-time index in phase 2.
+   */
   list<T>(prefix: string): Promise<{ key: string; value: T }[]>;
   /** Atomically add 1 and return the new value (rate limits, counters). */
   incr(key: string, ttlSeconds: number): Promise<number>;
   /** Write only if the stored value is still exactly `old` (compare-and-swap). Returns false if it changed or is gone. */
   replace<T>(key: string, old: T, value: T, ttlSeconds: number): Promise<boolean>;
 }
+
+/** The most items list() returns before it refuses (see Store.list). */
+export const LIST_LIMIT = 20_000;
 
 class MemoryStore implements Store {
   private m = new Map<string, { v: string; exp: number }>();
@@ -52,6 +59,7 @@ class MemoryStore implements Store {
       if (!k.startsWith(prefix)) continue;
       const e = this.live(k);
       if (e) out.push({ key: k, value: JSON.parse(e.v) as T });
+      if (out.length > LIST_LIMIT) throw new Error(`store.list('${prefix}') passed ${LIST_LIMIT} items; this collection needs an index, not a scan.`);
     }
     return out;
   }
@@ -139,9 +147,15 @@ class DynamoStore implements Store {
         KeyConditionExpression: sk === '-' ? 'pk = :pk' : 'pk = :pk AND begins_with(sk, :sk)',
         ExpressionAttributeValues: sk === '-' ? { ':pk': pk } : { ':pk': pk, ':sk': sk },
       }));
-      for (const it of r.Items ?? []) if ((it.exp as number) >= now) out.push({ key: `${it.pk}:${it.sk}`, value: JSON.parse(it.v as string) as T });
+      for (const it of r.Items ?? []) {
+        if ((it.exp as number) < now) continue;
+        // A counter written by incr holds its number in `n`, not a JSON value.
+        const value = it.v === undefined && typeof it.n === 'number' ? (it.n as T) : (JSON.parse(it.v as string) as T);
+        out.push({ key: `${it.pk}:${it.sk}`, value });
+      }
       start = r.LastEvaluatedKey;
-    } while (start && out.length < 2000);
+      if (start && out.length >= LIST_LIMIT) throw new Error(`store.list('${prefix}') passed ${LIST_LIMIT} items; this collection needs an index, not a scan.`);
+    } while (start);
     return out;
   }
 }

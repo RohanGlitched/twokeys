@@ -5,6 +5,7 @@
 import 'server-only';
 import { hmac } from '@noble/hashes/hmac.js';
 import { sha256 } from '@noble/hashes/sha2.js';
+import { fail, pseudonym } from './identity';
 import { labKey, subkey } from './labkey';
 import { store } from './store';
 import type { Finding } from './lab';
@@ -23,19 +24,33 @@ export interface Consent {
 export interface DeskCase {
   id: string;
   createdAt: number;
-  /** Ties the two partners' requests together (they are told this when they book). Never sent to the desk. */
+  /**
+   * A keyed code of the pairing (pairingRef), so the desk can say whether the partner booked too (they are
+   * told this when they book). Not the session id: it can't be matched to the lab's seat or used-link
+   * records. It does tie the two bookings to each other for as long as the cases are kept; erased on
+   * withdrawal. Never sent to the desk.
+   */
   pairing: string | null;
-  person: { id: string; name: string; sex: 'F' | 'M' };
+  /** `nameAr` is the person's name in Arabic, for the desk in Arabic. */
+  person: { id: string; name: string; nameAr?: string; sex: 'F' | 'M' };
+  /** Booked by a demo identity (shared by every visitor): kept 2 hours, not 60 days. */
+  demo?: boolean;
   /** Null after withdrawal, like everything else the person chose. */
   language: 'en' | 'ar' | null;
   readingLevel: 'simple' | 'standard' | 'detailed' | null;
   consent: Consent;
   sharedGenes: string[];
-  /** What each shared match means, from the lab's release: 'full', 'milder', 'low', or a globin kind ('hplc', 'bart', 'hbh', 'trait'). */
+  /** What each shared match means, from the lab's release: 'full', 'milder', 'low', or a globin kind ('hplc', 'bart', 'hbh-severe', 'hbh', 'trait'). */
   sharedKinds?: Record<string, string>;
+  /** For alpha globin, the chance per pregnancy of the named outcome: 'quarter', 'half' or 'all'. */
+  sharedChances?: Record<string, string>;
   ownFindings: Finding[] | null;
   relationship: Relationship | null;
-  /** Priority: 'urgent' (distress) = 4-hour clock; 'pregnant' = 4 hours from week 9 or when the weeks aren't known, else 1 working day; otherwise 2 working days, or 1 for a possible Hb Bart's or SMA match. */
+  /**
+   * Priority: 'urgent' (distress) = 4-hour clock; 'pregnant' = 4 hours from week 9, when the weeks aren't
+   * known, or with a possible Hb Bart's or severe HbH match, else 1 working day; otherwise 2 working days,
+   * or 1 for a possible Hb Bart's, severe HbH or SMA match.
+   */
   priority: 'urgent' | 'pregnant' | 'routine' | null;
   /** Weeks of pregnancy when booked, if the person said so: testing in pregnancy has time windows. */
   pregnancyWeeks?: number | null;
@@ -59,7 +74,10 @@ export interface DeskCase {
 /** `content` is a keyed hash of the case as it was after this entry (absent on entries written before it existed). */
 export interface AuditEntry { at: number; actor: string; action: string; content?: string; hash: string }
 
-const TTL = 60 * 60 * 24 * 60; // demo cases live 60 days
+const TTL = 60 * 60 * 24 * 60; // cases live 60 days in the demo
+const DEMO_TTL = 2 * 3600; // a case booked by a shared demo identity lives 2 hours
+/** Seconds left to keep a case: 2 hours from booking for a demo identity's case, else 60 days. */
+export const caseTtl = (c: Pick<DeskCase, 'demo' | 'createdAt'>) => (c.demo ? Math.max(60, Math.ceil((c.createdAt + DEMO_TTL * 1000 - Date.now()) / 1000)) : TTL);
 const enc = new TextEncoder();
 const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
 const mac = (key: Uint8Array, msg: string) => hex(hmac(sha256, key, enc.encode(msg)));
@@ -130,17 +148,58 @@ export async function logQueueRead(actor: string, shown: unknown[]) {
   }
 }
 
-/** What the queue shows of a case: its clock, an urgent/normal level, counts and the person's name. Nothing else. */
+/**
+ * What the queue shows of a case: an urgent/normal level, whether it is overdue, due today or later (never
+ * the exact due time, which would tell the pregnancy and match clocks apart), its place in the queue,
+ * counts and the person's name. Nothing else. The opened case shows the exact clock.
+ */
 export interface QueueItem {
-  id: string; name: string; status: CaseStatus; level: 'urgent' | 'normal';
-  createdAt: number; dueBy: number; firstContactAt: number | null; sharedCount: number; notesCount: number;
+  id: string; name: string; nameAr?: string; status: CaseStatus; level: 'urgent' | 'normal';
+  due: 'overdue' | 'today' | 'later' | null; overdue: boolean;
+  /** 0 is the top of the queue. Synthetic history is pinned first, so a judge always finds it. */
+  rank: number; pinned: boolean;
+  createdAt: number; firstContactAt: number | null; sharedCount: number; notesCount: number;
 }
-export function queueItem(c: DeskCase): QueueItem {
-  const urgent = c.status !== 'withdrawn' && (c.priority === 'urgent' || c.dueBy - c.createdAt <= 4 * 3_600_000);
-  return {
-    id: c.id, name: c.person.name, status: c.status, level: urgent ? 'urgent' : 'normal',
-    createdAt: c.createdAt, dueBy: c.dueBy, firstContactAt: c.firstContactAt, sharedCount: c.sharedGenes.length, notesCount: c.sealed ? 0 : c.notes.length,
-  };
+const GULF = 4 * 3_600_000; // UAE time, UTC+4, for "due today"
+const done = (c: DeskCase) => c.status === 'withdrawn' || c.status === 'closed';
+const isUrgent = (c: DeskCase) => c.status !== 'withdrawn' && (c.priority === 'urgent' || c.dueBy - c.createdAt <= 4 * 3_600_000);
+export const isSeed = (c: Pick<DeskCase, 'person'>) => c.person.id.startsWith('synthetic-');
+/** Pinned synthetic history first, then waiting cases before contacted ones, finished last; urgent first, then soonest due. */
+const order = (a: DeskCase, b: DeskCase) => Number(done(a)) - Number(done(b)) || Number(!isSeed(a)) - Number(!isSeed(b))
+  || Number(!!a.firstContactAt) - Number(!!b.firstContactAt) || Number(!isUrgent(a)) - Number(!isUrgent(b)) || a.dueBy - b.dueBy;
+export function queue(cases: DeskCase[], now = Date.now()): QueueItem[] {
+  const endOfDay = Math.floor((now + GULF) / 86_400_000) * 86_400_000 + 86_400_000 - GULF;
+  return [...cases].sort(order).map((c, rank) => {
+    const waiting = !done(c) && !c.firstContactAt;
+    const overdue = waiting && c.dueBy < now;
+    return {
+      id: c.id, name: c.person.name, nameAr: c.person.nameAr, status: c.status, level: isUrgent(c) ? 'urgent' : 'normal',
+      due: !waiting ? null : overdue ? 'overdue' : c.dueBy < endOfDay ? 'today' : 'later', overdue, rank, pinned: isSeed(c) && !done(c),
+      createdAt: c.createdAt, firstContactAt: c.firstContactAt, sharedCount: c.sharedGenes.length, notesCount: c.sealed ? 0 : c.notes.length,
+    };
+  });
+}
+
+/** The same-day flag the explainer gives a person in distress: HMAC(subkey 'urgent', person id | UTC day). /api/ask sends it as `urgentSig`. */
+export const signUrgent = (person: string, day = new Date().toISOString().slice(0, 10)) => mac(subkey('urgent'), `${person}|${day}`);
+/** True if `sig` is signUrgent(person) for today or yesterday (UTC), so a flag made just before midnight still counts. */
+export function verifyUrgent(person: string, sig: unknown): boolean {
+  if (typeof sig !== 'string' || !/^[0-9a-f]{64}$/.test(sig)) return false;
+  return [0, 1].some((d) => {
+    const want = signUrgent(person, new Date(Date.now() - d * 86_400_000).toISOString().slice(0, 10));
+    let diff = 0;
+    for (let i = 0; i < 64; i++) diff |= want.charCodeAt(i) ^ sig.charCodeAt(i);
+    return diff === 0;
+  });
+}
+
+/** The keyed pairing code a booked case keeps (see DeskCase.pairing). */
+export const pairingRef = (session: string) => mac(subkey('pairing-ref'), `pairing|${session}`).slice(0, 32);
+/** One open case per person: an atomic marker holding the case id, cleared on close or withdrawal. */
+export const openKey = (personId: string) => `open:${pseudonym(personId)}`;
+export async function clearOpen(c: DeskCase) {
+  const key = openKey(c.person.id);
+  if ((await store().get<string>(key)) === c.id) await store().del(key);
 }
 
 /** `n` working days after `t`. The UAE federal working week has run Monday to Friday since 2022. */
@@ -157,11 +216,13 @@ export function workingDaysFrom(t: number, n: number): number {
 export const twoWorkingDaysFrom = (t: number) => workingDaysFrom(t, 2);
 /**
  * From week 9 a pregnancy gets the same 4-hour clock as distress: chorionic villus sampling is done at
- * about weeks 10 to 13, and later options have legal time limits, so a day can matter.
+ * about weeks 10 to 13, and later options have legal time limits, so a day can matter. `serious` is a
+ * possible Hb Bart's, severe HbH or SMA match (1 working day even without a pregnancy); 'hydrops' is a
+ * possible Hb Bart's or severe HbH, which in any pregnancy gets the 4-hour clock (a risk to the mother too).
  */
-export function dueFor(priority: DeskCase['priority'], t: number, weeks?: number | null, serious = false) {
+export function dueFor(priority: DeskCase['priority'], t: number, weeks?: number | null, serious: boolean | 'hydrops' = false) {
   // Unknown weeks are treated as late: the legal window for some choices closes at 120 days.
-  if (priority === 'pregnant' && (weeks == null || weeks >= 9)) return t + 4 * 3_600_000;
+  if (priority === 'pregnant' && (weeks == null || weeks >= 9 || serious === 'hydrops')) return t + 4 * 3_600_000;
   return priority === 'urgent' ? t + 4 * 3_600_000 : priority === 'pregnant' || serious ? workingDaysFrom(t, 1) : workingDaysFrom(t, 2);
 }
 
@@ -174,6 +235,7 @@ export function withdraw(c: DeskCase, actor: string) {
   c.status = 'withdrawn';
   c.sharedGenes = [];
   c.sharedKinds = {};
+  c.sharedChances = {};
   c.ownFindings = null;
   c.relationship = null;
   c.question = null;
@@ -201,7 +263,7 @@ export async function partnerBooked(c: DeskCase): Promise<boolean> {
 }
 
 /** A new case only: never overwrites. */
-export async function saveCase(c: DeskCase) { await store().putNew(`case:${c.id}`, c, TTL); }
+export async function saveCase(c: DeskCase) { await store().putNew(`case:${c.id}`, c, caseTtl(c)); }
 /**
  * Read-modify-write with compare-and-swap, retried on conflict: two counsellors viewing at once both
  * get their audit entry, and a view or note racing a withdrawal can't write the erased data back.
@@ -214,9 +276,9 @@ export async function updateCase(id: string, change: (c: DeskCase) => Response |
     const c = structuredClone(old);
     const stop = change(c);
     if (stop) return stop;
-    if (await store().replace(`case:${id}`, old, c, TTL)) return c;
+    if (await store().replace(`case:${id}`, old, c, caseTtl(c))) return c;
   }
-  return Response.json({ error: 'The case is busy. Try again.' }, { status: 409 });
+  return fail('busy', 'The case is busy. Try again.', 409);
 }
 export async function getCase(id: string) { return store().get<DeskCase>(`case:${id}`); }
 export async function listCases() {

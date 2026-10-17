@@ -78,8 +78,17 @@ export function discreteLaplace(t: number, s = 1, rand: Rand = cryptoRand): numb
  */
 export const noisyCount = (n: number, scale: number, sensitivity = 1, rand: Rand = cryptoRand) => Math.max(0, n + discreteLaplace(scale * sensitivity, 1, rand));
 
-/** Per-person markers that must outlive every release ("for life"): kept 100 years. */
+/** Records that must outlive every release (the release ledger): kept 100 years. */
 export const FOREVER = 100 * 365 * 86_400;
+/**
+ * TTL (seconds) for per-person markers: to the end of the current UTC year plus one day. Their pseudonym
+ * key rotates with the year (identity.pseudonym), so a marker is useless after its year and is deleted
+ * rather than kept as a re-identifiable trace. Each person is counted once per year, not once ever.
+ */
+export function untilYearEnd(now = Date.now()): number {
+  const next = Date.UTC(new Date(now).getUTCFullYear() + 1, 0, 2);
+  return Math.ceil((next - now) / 1000);
+}
 /** A TTL (seconds) stretched to end at a UTC midnight, so an expiry doesn't record the second something was written. */
 export function dayAligned(ttl: number): number {
   const now = Math.floor(Date.now() / 1000);

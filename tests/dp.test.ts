@@ -1,6 +1,20 @@
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
-import { discreteLaplace, noisyCount, prf } from '../src/lib/dp';
+import { discreteLaplace, noisyCount, prf, untilYearEnd } from '../src/lib/dp';
+import { pseudonym } from '../src/lib/identity';
+
+describe('per-person markers', () => {
+  it('expire just after their year ends', () => {
+    const now = Date.UTC(2026, 9, 18, 12);
+    expect(now + untilYearEnd(now) * 1000).toBe(Date.UTC(2027, 0, 2));
+    expect(untilYearEnd(Date.UTC(2026, 11, 31, 23))).toBeLessThan(2 * 86_400);
+  });
+  it('use a pseudonym that changes every year', () => {
+    expect(pseudonym('mariam', 2026)).toBe(pseudonym('mariam', 2026));
+    expect(pseudonym('mariam', 2026)).not.toBe(pseudonym('mariam', 2027));
+    expect(pseudonym('mariam', 2026)).not.toBe(pseudonym('saeed', 2026));
+  });
+});
 
 describe('privacy noise (exact discrete Laplace)', () => {
   it('is centred on zero with the expected spread', () => {

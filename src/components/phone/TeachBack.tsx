@@ -6,7 +6,7 @@
 import { useMemo, useState } from 'react';
 import type { Locale } from '@/i18n/locales';
 import type { Level } from '@/lib/conditions';
-import type { L, T } from './PhoneApp';
+import type { Chance, L, T } from './PhoneApp';
 
 interface Q { q: L; options: L[]; right: number; why: L }
 
@@ -19,33 +19,52 @@ const THAL: Q = { q: { en: 'Can carrying thalassaemia affect your own health?', 
   options: [{ en: 'Carriers can have mild anaemia that is usually harmless', ar: 'قد يصاب الحامل بفقر دم خفيف غير ضار عادة' }, { en: 'Carriers need regular blood transfusions', ar: 'يحتاج الحامل إلى نقل دم منتظم' }, { en: 'Carrying it turns into thalassaemia later in life', ar: 'يتحول حمل التغيّر إلى ثلاسيميا لاحقاً' }], right: 0,
   why: { en: 'Carriers of thalassaemia can have mild anaemia that is usually harmless. It is not the illness, and it doesn’t turn into it.', ar: 'قد يصاب حاملو الثلاسيميا بفقر دم خفيف غير ضار عادة. وهو ليس المرض، ولا يتحول إليه.' } };
 
-const SHARED: Q[] = [
-  { q: { en: 'If you have a child, what is the chance the child has the condition?', ar: 'إذا رُزقتما بطفل، ما احتمال أن يصاب بالحالة؟' },
-    options: [{ en: 'Only the first child is at risk', ar: 'الطفل الأول فقط معرّض' }, { en: '1 in 4 each time', ar: '1 من 4 في كل مرة' }, { en: '1 in 2 each time', ar: '1 من 2 في كل مرة' }], right: 1,
-    why: { en: 'Each pregnancy has a 1 in 4 chance; 3 in 4 children won’t have it.', ar: 'لكل حمل احتمال 1 من 4، و3 من كل 4 أطفال لن يصابوا.' } },
+/** The chance as an answer: most pairs are 1 in 4; some alpha-globin pairs are 1 in 2, or every pregnancy. */
+const EACH: Record<Chance, L> = { quarter: { en: '1 in 4 each time', ar: '1 من 4 في كل مرة' }, half: { en: '1 in 2 each time', ar: '1 من 2 في كل مرة' }, 'three-quarters': { en: '3 in 4 each time', ar: '3 من 4 في كل مرة' }, all: { en: 'Every pregnancy', ar: 'في كل حمل' } };
+const STAYS: Record<Chance, L> = { quarter: { en: 'It stays 1 in 4', ar: 'يبقى 1 من 4' }, half: { en: 'It stays 1 in 2', ar: 'يبقى 1 من 2' }, 'three-quarters': { en: 'It stays 3 in 4', ar: 'يبقى 3 من 4' }, all: { en: 'It stays the same', ar: 'يبقى كما هو' } };
+const ODDS: Record<Exclude<Chance, 'all'>, L> = { quarter: { en: '1 in 4', ar: '1 من 4' }, half: { en: '1 in 2', ar: '1 من 2' }, 'three-quarters': { en: '3 in 4', ar: '3 من 4' } };
+/** "What is the chance?": the right answer is this couple's chance; the other two are real misreadings. */
+function chanceQ(q: L, chance: Chance, why: Record<Chance, L>): Q {
+  // The third option is this couple's chance, or 1 in 2 (the usual misreading) when theirs is 1 in 4.
+  const options = [{ en: 'Only the first child is at risk', ar: 'الطفل الأول فقط معرّض' }, EACH.quarter, chance === 'quarter' ? EACH.half : EACH[chance]];
+  return { q, options, right: chance === 'quarter' ? 1 : 2, why: why[chance] };
+}
+const nextTime = (chance: Chance): Q => ({ q: { en: 'If a first child has the condition, does the chance change next time?', ar: 'إذا أصيب الطفل الأول، هل يتغيّر الاحتمال في الحمل التالي؟' },
+  options: [{ en: 'It goes down', ar: 'ينخفض' }, STAYS[chance], { en: 'It goes up', ar: 'يرتفع' }], right: 1,
+  why: chance === 'all' ? { en: 'What happened before doesn’t change it: it is the same in every pregnancy.', ar: 'لا يتأثر الاحتمال بما سبق: يبقى كما هو في كل حمل.' }
+    : { en: `What happened before doesn’t change it: every pregnancy is ${ODDS[chance].en}.`, ar: `لا يتأثر الاحتمال بما سبق: يبقى ${ODDS[chance].ar} في كل حمل.` } });
+
+const SHARED = (chance: Chance): Q[] => [
+  chanceQ({ en: 'If you have a child, what is the chance the child has the condition?', ar: 'إذا رُزقتما بطفل، ما احتمال أن يصاب بالحالة؟' }, chance, {
+    quarter: { en: 'Each pregnancy has a 1 in 4 chance; 3 in 4 children won’t have it.', ar: 'لكل حمل احتمال 1 من 4، و3 من كل 4 أطفال لن يصابوا.' },
+    half: { en: 'Each pregnancy has a 1 in 2 chance with your pair of changes; 1 in 2 children won’t have it.', ar: 'لكل حمل احتمال 1 من 2 مع زوج تغيّراتكما، ولن يصاب 1 من كل 2 من الأطفال.' },
+    'three-quarters': { en: 'Each pregnancy has a 3 in 4 chance with your pair of changes; 1 in 4 children won’t have it.', ar: 'لكل حمل احتمال 3 من 4 مع زوج تغيّراتكما، ولن يصاب 1 من كل 4 أطفال.' },
+    all: { en: 'With your pair of changes, every pregnancy inherits both changes.', ar: 'مع زوج تغيّراتكما يرث الجنين التغيّرين في كل حمل.' },
+  }),
   CARRIER,
-  { q: { en: 'If a first child has the condition, does the chance change next time?', ar: 'إذا أصيب الطفل الأول، هل يتغيّر الاحتمال في الحمل التالي؟' },
-    options: [{ en: 'It goes down', ar: 'ينخفض' }, { en: 'It stays 1 in 4', ar: 'يبقى 1 من 4' }, { en: 'It goes up', ar: 'يرتفع' }], right: 1,
-    why: { en: 'What happened before doesn’t change it: every pregnancy is 1 in 4.', ar: 'لا يتأثر الاحتمال بما سبق: يبقى 1 من 4 في كل حمل.' } },
+  nextTime(chance),
 ];
+/** "What is the chance a child inherits both changes?" for milder matches. */
+const BOTH = (chance: Chance) => chanceQ({ en: 'What is the chance a child inherits both changes?', ar: 'ما احتمال أن يرث الطفل التغيّرين معاً؟' }, chance, {
+  quarter: { en: 'Each pregnancy has a 1 in 4 chance of both changes.', ar: 'لكل حمل احتمال 1 من 4 أن يرث التغيّرين.' },
+  half: { en: 'With your pair of changes, each pregnancy has a 1 in 2 chance of both.', ar: 'مع زوج تغيّراتكما، لكل حمل احتمال 1 من 2 أن يرث التغيّرين.' },
+  'three-quarters': { en: 'With your pair of changes, each pregnancy has a 3 in 4 chance of both.', ar: 'مع زوج تغيّراتكما، لكل حمل احتمال 3 من 4 أن يرث التغيّرين.' },
+  all: { en: 'With your pair of changes, every pregnancy inherits both.', ar: 'مع زوج تغيّراتكما يرث الجنين التغيّرين في كل حمل.' },
+});
 /** One partner's change is milder: the 1 in 4 child usually has a milder form. */
-const MILDER: Q[] = [
+const MILDER = (chance: Chance): Q[] => [
   { q: { en: 'If a child inherits both your changes, what is most likely?', ar: 'إذا ورث الطفل تغيّريكما معاً، فما الأرجح؟' },
     options: [{ en: 'A milder form of the condition', ar: 'شكل أخف من الحالة' }, { en: 'The most severe form', ar: 'أشد أشكالها' }, { en: 'A healthy carrier, like you', ar: 'حامل سليم للتغيّر مثلكما' }], right: 0,
     why: { en: 'One of the changes is milder, so a child with both usually has a milder form.', ar: 'أحد التغيّرين أخف، لذا يصاب الطفل الذي يرثهما عادة بشكل أخف.' } },
-  { q: { en: 'What is the chance a child inherits both changes?', ar: 'ما احتمال أن يرث الطفل التغيّرين معاً؟' },
-    options: [{ en: '1 in 2 each time', ar: '1 من 2 في كل مرة' }, { en: '1 in 4 each time', ar: '1 من 4 في كل مرة' }, { en: 'Only the first child', ar: 'الطفل الأول فقط' }], right: 1,
-    why: { en: 'Each pregnancy has a 1 in 4 chance of both changes.', ar: 'لكل حمل احتمال 1 من 4 أن يرث التغيّرين.' } },
+  BOTH(chance),
   CARRIER,
 ];
 /** Both changes are milder: at most a mild form. */
-const LOW: Q[] = [
+const LOW = (chance: Chance): Q[] => [
   { q: { en: 'If a child inherits both your milder changes, what is most likely?', ar: 'إذا ورث الطفل تغيّريكما الأخفين معاً، فما الأرجح؟' },
     options: [{ en: 'A mild form at most, often nothing', ar: 'شكل خفيف على الأكثر، وغالباً لا شيء' }, { en: 'The serious form, as with a full match', ar: 'الشكل الخطير، كما في التطابق الكامل' }, { en: 'It depends only on whether you are related', ar: 'يعتمد ذلك على القرابة بينكما فقط' }], right: 0,
     why: { en: 'Two milder changes together cause at most a mild form, and often no problems.', ar: 'يسبب تغيّران أخفان معاً شكلاً خفيفاً على الأكثر، وغالباً لا مشكلات.' } },
-  { q: { en: 'What is the chance a child inherits both changes?', ar: 'ما احتمال أن يرث الطفل التغيّرين معاً؟' },
-    options: [{ en: '1 in 2 each time', ar: '1 من 2 في كل مرة' }, { en: '1 in 4 each time', ar: '1 من 4 في كل مرة' }, { en: 'Only the first child', ar: 'الطفل الأول فقط' }], right: 1,
-    why: { en: 'Each pregnancy has a 1 in 4 chance of both changes.', ar: 'لكل حمل احتمال 1 من 4 أن يرث التغيّرين.' } },
+  BOTH(chance),
   CARRIER,
 ];
 const XL: Q[] = [
@@ -81,15 +100,17 @@ function order(seed: string, n: number): number[] {
   return a;
 }
 
-export function TeachBack({ lang, t, level, kind, identity, onCounsellor, thal, seed }: {
+export function TeachBack({ lang, t, level, kind, identity, onCounsellor, thal, seed, chance = 'quarter' }: {
   lang: Locale; t: T; level: Level; kind: 'shared' | 'milder' | 'low' | 'xl' | 'none'; identity: string | null; onCounsellor: () => void;
+  /** This couple's chance per pregnancy for the gene the questions are about (1 in 4 unless the lab says otherwise). */
+  chance?: Chance;
   /** A thalassaemia gene is shared (HBB or HBA): ask about carriers' mild anaemia instead. */
   thal?: boolean;
   seed: string;
 }) {
-  const qs = { shared: SHARED, milder: MILDER, low: LOW, xl: XL, none: NONE }[kind].map((q) => (thal && q === CARRIER ? THAL : q));
+  const qs = useMemo(() => ({ shared: SHARED(chance), milder: MILDER(chance), low: LOW(chance), xl: XL, none: NONE }[kind].map((q) => (thal && q === CARRIER ? THAL : q))), [kind, chance, thal]);
   // Shown order per question, as indexes into its options; answers are stored as the original index.
-  const shown = useMemo(() => qs.map((q, i) => order(`${seed}:${kind}:${i}`, q.options.length)), [seed, kind, qs.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  const shown = useMemo(() => qs.map((q, i) => order(`${seed}:${kind}:${i}`, q.options.length)), [seed, kind, qs]);
   const [first, setFirst] = useState<(number | null)[]>([null, null, null]);
   const [now, setNow] = useState<(number | null)[]>([null, null, null]);
   const [sent, setSent] = useState(false);
@@ -113,7 +134,7 @@ export function TeachBack({ lang, t, level, kind, identity, onCounsellor, thal, 
   return (
     <section className="mt-8 border-t border-rule pt-5">
       <h3 className="text-[17px] font-semibold">{t({ en: 'Check you’ve got it', ar: 'تأكد أنك فهمت', arF: 'تأكدي أنك فهمتِ' })}</h3>
-      <p className="mt-1 text-[13px] text-ink-2">{t({ en: 'Three quick questions. If an answer is off, we explain it again. Only how many you got right first time is counted, without your name.', ar: 'ثلاثة أسئلة سريعة. إن لم تكن الإجابة دقيقة نشرحها من جديد. ولا يُحسب إلا عدد الإجابات الصحيحة من المحاولة الأولى، دون اسمك.' })}</p>
+      <p className="mt-1 text-[14px] leading-relaxed text-ink">{t({ en: 'Three quick questions. If an answer is off, we explain it again. Only how many you got right first time is counted, without your name.', ar: 'ثلاثة أسئلة سريعة. إن لم تكن الإجابة دقيقة نشرحها من جديد. ولا يُحسب إلا عدد الإجابات الصحيحة من المحاولة الأولى، دون اسمك.' })}</p>
       <ol className="mt-3 space-y-4">
         {qs.map((q, i) => {
           const a = now[i];
@@ -129,8 +150,8 @@ export function TeachBack({ lang, t, level, kind, identity, onCounsellor, thal, 
                 ))}
               </div>
               {a !== null && (
-                <p role="status" className={`mt-1.5 text-[13px] leading-relaxed ${right ? 'text-sage' : 'text-ink'}`}>
-                  {right ? t(q.why) : <>{t({ en: 'Not quite. ', ar: 'ليس تماماً. ' })}{t(q.why)} {t({ en: 'Try again.', ar: 'حاول مرة أخرى.', arF: 'حاولي مرة أخرى.' })}</>}
+                <p role="status" className="mt-1.5 text-[14px] leading-relaxed text-ink">
+                  {right ? <><span className="font-medium text-sage">{t({ en: 'Right. ', ar: 'صحيح. ' })}</span>{t(q.why)}</> : <><span className="font-medium text-alert">{t({ en: 'Not quite. ', ar: 'ليس تماماً. ' })}</span>{t(q.why)} {t({ en: 'Try again.', ar: 'حاول مرة أخرى.', arF: 'حاولي مرة أخرى.' })}</>}
                 </p>
               )}
             </li>

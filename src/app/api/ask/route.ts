@@ -6,21 +6,44 @@ import { subkey } from '@/lib/labkey';
 import { readJson } from '@/lib/http';
 import { limited } from '@/lib/ratelimit';
 import { store } from '@/lib/store';
+import { signUrgent } from '@/lib/desk';
+import { personFrom } from '@/lib/identity';
 
 /**
- * Both sides of the conversation carry a server signature bound to their role; only signed turns come back
- * as history, so a client can neither put words in the explainer's mouth nor slip in an unchecked "question".
+ * History turns carry a server signature bound to their role, the couple's result (genes, X-linked genes,
+ * strengths, relatedness, language), the explainer version and a one-day expiry. Only signed turns come back
+ * as history, so a client can't put words in the explainer's mouth, splice a turn from another couple's
+ * conversation, or replay an old one. A question is signed only when it was answered by the checked model
+ * path, so a refused question (an injection, a probe) can never re-enter as history.
  */
-const sign = (role: 'user' | 'assistant', text: string) => Array.from(hmac(sha256, subkey('ask-history'), new TextEncoder().encode(`twokeys/ask-history/v2|${role}|${text}`)), (b) => b.toString(16).padStart(2, '0')).join('');
+const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+const contextOf = (b: Record<string, unknown>) => JSON.stringify([b.lang === 'ar' ? 'ar' : 'en', [...((b.genes as string[]) ?? [])].sort(), [...((b.xl as string[]) ?? [])].sort(), b.strengths ?? {}, !!b.related]);
+const mac = (ctx: string, exp: number, role: string, text: string) => hex(hmac(sha256, subkey('ask-history'), new TextEncoder().encode(`twokeys/ask-history/v3|${EXPLAINER_VERSION}|${ctx}|${exp}|${role}|${text}`)));
+const sign = (ctx: string, role: 'user' | 'assistant', text: string) => { const exp = Math.floor(Date.now() / 1000) + 86_400; return `${exp}.${mac(ctx, exp, role, text)}`; };
+const verify = (ctx: string, role: string, text: string, sig: unknown) => {
+  if (typeof sig !== 'string') return false;
+  const [e, m] = sig.split('.');
+  const exp = Number(e);
+  return Number.isInteger(exp) && exp > Date.now() / 1000 && m === mac(ctx, exp, role, text);
+};
+/** Demo spend guard: per address per hour, and for the whole service per day. */
+const PER_HOUR = 150;
+const PER_DAY = 5000;
 
 export async function POST(req: Request) {
   const b = await readJson<Record<string, unknown>>(req);
   if (b instanceof Response) return b;
-  const input = parseAskBody(b, (role, text, sig) => typeof sig === 'string' && sig === sign(role, text));
-  if ('error' in input) return Response.json({ error: input.error }, { status: 400 });
+  // At most 12 history turns are even looked at, before any signature is checked.
+  if (Array.isArray(b.history)) b.history = (b.history as unknown[]).slice(-12);
+  const ctx = contextOf(b);
+  const input = parseAskBody(b, (role, text, sig) => verify(ctx, role, text, sig));
+  if ('error' in input) return Response.json({ error: input.error, code: 'bad_request' }, { status: 400 });
 
-  // A small hourly budget per client keeps the demo's model spend bounded.
-  if (await limited(req, 'ask', 40)) return Response.json({ error: 'You’ve asked a lot this hour. A counsellor can answer the rest.' }, { status: 429 });
+  // Bounded model spend: an hourly budget per address and a daily one for the service.
+  const today = new Date().toISOString().slice(0, 10);
+  if (await limited(req, 'ask', PER_HOUR) || (await store().incr(`ask:day:${today}`, 60 * 60 * 26)) > PER_DAY) {
+    return Response.json({ error: 'The demo’s question budget is used up for now. A counsellor can answer the rest.', code: 'rate_limited' }, { status: 429 });
+  }
 
   const out = await ask(input);
   // Monitoring without content: daily counts of how each answer was produced, never the question.
@@ -38,5 +61,7 @@ export async function POST(req: Request) {
     out.repairs ? db.incr(`mon:${day}:repaired`, ttl) : null,
     ...failed.map((k) => db.incr(`mon:${day}:fail:${k}`, ttl)),
   ]).catch((e) => console.error('monitor write failed', e));
-  return Response.json({ ...out, version: EXPLAINER_VERSION, sig: sign('assistant', out.answer), qsig: sign('user', input.question) }, { headers: { 'cache-control': 'no-store' } });
+  return Response.json({ ...out, version: EXPLAINER_VERSION, sig: sign(ctx, 'assistant', out.answer), ...(out.route === 'model' ? { qsig: sign(ctx, 'user', input.question) } : {}),
+    // A crisis reply carries a same-day flag the desk accepts, bound to the signed-in person and today.
+    ...(out.urgent ? (() => { const p = personFrom(req); return p ? { urgentSig: signUrgent(p.id) } : {}; })() : {}) }, { headers: { 'cache-control': 'no-store' } });
 }

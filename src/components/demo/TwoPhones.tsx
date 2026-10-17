@@ -1,16 +1,18 @@
 'use client';
 // Two phones side by side, each a real, separate app instance (iframe), pairing through the real
-// lab and relay. The page only hands both phones the same link; it never sees their results. The
-// strip between them shows what each phone reports it sent and received, which is all the relay saw.
+// lab and relay. The page only hands both phones the same link. The strip between them shows what
+// each phone reports it sent and received, which is all the relay saw; at the end each phone tells
+// the page which shared genes it learned, for the summary row (a demo convenience: in real use there
+// is no page between the two phones).
 // On a phone-sized screen one phone shows at a time, with a switcher that flags the other when it
-// is waiting for a tap.
-import { useEffect, useState } from 'react';
+// is waiting for a tap, and switches to it by itself when it needs the identity check.
+import { useEffect, useRef, useState } from 'react';
 import type { Locale } from '@/i18n/locales';
 import { linkFragment, newLink } from '@/lib/pairing';
 import type { CoupleInfo } from '@/components/phone/PhoneRoute';
 
 type L = { en: string; ar: string };
-interface Seen { at: number; person: string; kind: string; bytes?: number; cipher?: string; count?: number; ms?: number }
+interface Seen { at: number; person: string; kind: string; bytes?: number; cipher?: string; count?: number; ms?: number; genes?: string[] }
 /** What the wire log shows; anything else a phone reports (such as waiting) is left out. */
 const KINDS = new Set(['tokens', 'confirmed', 'sent', 'received', 'proof', 'done']);
 
@@ -54,6 +56,11 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
   const [need, setNeed] = useState<Record<string, boolean>>({});
   const [showing, setShowing] = useState(0);
   const [wide, setWide] = useState(true);
+  const figures = useRef<Record<string, HTMLElement | null>>({});
+  const logBox = useRef<HTMLOListElement | null>(null);
+  const c = couples.find((x) => x.id === coupleId)!;
+  const couplesRef = useRef(c);
+  useEffect(() => { couplesRef.current = c; }, [c]);
   const reset = () => { setFrag(linkFragment(newLink())); setSeen([]); setNeed({}); setShowing(0); setRound((r) => r + 1); };
   // eslint-disable-next-line react-hooks/set-state-in-effect -- needs Web Crypto, so it runs in the browser, read once after hydration
   useEffect(() => { setFrag(linkFragment(newLink())); }, []);
@@ -67,16 +74,37 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
   useEffect(() => {
     const on = (e: MessageEvent) => {
       if (e.origin !== window.location.origin) return;
-      if (e.data?.type === 'twokeys-attention') { const { person, need: n } = e.data as { person: string; need: boolean }; setNeed((x) => ({ ...x, [person]: n })); return; }
+      if (e.data?.type === 'twokeys-attention') {
+        const { person, need: n, confirm } = e.data as { person: string; need: boolean; confirm?: boolean };
+        setNeed((x) => ({ ...x, [person]: n }));
+        if (confirm) showConfirm(person);
+        return;
+      }
       if (e.data?.type !== 'twokeys-step') return;
       const { person, step } = e.data as { person: string; step: Omit<Seen, 'at' | 'person'> };
       if (!KINDS.has(step.kind)) return;
-      setSeen((x) => [...x, { ...step, person, at: Date.now() }].slice(-14));
+      setSeen((x) => [...x, { ...step, person, at: Date.now() }].slice(-30));
+    };
+    // A phone asking "is this your partner?" shows its sheet at the bottom of its screen: bring that
+    // phone into view, and on a phone-sized page switch to it.
+    const showConfirm = (person: string) => {
+      const i = [couplesRef.current.a, couplesRef.current.b].indexOf(person);
+      if (i < 0) return;
+      if (!window.matchMedia('(min-width: 768px)').matches) setShowing(i);
+      setTimeout(() => {
+        const el = figures.current[person];
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        if (r.top >= 0 && r.bottom <= window.innerHeight) return;
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        el.scrollIntoView({ block: 'end', behavior: still ? 'auto' : 'smooth' });
+      }, 60);
     };
     window.addEventListener('message', on);
     return () => window.removeEventListener('message', on);
   }, []);
-  const c = couples.find((x) => x.id === coupleId)!;
+  // The log keeps its newest line in view.
+  useEffect(() => { const b = logBox.current?.parentElement; if (b && b.scrollHeight > b.clientHeight) b.scrollTop = b.scrollHeight; }, [seen]);
   const who = (id: string) => t(names[id] ?? { en: id, ar: id });
   const src = (id: string, role: 'A' | 'B') => `/${lang}/phone?as=${id}&role=${role}&embed=1#${frag}`;
   const n = (x: number) => x.toLocaleString(ar ? 'ar-AE' : 'en-GB');
@@ -85,15 +113,17 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
     const f = female.includes(s.person);
     switch (s.kind) {
       case 'tokens': return t({ en: `Lab → ${w}: ${s.count} tokens, no gene names`, ar: `المختبر ← ${w}: ${n(s.count ?? 0)} رمزاً، دون أسماء جينات` });
-      case 'confirmed': return t({ en: `${w} confirmed who they are comparing with`, ar: f ? `أكّدت ${w} هوية من تقارن معه` : `أكّد ${w} هوية من يقارن معها` });
+      case 'confirmed': return t({ en: `${w} confirmed who ${f ? 'she is' : 'he is'} comparing with`, ar: f ? `أكّدت ${w} هوية من تقارن معه` : `أكّد ${w} هوية من يقارن معها` });
       case 'sent': return t({ en: `${w} → relay: ${n(s.bytes ?? 0)} encrypted characters`, ar: `${w} ← الوسيط: ${n(s.bytes ?? 0)} حرفاً مشفّراً` });
       case 'received': return t({ en: `Relay → ${w}: the partner’s locked list`, ar: `الوسيط ← ${w}: قائمة الشريك المقفلة` });
       case 'proof': return t({ en: `${w}’s phone checked the proof of honest locking`, ar: `تحقق هاتف ${w} من إثبات القفل الأمين` });
-      case 'done': return t({ en: `Lab confirmed ${w}’s match (${((s.ms ?? 0) / 1000).toFixed(1)} s)`, ar: `أكد المختبر تطابق ${w}` });
+      case 'done': return t({ en: `Lab confirmed ${w}’s match (${((s.ms ?? 0) / 1000).toFixed(1)} s)`, ar: `أكد المختبر تطابق ${w}` });
       default: return null;
     }
   };
   const pair = [{ id: c.a, role: 'A' as const }, { id: c.b, role: 'B' as const }];
+  // The button's own words on each phone: Arabic addresses her and him differently.
+  const compareAr = (id: string) => (female.includes(id) ? 'قارني الآن' : 'قارن الآن');
   const reader = pair.find((p) => personal.includes(p.id));
   // The coach strip: the few taps that make the demo work, named for the couple on screen.
   const steps: L[] = [
@@ -101,7 +131,7 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
       ? { en: `${who(reader.id)} opens the result that is hers alone`, ar: `تفتح ${who(reader.id)} نتيجتها الخاصة أولاً` }
       : { en: `${who(reader.id)} opens the result that is his alone`, ar: `يفتح ${who(reader.id)} نتيجته الخاصة أولاً` }] : []),
     { en: 'Check the three words match', ar: 'تحقق من تطابق الكلمات الثلاث' },
-    { en: 'Tap “Compare now” on both', ar: 'اضغط «قارن الآن» على الهاتفين' },
+    { en: 'Tap “Compare now” on both', ar: `اضغط «${compareAr(c.a)}» لدى ${who(c.a)} و«${compareAr(c.b)}» لدى ${who(c.b)}` },
     { en: 'Tap “Yes” on both', ar: 'اضغط «نعم» على الهاتفين' },
   ];
   const later: L[] = [
@@ -111,19 +141,42 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
     { en: 'a family note', ar: 'رسالة للأقارب' },
   ];
 
+  // Consecutive relay messages read as one group; everything else is one row each.
+  const groups: { relay: boolean; items: Seen[] }[] = [];
+  for (const s of seen) {
+    const relay = s.kind === 'sent' || s.kind === 'received';
+    const last = groups.at(-1);
+    if (relay && last?.relay) last.items.push(s); else groups.push({ relay, items: [s] });
+  }
+  // Once both phones are done: who learned what, from what they reported.
+  const done = pair.map((p) => seen.find((s) => s.kind === 'done' && s.person === p.id));
+  const learned = (s?: Seen) => (s?.genes?.length ? s.genes.join(ar ? '، ' : ', ') : t({ en: 'no shared gene', ar: 'لا جين مشترك' }));
+  const summary = done.every(Boolean) ? (ar
+    ? `${pair.map((p, i) => `${female.includes(p.id) ? 'عرفت' : 'عرف'} ${who(p.id)}: ${learned(done[i])}.`).join(' ')} عرف الوسيط: لا شيء. عرف المختبر: أنهما اقترنا.`
+    : `${pair.map((p, i) => `${who(p.id)} learned: ${learned(done[i])}.`).join(' ')} Relay learned: nothing. Lab learned: that they paired.`) : null;
+
   const log = (
     <>
       <p className="text-[12.5px] leading-relaxed text-ink-2">{t({ en: 'Reported by the phones as it happens. The relay stores only these encrypted blobs and deletes them after 10 minutes.', ar: 'تبلّغ عنه الهواتف لحظة حدوثه. لا يخزن الوسيط إلا هذه الكتل المشفّرة ويحذفها بعد 10 دقائق.' })}</p>
       {seen.length === 0 ? (
         <p className="mt-3 rounded-[3px] border border-dashed border-ink-3 px-3 py-4 text-[13px] text-ink-2">{t({ en: 'Nothing yet. Start a comparison.', ar: 'لا شيء بعد. ابدأ المقارنة.' })}</p>
       ) : (
-        <ol className="mt-3 space-y-2">
-          {seen.map((s, i) => (
+        <ol ref={logBox} className="mt-3 space-y-2">
+          {groups.map((g, i) => g.relay ? (
             <li key={i} className="rounded-[3px] border border-rule bg-paper px-3 py-2 text-[13px] leading-snug">
-              {line(s)}
-              {s.cipher && <code dir="ltr" className="mt-1 block truncate font-mono text-[11px] text-ink-2">{s.cipher}</code>}
+              <p className="font-medium">{t({ en: 'Through the relay, encrypted', ar: 'عبر الوسيط، مشفّرة' })}</p>
+              <ul className="mt-1 space-y-0.5 text-ink-2">{g.items.map((s, k) => <li key={k}>{line(s)}</li>)}</ul>
+              {g.items.some((s) => s.cipher) && (
+                <details className="mt-1">
+                  <summary className="cursor-pointer py-1 text-[12.5px] text-ink-2">{t({ en: 'What the relay stored', ar: 'ما خزّنه الوسيط' })}</summary>
+                  {g.items.filter((s) => s.cipher).map((s, k) => <code key={k} dir="ltr" className="mt-1 block truncate font-mono text-[11px] text-ink-2">{s.cipher}</code>)}
+                </details>
+              )}
             </li>
+          ) : (
+            <li key={i} className="rounded-[3px] border border-rule bg-paper px-3 py-2 text-[13px] leading-snug">{line(g.items[0])}</li>
           ))}
+          {summary && <li className="rounded-[3px] border border-ink bg-paper px-3 py-2.5 text-[13px] font-medium leading-relaxed">{summary}</li>}
         </ol>
       )}
     </>
@@ -168,9 +221,10 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
       {frag && (
         <div className="mt-4 grid items-start gap-6 md:mt-6 lg:grid-cols-[1fr_260px_1fr]" key={`${coupleId}-${round}`}>
           {pair.map((p, i) => (
-            <figure key={p.id} className={`mx-auto w-full max-w-[400px] ${i === 1 ? 'lg:order-3' : ''} ${showing === i ? '' : 'hidden'} md:block`}>
+            <figure key={p.id} ref={(el) => { figures.current[p.id] = el; }} className={`mx-auto w-full max-w-[400px] scroll-mb-3 ${i === 1 ? 'lg:order-3' : ''} ${showing === i ? '' : 'hidden'} md:block`}>
               <div className="overflow-hidden rounded-[28px] border-[10px] border-ink bg-ink">
-                <iframe title={ar ? `هاتف ${who(p.id)}` : `${who(p.id)}’s phone`} src={src(p.id, p.role)} className="h-[min(720px,78dvh)] w-full rounded-[18px] bg-wool md:h-[720px]" />
+                {/* Never taller than the window, so a sheet at the bottom of the phone is on screen. */}
+                <iframe title={ar ? `هاتف ${who(p.id)}` : `${who(p.id)}’s phone`} src={src(p.id, p.role)} className="h-[min(720px,calc(100dvh-24px))] w-full rounded-[18px] bg-wool" />
               </div>
               <figcaption className="mt-2 text-center text-[13px] text-ink-2">{ar ? `هاتف ${who(p.id)}` : `${who(p.id)}’s phone`}</figcaption>
             </figure>
@@ -178,7 +232,7 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
           {wide ? (
             <aside className="lg:order-2" aria-live="polite" aria-label={t({ en: 'What the relay and lab saw', ar: 'ما رآه الوسيط والمختبر' })}>
               <p className="text-[14px] font-medium">{t({ en: 'What crossed the wire', ar: 'ما عبر الشبكة' })}</p>
-              <div className="mt-1">{log}</div>
+              <div className="mt-1 max-h-[calc(min(720px,calc(100dvh-24px))-4px)] overflow-y-auto pe-1">{log}</div>
             </aside>
           ) : (
             <details className="rounded-[3px] border border-rule bg-paper px-4">

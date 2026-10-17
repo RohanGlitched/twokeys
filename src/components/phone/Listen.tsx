@@ -29,7 +29,7 @@ export function Listen({ lang, text }: { lang: Locale; text: string }) {
     return (
       <span className="relative inline-flex">
         <button onClick={() => setWhy((x) => !x)} aria-disabled="true" aria-expanded={why} className="inline-flex min-h-9 items-center gap-1.5 rounded-[2px] border border-rule px-2.5 text-[13px] text-ink-3">
-          {icon(false)}{lang === 'ar' ? 'استمع' : 'Listen'}
+          {icon(false)}{lang === 'ar' ? 'استماع' : 'Listen'}
         </button>
         {why && (
           <span role="status" className="absolute end-0 top-full z-10 mt-1 w-56 rounded-[3px] border border-ink bg-paper px-3 py-2 text-[12.5px] leading-snug text-ink">
@@ -55,7 +55,7 @@ export function Listen({ lang, text }: { lang: Locale; text: string }) {
   return (
     <button onClick={toggle} aria-pressed={speaking} className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-[2px] border border-rule px-2.5 text-[13px] hover:border-ink">
       {icon(!speaking)}
-      {speaking ? (lang === 'ar' ? 'إيقاف' : 'Stop') : (lang === 'ar' ? 'استمع' : 'Listen')}
+      {speaking ? (lang === 'ar' ? 'إيقاف' : 'Stop') : (lang === 'ar' ? 'استماع' : 'Listen')}
     </button>
   );
 }

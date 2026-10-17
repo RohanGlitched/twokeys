@@ -8,6 +8,7 @@ import { letterFor, RELATIONS, sealLetter, type Relation } from '@/lib/letters';
 import { ackHash, RELATION_NAME } from '@/components/family/LetterView';
 import type { L, T } from './PhoneApp';
 import { Listen } from './Listen';
+import { codeOf, errorText } from './errors';
 
 function Back({ lang, onBack }: { lang: Locale; onBack: () => void }) {
   return <button onClick={onBack} className="-ms-2 inline-flex min-h-11 items-center self-start px-2 text-[14px] text-ink-2"><span aria-hidden>{lang === 'ar' ? '→ ' : '← '}</span>{lang === 'ar' ? 'رجوع' : 'Back'}</button>;
@@ -88,8 +89,8 @@ export function dueText(ms: number, lang: Locale): string {
   return lang === 'ar' ? `قبل نهاية يوم ${day}` : `by the end of ${day}`;
 }
 
-export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, genes, personalGenes, level, related, headingId, booking, onBooking, initialQuestion }: {
-  lang: Locale; t: T; identity: string; urgent: boolean; onBack: () => void; pairing: string | null; role: 'A' | 'B' | null; genes: string[]; personalGenes: string[]; level: Level; related: boolean; headingId: string;
+export function Counsellor({ lang, t, identity, urgent, urgentSig, onBack, pairing, role, genes, personalGenes, level, related, headingId, booking, onBooking, initialQuestion }: {
+  lang: Locale; t: T; identity: string; urgent: boolean; urgentSig?: string; onBack: () => void; pairing: string | null; role: 'A' | 'B' | null; genes: string[]; personalGenes: string[]; level: Level; related: boolean; headingId: string;
   booking: Booking | null; onBooking: (b: Booking | null) => void; initialQuestion?: string;
 }) {
   const [own, setOwn] = useState(personalGenes.length > 0);
@@ -99,7 +100,7 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
   const [weeks, setWeeks] = useState('');
   const [question, setQuestion] = useState(initialQuestion ?? '');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ code?: string; en?: string } | null>(null);
   const priority = urgent ? 'urgent' : pregnant ? 'pregnant' : 'routine';
   const booked = booking && !booking.withdrawn ? booking : null;
 
@@ -107,10 +108,10 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
     setBusy(true); setError(null);
     // The shared genes are worked out by the lab from the pairing, not taken from this phone.
     const r = await fetch('/api/desk/cases', { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity },
-      body: JSON.stringify({ pairing, role, consent: { ownResults: own, relationship: rel }, language: lang, readingLevel: level, priority, question, pregnant, weeks: pregnant && weeks ? Number(weeks) : undefined }) });
-    const j = await r.json().catch(() => ({}));
+      body: JSON.stringify({ pairing, role, consent: { ownResults: own, relationship: rel }, language: lang, readingLevel: level, priority, question, pregnant, weeks: pregnant && weeks ? Number(weeks) : undefined, urgentSig: urgent ? urgentSig : undefined }) }).catch(() => null);
+    const j = r ? await r.json().catch(() => ({})) : {};
     setBusy(false);
-    if (r.ok) onBooking({ ...j, chose: { own, rel, question: !!question.trim() } }); else setError(j.error ?? t({ en: 'Booking failed. Try again.', ar: 'تعذّر الحجز. حاول مرة أخرى.', arF: 'تعذّر الحجز. حاولي مرة أخرى.' }));
+    if (r?.ok) onBooking({ ...j, chose: { own, rel, question: !!question.trim() } }); else setError({ code: r ? codeOf(j) : 'offline', en: (j as { error?: string }).error });
   };
   const withdraw = async () => {
     if (!booked) return;
@@ -168,18 +169,18 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
           <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'Choose exactly what the counsellor may see. Nothing else leaves this phone.', ar: 'اختر بالضبط ما يمكن للمرشد رؤيته. ولا يخرج شيء آخر من هذا الهاتف.', arF: 'اختاري بالضبط ما يمكن للمرشد رؤيته. ولا يخرج شيء آخر من هذا الهاتف.' })}</p>
           <fieldset className="mt-4 divide-y divide-rule border-y border-rule">
             <legend className="sr-only">{t({ en: 'What the counsellor may see', ar: 'ما يمكن للمرشد رؤيته' })}</legend>
-            <label className="flex gap-3 py-3 text-[14px]"><input type="checkbox" checked disabled className="mt-1 h-4 w-4" />
+            <label className="flex gap-3 py-3 text-[14px]"><input type="checkbox" checked disabled className="mt-0.5 h-6 w-6 shrink-0" />
               <span><span className="font-medium">{t({ en: 'The genes we both carry', ar: 'الجينات التي نحملها معاً' })}</span><br />
                 <span className="text-ink-2">{genes.length ? genes.join(', ') : t({ en: 'none in common', ar: 'لا جين مشتركاً' })}{t({ en: ' (confirmed by the lab; needed to book)', ar: ' (يؤكدها المختبر؛ لازمة للحجز)' })}</span></span></label>
-            <label className="flex cursor-pointer gap-3 py-3 text-[14px]"><input type="checkbox" checked={own} onChange={(e) => setOwn(e.target.checked)} className="mt-1 h-4 w-4" />
+            <label className="flex cursor-pointer gap-3 py-3 text-[14px]"><input type="checkbox" checked={own} onChange={(e) => setOwn(e.target.checked)} className="mt-0.5 h-6 w-6 shrink-0" />
               <span><span className="font-medium">{t({ en: 'My own full results', ar: 'نتائجي الكاملة' })}</span><br /><span className="text-ink-2">{t({ en: 'Only you and the counsellor, never your partner.', ar: 'أنت والمرشد فقط، ولا تراها شريكتك أبداً.', arF: 'أنتِ والمرشد فقط، ولا يراها شريكك أبداً.' })}</span></span></label>
-            <label className="flex cursor-pointer gap-3 py-3 text-[14px]"><input type="checkbox" checked={rel} onChange={(e) => setRel(e.target.checked)} className="mt-1 h-4 w-4" />
+            <label className="flex cursor-pointer gap-3 py-3 text-[14px]"><input type="checkbox" checked={rel} onChange={(e) => setRel(e.target.checked)} className="mt-0.5 h-6 w-6 shrink-0" />
               <span><span className="font-medium">{t({ en: 'That we are related', ar: 'أن بيننا قرابة' })}</span><br /><span className="text-ink-2">{related ? t({ en: 'You told us you are. It helps the counsellor explain your chances.', ar: 'أخبرتنا بذلك، وهو يساعد المرشد على شرح الاحتمالات.' }) : t({ en: 'Helps the counsellor explain your chances.', ar: 'يساعد المرشد على شرح الاحتمالات.' })}</span></span></label>
           </fieldset>
 
           <fieldset className="mt-4 text-[14px]">
             <legend className="font-medium">{t({ en: 'Only if it applies: is there a pregnancy?', ar: 'فقط إن كان ذلك ينطبق: هل يوجد حمل؟' })}</legend>
-            <p className="text-[13px] text-ink-2">{t({ en: 'If yes, a counsellor contacts you within one working day, or the same day from week 9, because some tests have time limits.', ar: 'إن كان الجواب نعم يتواصل معك مرشد خلال يوم عمل واحد، أو في اليوم نفسه ابتداءً من الأسبوع التاسع، لأن لبعض الفحوص مهلاً زمنية.' })}</p>
+            <p className="text-[13px] text-ink-2">{t(PREGNANCY_CLOCK)}</p>
             <div className="mt-2 flex flex-wrap gap-2" role="radiogroup">
               {[{ v: false, l: { en: 'No, or not applicable', ar: 'لا، أو لا ينطبق' } }, { v: true, l: { en: 'Yes', ar: 'نعم' } }].map((o) => (
                 <button key={String(o.v)} role="radio" aria-checked={pregnant === o.v} onClick={() => setPregnant(o.v)}
@@ -193,6 +194,9 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
                 <span className="text-[13px] text-ink-2">{t({ en: '(optional)', ar: '(اختياري)' })}</span>
               </label>
             )}
+            {pregnant && <p className="mt-2 text-[13px]" aria-live="polite">{weeks && Number(weeks) < 9
+              ? t({ en: 'At this stage: within one working day.', ar: 'في هذه المرحلة: خلال يوم عمل واحد.' })
+              : weeks ? t({ en: 'At this stage: the same day.', ar: 'في هذه المرحلة: في اليوم نفسه.' }) : t({ en: 'Without the weeks: the same day.', ar: 'دون عدد الأسابيع: في اليوم نفسه.' })}</p>}
           </fieldset>
 
           <label className="mt-4 block text-[14px] font-medium" htmlFor="cq">{t({ en: 'Anything you want the counsellor to know (optional)', ar: 'أي شيء تريد أن يعرفه المرشد (اختياري)', arF: 'أي شيء تريدين أن يعرفه المرشد (اختياري)' })}</label>
@@ -209,7 +213,7 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
               <li>{t({ en: 'Law: UAE Federal Decree-Law 49/2023 on the use of the human genome, which sets consent and privacy rules for genetic data.', ar: 'القانون: المرسوم بقانون اتحادي رقم 49 لسنة 2023 بشأن استخدام الجينوم البشري، الذي يضع قواعد الموافقة والخصوصية للبيانات الجينية.' })}</li>
             </ul>
           </details>
-          {error && <p role="alert" className="mt-3 text-[14px] text-alert">{error}</p>}
+          {error && <p role="alert" dir="auto" className="mt-3 text-[14px] text-alert">{errorText(t, lang, error.code, error.en, { en: 'Booking failed. Try again.', ar: 'تعذّر الحجز. حاول مرة أخرى.', arF: 'تعذّر الحجز. حاولي مرة أخرى.' })}</p>}
           <button onClick={book} disabled={busy} className="mt-5 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool disabled:opacity-50">
             {busy ? t({ en: 'Booking…', ar: 'جارٍ الحجز…' }) : urgent ? t({ en: 'Ask a counsellor to call me today', ar: 'اطلب من مرشد الاتصال بي اليوم', arF: 'اطلبي من مرشد الاتصال بي اليوم' }) : t({ en: 'Agree and book a call', ar: 'وافق واحجز مكالمة', arF: 'وافقي واحجزي مكالمة' })}
           </button>
@@ -219,13 +223,20 @@ export function Counsellor({ lang, t, identity, urgent, onBack, pairing, role, g
   );
 }
 
+/** The desk's pregnancy clock, said the same way (see dueFor in lib/desk.ts). */
+const PREGNANCY_CLOCK: L = {
+  en: 'If yes, a counsellor contacts you the same day from week 9 of pregnancy, or if you don’t give the weeks; earlier in pregnancy, within one working day. Some tests have time limits.',
+  ar: 'إن كان الجواب نعم يتواصل معك مرشد في اليوم نفسه ابتداءً من الأسبوع التاسع من الحمل، أو إن لم تذكر عدد الأسابيع؛ وقبل ذلك خلال يوم عمل واحد. فلبعض الفحوص مهل زمنية.',
+  arF: 'إن كان الجواب نعم يتواصل معك مرشد في اليوم نفسه ابتداءً من الأسبوع التاسع من الحمل، أو إن لم تذكري عدد الأسابيع؛ وقبل ذلك خلال يوم عمل واحد. فلبعض الفحوص مهل زمنية.',
+};
+
 function Row({ k, v }: { k: string; v: ReactNode }) {
   return <div className="flex justify-between gap-4 py-2"><dt className="text-ink-2">{k}</dt><dd className="text-end">{v}</dd></div>;
 }
 
 // ---------------------------------------------------------------- ask
 
-interface Turn { role: 'user' | 'assistant'; text: string; cites?: string[]; route?: string; escalate?: boolean; urgent?: boolean; sig?: string }
+interface Turn { role: 'user' | 'assistant'; text: string; cites?: string[]; route?: string; escalate?: boolean; urgent?: boolean; sig?: string; urgentSig?: string }
 
 /** Readable names for the checked facts an answer used. */
 const CITE: Record<string, L> = {
@@ -239,14 +250,17 @@ const CITE: Record<string, L> = {
 };
 const citeName = (c: string, t: T) => (c.startsWith('cond:') ? (conditionFor(c.slice(5)) ? t(conditionFor(c.slice(5))!.name) : c.slice(5)) : CITE[c] ? t(CITE[c]) : c);
 
+const ASK_LIMITED: L = { en: 'You’ve asked a lot this hour. A genetic counsellor can answer the rest.', ar: 'طرحت أسئلة كثيرة في هذه الساعة. ويمكن للمرشد الوراثي الإجابة عن البقية.', arF: 'طرحتِ أسئلة كثيرة في هذه الساعة. ويمكن للمرشد الوراثي الإجابة عن البقية.' };
+const ASK_FAILED: L = { en: 'That didn’t work. A genetic counsellor can answer this.', ar: 'تعذّرت الإجابة. ويمكن للمرشد الوراثي الإجابة عن هذا.' };
+
 const STARTERS: L[] = [
   { en: 'What does it mean that we both carry this?', ar: 'ماذا يعني أننا نحمل هذا معاً؟' },
   { en: 'Can our children be healthy?', ar: 'هل يمكن أن يكون أطفالنا أصحاء؟' },
   { en: 'Does being related change anything?', ar: 'هل تغيّر قرابتنا شيئاً؟' },
 ];
 
-export function Ask({ lang, t, sex, onBack, genes, xl, level, related, onCounsellor, onUrgent, headingId }: {
-  lang: Locale; t: T; sex: 'F' | 'M'; onBack: () => void; genes: { gene: string; strength: number }[]; xl: string[]; level: Level; related: boolean; onCounsellor: () => void; onUrgent: () => void; headingId: string;
+export function Ask({ lang, t, sex, identity, onBack, genes, xl, level, related, onCounsellor, onUrgent, headingId }: {
+  lang: Locale; t: T; sex: 'F' | 'M'; identity?: string; onBack: () => void; genes: { gene: string; strength: number; kind?: string; chance?: string }[]; xl: string[]; level: Level; related: boolean; onCounsellor: () => void; onUrgent: (urgentSig?: string) => void; headingId: string;
 }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState('');
@@ -260,10 +274,13 @@ export function Ask({ lang, t, sex, onBack, genes, xl, level, related, onCounsel
     setTurns((x) => [...x, { role: 'user', text: question }]);
     setBusy(true);
     try {
-      const r = await fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ lang, sex, level, genes: genes.map((g) => g.gene), strengths: Object.fromEntries(genes.map((g) => [g.gene, g.strength])), xl, related, question, history }) });
-      const j = await r.json();
+      const r = await fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json', ...(identity ? { 'x-person': identity } : {}) }, body: JSON.stringify({ lang, sex, level, genes: genes.map((g) => g.gene), strengths: Object.fromEntries(genes.map((g) => [g.gene, g.strength])),
+        kinds: Object.fromEntries(genes.filter((g) => g.kind).map((g) => [g.gene, g.kind])), chances: Object.fromEntries(genes.filter((g) => g.chance).map((g) => [g.gene, g.chance])), xl, related, question, history }) });
+      const j = await r.json().catch(() => ({}));
       if (r.ok) setTurns((x) => x.map((m, i) => (i === x.length - 1 && m.role === 'user' ? { ...m, sig: j.qsig } : m)));
-      setTurns((x) => [...x, r.ok ? { role: 'assistant', text: j.answer, cites: j.cites, route: j.route, escalate: j.escalate, urgent: j.urgent, sig: j.sig } : { role: 'assistant', text: j.error, escalate: true }]);
+      // An error reply is the phone's own words for its code: the server's English never reaches an Arabic screen.
+      setTurns((x) => [...x, r.ok ? { role: 'assistant', text: j.answer, cites: j.cites, route: j.route, escalate: j.escalate, urgent: j.urgent, sig: j.sig, urgentSig: j.urgentSig }
+        : { role: 'assistant', text: codeOf(j) === 'rate_limited' ? t(ASK_LIMITED) : errorText(t, lang, codeOf(j), j.error, ASK_FAILED), escalate: true }]);
     } catch {
       setTurns((x) => [...x, { role: 'assistant', text: t({ en: 'The connection dropped. A genetic counsellor can answer this.', ar: 'انقطع الاتصال. يمكن للمرشد الوراثي الإجابة عن هذا.' }), escalate: true }]);
     } finally { setBusy(false); }
@@ -280,7 +297,7 @@ export function Ask({ lang, t, sex, onBack, genes, xl, level, related, onCounsel
         {turns.map((m, i) => (
           <div key={i}>
             <div data-turn={m.role} className={m.role === 'user' ? 'ms-8 rounded-[3px] bg-ink px-3.5 py-2.5 text-[14px] text-wool' : 'me-4 rounded-[3px] border border-rule bg-paper px-3.5 py-2.5 text-[14px] leading-relaxed'}>
-              {m.text}
+              <p dir="auto">{m.text}</p>
               {m.role === 'assistant' && m.route && (
                 <p className="mt-1.5 text-[12.5px] leading-snug text-ink-2">
                   {m.route === 'model'
@@ -294,7 +311,7 @@ export function Ask({ lang, t, sex, onBack, genes, xl, level, related, onCounsel
             {m.urgent ? (
               <div className="me-4 mt-2 rounded-[3px] border border-alert bg-paper px-3.5 py-3 text-[14px]">
                 <p className="font-medium">{t(HELP)}</p>
-                <button onClick={onUrgent} className="mt-2 w-full rounded-[2px] bg-alert px-3 py-3 font-medium text-wool">{t({ en: 'Ask a counsellor to call me today', ar: 'اطلب من مرشد الاتصال بي اليوم', arF: 'اطلبي من مرشد الاتصال بي اليوم' })}</button>
+                <button onClick={() => onUrgent(m.urgentSig)} className="mt-2 w-full rounded-[2px] bg-alert px-3 py-3 font-medium text-wool">{t({ en: 'Ask a counsellor to call me today', ar: 'اطلب من مرشد الاتصال بي اليوم', arF: 'اطلبي من مرشد الاتصال بي اليوم' })}</button>
               </div>
             ) : m.escalate ? (
               <button onClick={onCounsellor} className="me-4 mt-2 w-full rounded-[2px] border border-ink px-3 py-2.5 text-[14px] font-medium">{t({ en: 'Talk to a genetic counsellor about this', ar: 'تحدّث إلى مرشد وراثي بشأن هذا', arF: 'تحدّثي إلى مرشد وراثي بشأن هذا' })}</button>

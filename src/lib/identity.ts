@@ -6,6 +6,7 @@ import { hmac } from '@noble/hashes/hmac.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { subkey } from './labkey';
 import { personById, type Person } from './people';
+import type { ErrorCode } from './pairing';
 
 const enc = new TextEncoder();
 const TTL_MS = 8 * 60 * 60 * 1000;
@@ -33,7 +34,20 @@ export function personFrom(req: Request): Person | null {
   return diff === 0 ? personById(id) : null;
 }
 
-/** A stable pseudonym for a person (HMAC under its own key), for markers that must never hold the raw id. */
-export const pseudonym = (id: string) => Array.from(hmac(sha256, subkey('person'), enc.encode(id)).slice(0, 16), (b) => b.toString(16).padStart(2, '0')).join('');
+/**
+ * A pseudonym for a person (HMAC under its own key), for markers that must never hold the raw id. The key
+ * rotates every UTC calendar year (subkey 'person:<year>'), so one year's markers share nothing with the
+ * next year's, and the per-person markers themselves expire when their year ends (dp.untilYearEnd): after
+ * that nothing is left to link to a person, even by someone holding the root key. The per-person privacy
+ * budget is therefore stated per year (see api/metrics).
+ */
+export const pseudonym = (id: string, year = new Date().getUTCFullYear()) => Array.from(hmac(sha256, subkey(`person:${year}`), enc.encode(id)).slice(0, 16), (b) => b.toString(16).padStart(2, '0')).join('');
 
-export const needIdentity = () => Response.json({ error: 'Sign in first.' }, { status: 401 });
+/** Every identity minted here is a demo identity, shared by every visitor (UAE PASS replaces this in production). */
+export const isDemoIdentity = (p: Person) => !!personById(p.id);
+
+/** An error response with a stable code (ErrorCode in lib/pairing) beside the English text, so the app can word it in either language. */
+export const fail = (code: ErrorCode, error: string, status: number, extra: Record<string, unknown> = {}, headers?: HeadersInit) =>
+  Response.json({ error, code, ...extra }, { status, headers });
+
+export const needIdentity = () => fail('sign_in', 'Sign in first.', 401);

@@ -1,10 +1,14 @@
 // Plain-language condition cards for the genes in the demo. Every card cites its source; wording is
 // non-directive and avoids stigma ("carrier is not a disease"). Three reading levels per language.
+// The cards here are written in full; every other panel gene has a shorter card from panelcards.ts, so
+// conditionFor never returns a bare gene symbol for a gene the lab can report.
 import type { Locale } from '@/i18n/locales';
+import { PANEL_CARDS } from './panelcards';
 
 /** `arF`: Arabic addressed to a woman, where it differs. */
 type L = { en: string; ar: string; arF?: string };
 export type Level = 'simple' | 'standard' | 'detailed';
+export type { L as Text };
 
 export interface Condition {
   gene: string;
@@ -14,8 +18,13 @@ export interface Condition {
   /** ACMG-style severity band and what care looks like today. */
   severity: 'profound' | 'severe' | 'moderate' | 'mild' | 'variable';
   care: L;
-  /** What being a carrier can mean for the carrier's own health, where that matters. */
+  /** What being a carrier can mean for the carrier's own health, where that matters. For X-linked genes, a woman's. */
   carrierNote?: L;
+  /**
+   * X-linked genes only: what the result means for a man who has it, shown on his own card. For conditions
+   * that show early in boys, a healthy man with the finding should have it re-checked first.
+   */
+  maleNote?: L;
   source: { label: string; url: string };
 }
 
@@ -86,6 +95,11 @@ export const CONDITIONS: Record<string, Condition> = {
     },
     severity: 'moderate',
     care: { en: 'Well controlled with daily colchicine.', ar: 'يُضبط جيداً بالكولشيسين اليومي.' },
+    carrierNote: {
+      en: 'Most carriers stay well. A small number of people with one changed copy do have bouts of fever and pain; if that happens, tell your doctor, who can check for FMF.',
+      ar: 'يبقى معظم الحاملين بصحة جيدة. ولدى عدد قليل ممن لديهم نسخة واحدة متغيرة نوبات من الحمى والألم؛ وإن حدث ذلك فأخبر طبيبك ليتحقق من وجود حمى البحر الأبيض المتوسط.',
+      arF: 'يبقى معظم الحاملين بصحة جيدة. ولدى عدد قليل ممن لديهم نسخة واحدة متغيرة نوبات من الحمى والألم؛ وإن حدث ذلك فأخبري طبيبك ليتحقق من وجود حمى البحر الأبيض المتوسط.',
+    },
     source: { label: 'MedlinePlus Genetics: familial Mediterranean fever', url: 'https://medlineplus.gov/genetics/condition/familial-mediterranean-fever/' },
   },
   ABCA4: {
@@ -135,20 +149,20 @@ export const CONDITIONS: Record<string, Condition> = {
     name: { en: 'Alpha thalassaemia', ar: 'الثلاسيميا ألفا' },
     what: {
       simple: {
-        en: 'Everyone has four alpha genes, two from each parent. Missing one or two is common here and usually causes no illness. What a child could inherit depends on the exact genes each of you has on each side, so a counsellor checks your results. The most serious form, before birth, is possible only if both of you carry a change that removes two genes together.',
-        ar: 'لكل إنسان أربعة جينات ألفا، اثنان من كل والد. وغياب جين أو اثنين شائع هنا ولا يسبب مرضاً عادة. وما قد يرثه الطفل يعتمد على الجينات المحددة لدى كل منكما على كل جانب، لذا يراجع المرشد الوراثي نتيجتيكما. والشكل الأخطر، قبل الولادة، لا يحدث إلا إذا حمل كلاكما تغيّراً يحذف جينين معاً.',
+        en: 'Everyone has four alpha genes, two from each parent. Missing one or two is common here and usually causes no illness. What a child could inherit, and how likely it is, depends on the two copies each of you has, so a counsellor checks your results. Hb Bart’s, the most serious form before birth, happens only if both of you carry a change that removes two genes together. Rarely, a severe form of HbH disease can also affect a baby before birth, for example when one of you carries that change and the other a change that stops a gene working.',
+        ar: 'لكل إنسان أربعة جينات ألفا، اثنان من كل والد. وغياب جين أو اثنين شائع هنا ولا يسبب مرضاً عادة. وما قد يرثه الطفل، واحتمال ذلك، يعتمدان على النسختين لدى كل منكما، لذا يراجع المرشد الوراثي نتيجتيكما. ولا يحدث خضاب بارت، وهو الشكل الأخطر قبل الولادة، إلا إذا حمل كلاكما تغيّراً يحذف جينين معاً. وفي حالات نادرة قد يؤثر أيضاً شكل شديد من مرض الهيموغلوبين H في الجنين قبل الولادة، كأن يحمل أحدكما هذا التغيّر ويحمل الآخر تغيّراً يوقف عمل الجين.',
       },
       standard: {
-        en: 'There are four alpha-globin genes, two on the chromosome from each parent. Each chromosome can be αα (both work), −α (one missing, the alpha-plus type common in the UAE) or −− (both missing, the alpha-zero type). A child of two −α parents can at most inherit −α/−α, which is usually silent. HbH disease, a lifelong anaemia, comes from three genes lost (−−/−α) or from some changes that stop a gene working without deleting it: two copies of αT-Saudi can cause HbH disease even though each parent carries only an alpha-plus change, and Hb Constant Spring makes HbH disease more severe. Hb Bart’s hydrops before birth needs −− from both parents, so it cannot happen when only alpha-plus changes are involved. A counsellor checks each of your two copies.',
-        ar: 'هناك أربعة جينات لألفا غلوبين، اثنان على الكروموسوم الآتي من كل والد. وقد يكون كل كروموسوم αα (يعمل الجينان) أو −α (غياب جين، وهو نوع ألفا+ الشائع في الإمارات) أو −− (غياب الجينين، وهو نوع ألفا صفر). وطفل والدين لدى كل منهما −α يرث في أقصى حال −α/−α، ولا يسبب ذلك أعراضاً عادة. ومرض الهيموغلوبين H، وهو فقر دم مدى الحياة، ينتج عن فقدان ثلاثة جينات (−−/−α) أو عن تغيّرات توقف الجين دون حذفه: فنسختان من αT-Saudi قد تسببان مرض الهيموغلوبين H مع أن كل والد لا يحمل إلا تغيّراً من نوع ألفا+، وHb Constant Spring يجعل مرض الهيموغلوبين H أشد. أما استسقاء الجنين بخضاب بارت قبل الولادة فيتطلب −− من الوالدين كليهما، فلا يحدث حين تقتصر التغيّرات على نوع ألفا+. ويراجع المرشد الوراثي النسختين لدى كل منكما.',
+        en: 'There are four alpha-globin genes, two on the chromosome from each parent. Each chromosome can be αα (both work), −α (one missing, the alpha-plus type common in the UAE) or −− (both missing, the alpha-zero type). A child of two −α parents can at most inherit −α/−α, which is usually silent. HbH disease, a lifelong anaemia, comes from three genes lost (−−/−α) or from some changes that stop a gene working without deleting it: two copies of αT-Saudi can cause HbH disease even though each parent carries only an alpha-plus change, and Hb Constant Spring makes HbH disease more severe. Hb Bart’s hydrops before birth needs −− from both parents, so it cannot happen when only alpha-plus changes are involved. When one parent passes −− and the other a non-deletional change such as Hb Constant Spring, the child can have a severe HbH disease, which has rarely affected babies before birth. The chance in each pregnancy depends on each of your two copies: a parent with −α on both chromosomes, for example, passes −α to every child. A counsellor checks each of your two copies.',
+        ar: 'هناك أربعة جينات لألفا غلوبين، اثنان على الكروموسوم الآتي من كل والد. وقد يكون كل كروموسوم αα (يعمل الجينان) أو −α (غياب جين، وهو نوع ألفا+ الشائع في الإمارات) أو −− (غياب الجينين، وهو نوع ألفا صفر). وطفل والدين لدى كل منهما −α يرث في أقصى حال −α/−α، ولا يسبب ذلك أعراضاً عادة. ومرض الهيموغلوبين H، وهو فقر دم مدى الحياة، ينتج عن فقدان ثلاثة جينات (−−/−α) أو عن تغيّرات توقف الجين دون حذفه: فنسختان من αT-Saudi قد تسببان مرض الهيموغلوبين H مع أن كل والد لا يحمل إلا تغيّراً من نوع ألفا+، وHb Constant Spring يجعل مرض الهيموغلوبين H أشد. أما استسقاء الجنين بخضاب بارت قبل الولادة فيتطلب −− من الوالدين كليهما، فلا يحدث حين تقتصر التغيّرات على نوع ألفا+. وحين ينقل أحد الوالدين −− وينقل الآخر تغيّراً غير حذفي مثل Hb Constant Spring، قد يصاب الطفل بشكل شديد من مرض الهيموغلوبين H، وقد أثّر ذلك في حالات نادرة في الجنين قبل الولادة. ويعتمد الاحتمال في كل حمل على النسختين لدى كل منكما: فالوالد الذي لديه −α على الكروموسومين كليهما، مثلاً، ينقل −α إلى كل طفل. ويراجع المرشد الوراثي النسختين لدى كل منكما.',
       },
       detailed: {
-        en: 'Haplotypes: αα, −α (α+: −α3.7, −α4.2), −− (α0: −−MED, −−SEA) and non-deletional α+ variants (αTα, e.g. αT-Saudi, HBA2 c.*94A>G in the poly(A) signal; Hb Constant Spring). −α/−α or −−/αα gives trait; −−/−α gives deletional HbH disease; −−/αCSα gives HbH-Constant Spring, often transfusion-dependent; αT-Saudi homozygosity (αTα/αTα) gives HbH disease without any α0 allele; −−/−− gives Hb Bart’s hydrops (with maternal pre-eclampsia risk). So Hb Bart’s needs an α0 allele from each partner. Cis versus trans arrangement decides it, and short-read sequencing can miss deletions and non-deletional variants; confirmation needs gap-PCR, MLPA or sequencing of HBA1/HBA2.',
-        ar: 'الأنماط: αα، و−α (ألفا+: −α3.7، −α4.2)، و−− (ألفا صفر: −−MED، −−SEA)، ومتغيرات ألفا+ غير الحذفية (αTα، مثل αT-Saudi وهو HBA2 c.*94A>G في إشارة poly(A)؛ وHb Constant Spring). −α/−α أو −−/αα يعطي السمة؛ و−−/−α يعطي مرض الهيموغلوبين H الحذفي؛ و−−/αCSα يعطي HbH-Constant Spring وكثيراً ما يحتاج نقل دم؛ وتماثل αT-Saudi (αTα/αTα) يعطي مرض الهيموغلوبين H دون أي أليل ألفا صفر؛ و−−/−− يعطي استسقاء الجنين بخضاب بارت (مع خطر تسمم الحمل على الأم). فخضاب بارت يتطلب أليل ألفا صفر من كل شريك. ويحدد ذلك ترتيب الحذف على الكروموسوم نفسه أو على الكروموسومين، وقد يفوت التسلسل القصير الحذوف والمتغيرات غير الحذفية، فيلزم تأكيد بـ gap-PCR أو MLPA أو تسلسل HBA1/HBA2.',
+        en: 'Haplotypes: αα, −α (α+: −α3.7, −α4.2), −− (α0: −−MED, −−SEA) and non-deletional α+ variants (αTα, e.g. αT-Saudi, HBA2 c.*94A>G in the poly(A) signal; Hb Constant Spring). −α/−α or −−/αα gives trait; −−/−α gives deletional HbH disease; −−/αCSα gives HbH-Constant Spring, more severe than deletional HbH and transfusion-dependent in some; severe fetal anaemia with hydrops has been reported with it, and with homozygous Hb Adana; αT-Saudi homozygosity (αTα/αTα) gives HbH disease without any α0 allele; −−/−− gives Hb Bart’s hydrops (with maternal pre-eclampsia risk). So Hb Bart’s needs an α0 allele from each partner. Each partner’s two haplotypes set the chance per pregnancy: −α/−α with −−/αα gives HbH disease in 1 in 2; −α/−α with −α/−α gives trait in every child; −−/αα with −−/αα gives Hb Bart’s in 1 in 4. Cis versus trans arrangement decides it, and short-read sequencing can miss deletions and non-deletional variants; confirmation needs gap-PCR, MLPA or sequencing of HBA1/HBA2.',
+        ar: 'الأنماط: αα، و−α (ألفا+: −α3.7، −α4.2)، و−− (ألفا صفر: −−MED، −−SEA)، ومتغيرات ألفا+ غير الحذفية (αTα، مثل αT-Saudi وهو HBA2 c.*94A>G في إشارة poly(A)؛ وHb Constant Spring). −α/−α أو −−/αα يعطي السمة؛ و−−/−α يعطي مرض الهيموغلوبين H الحذفي؛ و−−/αCSα يعطي HbH-Constant Spring، وهو أشد من مرض الهيموغلوبين H الحذفي ويحتاج بعض المرضى فيه إلى نقل دم، وقد وُصف معه فقر دم جنيني شديد مع استسقاء، وكذلك مع تماثل Hb Adana؛ وتماثل αT-Saudi (αTα/αTα) يعطي مرض الهيموغلوبين H دون أي أليل ألفا صفر؛ و−−/−− يعطي استسقاء الجنين بخضاب بارت (مع خطر تسمم الحمل على الأم). فخضاب بارت يتطلب أليل ألفا صفر من كل شريك. ويحدد النمطان لدى كل شريك الاحتمال في كل حمل: −α/−α مع −−/αα يعطي مرض الهيموغلوبين H باحتمال 1 من 2، و−α/−α مع −α/−α يعطي السمة لكل طفل، و−−/αα مع −−/αα يعطي خضاب بارت باحتمال 1 من 4. ويحدد ذلك ترتيب الحذف على الكروموسوم نفسه أو على الكروموسومين، وقد يفوت التسلسل القصير الحذوف والمتغيرات غير الحذفية، فيلزم تأكيد بـ gap-PCR أو MLPA أو تسلسل HBA1/HBA2.',
       },
     },
     severity: 'variable',
-    care: { en: 'Often silent. HbH disease needs specialist care; Hb Bart’s hydrops needs specialist care in pregnancy.', ar: 'غالباً بلا أعراض. ويحتاج مرض الهيموغلوبين H إلى رعاية متخصصة، ويحتاج استسقاء الجنين بخضاب بارت إلى رعاية متخصصة أثناء الحمل.' },
+    care: { en: 'Often silent. HbH disease needs specialist care; Hb Bart’s hydrops, and the rare severe HbH that affects a baby before birth, need specialist care in pregnancy.', ar: 'غالباً بلا أعراض. ويحتاج مرض الهيموغلوبين H إلى رعاية متخصصة، ويحتاج استسقاء الجنين بخضاب بارت، والشكل الشديد النادر من مرض الهيموغلوبين H الذي يصيب الجنين قبل الولادة، إلى رعاية متخصصة أثناء الحمل.' },
     carrierNote: {
       en: 'Carriers can have small red cells and a slightly low blood count, which is harmless; tell your doctor, so it isn’t mistaken for iron deficiency.',
       ar: 'قد تكون خلايا الدم الحمراء أصغر لدى حامل هذا التغيّر، مع انخفاض بسيط في الدم غير ضار؛ أخبر طبيبك كي لا يُظن أنه نقص حديد.',
@@ -308,24 +322,24 @@ export const CONDITIONS: Record<string, Condition> = {
   },
   DONSON: {
     gene: 'DONSON',
-    name: { en: 'Microcephaly-micromelia syndrome (DONSON)', ar: 'متلازمة صغر الرأس وقصر الأطراف (DONSON)' },
+    name: { en: 'DONSON-related microcephaly and short stature (including microcephaly-micromelia syndrome)', ar: 'صغر الرأس وقصر القامة المرتبطان بجين DONSON (ومنهما متلازمة صغر الرأس وقصر الأطراف)' },
     what: {
       simple: {
-        en: 'A rare condition in which a baby grows very little in the womb, with a small head and short arms and legs. Sadly, babies with this condition have not survived long after birth. A genetic counsellor can explain the choices open to you.',
-        ar: 'حالة نادرة ينمو فيها الجنين قليلاً جداً في الرحم، مع صغر في الرأس وقصر في الذراعين والساقين. ومن المؤسف أن الأطفال المصابين بها لم يعيشوا طويلاً بعد الولادة. ويستطيع المرشد الوراثي أن يشرح لكما الخيارات المتاحة.',
+        en: 'A rare condition that affects how a baby grows before birth, often with a small head and short stature. How serious it is depends on the exact changes: some children have a milder form and grow up small, while in the most severe form, which also affects the arms and legs, a baby may not survive before or soon after birth. A genetic counsellor looks at your exact changes before saying what they could mean, and can explain the choices open to you.',
+        ar: 'حالة نادرة تؤثر في نمو الجنين قبل الولادة، وكثيراً ما يكون الرأس صغيراً والقامة قصيرة. وتعتمد شدتها على التغيّرات المحددة: فلدى بعض الأطفال شكل أخف ويكبرون بقامة قصيرة، أما في الشكل الأشد، الذي يؤثر أيضاً في الذراعين والساقين، فقد لا ينجو الطفل قبل الولادة أو بعدها بقليل. ويراجع المرشد الوراثي التغيّرات المحددة لديكما قبل أن يوضح ما قد تعنيه، ويستطيع أن يشرح لكما الخيارات المتاحة.',
       },
       standard: {
-        en: 'The baby grows very little before birth, with a small head and short arms and legs, often with missing thumbs or forearm bones. In the families reported so far, babies died before or shortly after birth. It has been reported in an Emirati family. Carriers are healthy. A genetic counsellor can explain what testing is possible in a pregnancy and the other options, such as IVF with embryo testing.',
-        ar: 'ينمو الجنين قليلاً جداً قبل الولادة، مع صغر في الرأس وقصر في الذراعين والساقين، وكثيراً ما تغيب الإبهامان أو عظام الساعد. وفي الأسر التي وُصفت حتى الآن توفي الأطفال قبل الولادة أو بعدها بقليل. وقد وُصفت الحالة في أسرة إماراتية. والحاملون للتغيّر أصحّاء. ويستطيع المرشد الوراثي أن يشرح ما يمكن فحصه أثناء الحمل والخيارات الأخرى، مثل أطفال الأنابيب مع فحص الأجنة.',
+        en: 'DONSON helps cells copy their DNA when they divide. Outcomes range widely with the exact pair of changes. Changes that leave some of the protein working have been found in children with a small head and short stature from before birth (microcephalic primordial dwarfism). Changes that remove the protein almost entirely cause microcephaly-micromelia syndrome, with very short arms and legs, and babies with it have died before or shortly after birth; this has been reported in an Emirati family. Carriers are healthy. A genetic counsellor reviews your exact changes before giving any outlook, and can explain what testing is possible in a pregnancy and the other options, such as IVF with embryo testing.',
+        ar: 'يساعد جين DONSON الخلايا على نسخ حمضها النووي عند انقسامها. وتتفاوت النتائج كثيراً بحسب زوج التغيّرين المحددين. فالتغيّرات التي تُبقي جزءاً من البروتين عاملاً وُجدت لدى أطفال بصغر في الرأس وقصر في القامة منذ ما قبل الولادة (التقزم البدئي مع صغر الرأس). أما التغيّرات التي تلغي البروتين تقريباً فتسبب متلازمة صغر الرأس وقصر الأطراف، مع قصر شديد في الذراعين والساقين، وقد توفي الأطفال المصابون بها قبل الولادة أو بعدها بقليل؛ ووُصفت في أسرة إماراتية. والحاملون للتغيّر أصحّاء. ويراجع المرشد الوراثي التغيّرات المحددة لديكما قبل أي توقع، ويستطيع أن يشرح ما يمكن فحصه أثناء الحمل والخيارات الأخرى، مثل أطفال الأنابيب مع فحص الأجنة.',
       },
       detailed: {
-        en: 'Microcephaly-micromelia syndrome (MIMIS) from biallelic loss-of-function DONSON variants: the founder c.1047-9A>G (reported in Cree and Saudi families) and c.763C>T (p.Gln255*) in an Emirati first-cousin family. Severe growth restriction, microcephaly, upper-limb-predominant reduction defects (absent radius or ulna and thumbs), short legs with fibular hypoplasia; anophthalmia in the Emirati newborns. Outcome is intrauterine or perinatal death. Prenatal diagnosis and PGT-M are options for a genetic counsellor to discuss.',
-        ar: 'متلازمة صغر الرأس وقصر الأطراف (MIMIS) من متغيرات فاقدة للوظيفة في نسختي DONSON: المتغير المؤسِّس c.1047-9A>G (وُصف في أسر من الكري ومن السعودية) وc.763C>T (p.Gln255*) في أسرة إماراتية الوالدان فيها أبناء عمومة. تأخر نمو شديد، وصغر الرأس، وعيوب نقص تغلب في الأطراف العلوية (غياب الكعبرة أو الزند والإبهامين)، وساقان قصيرتان مع نقص تنسّج الشظية؛ وغياب العينين لدى المولودين الإماراتيين. والنتيجة وفاة داخل الرحم أو حول الولادة. والتشخيص قبل الولادة وفحص الأجنة (PGT-M) خياران يناقشهما المرشد الوراثي.',
+        en: 'DONSON is a replisome component that protects stalled replication forks. Biallelic hypomorphic variants, which lower DONSON protein, cause microcephalic primordial dwarfism (Reynolds et al., Nat Genet 2017, 29 individuals). Biallelic loss-of-function variants cause microcephaly-micromelia syndrome (MIMIS): the founder c.1047-9A>G (Cree and Saudi families) and c.763C>T (p.Gln255*) in an Emirati first-cousin family, with severe growth restriction, microcephaly, upper-limb-predominant reduction defects (absent radius or ulna and thumbs), short legs with fibular hypoplasia, anophthalmia in the Emirati newborns, and intrauterine or perinatal death. Prognosis depends on the specific variants, so a genetic counsellor reviews them before any prognosis; prenatal diagnosis and PGT-M are options to discuss.',
+        ar: 'جين DONSON من مكوّنات آلية نسخ الحمض النووي، ويحمي شوكات النسخ المتوقفة. والمتغيرات في النسختين التي تُضعف البروتين دون أن تلغيه تخفض مستوى بروتين DONSON وتسبب التقزم البدئي مع صغر الرأس (Reynolds وزملاؤه، Nat Genet 2017، لدى 29 شخصاً). أما المتغيرات الفاقدة للوظيفة في النسختين فتسبب متلازمة صغر الرأس وقصر الأطراف (MIMIS): المتغير المؤسِّس c.1047-9A>G (وُصف في أسر من الكري ومن السعودية) وc.763C>T (p.Gln255*) في أسرة إماراتية الوالدان فيها أبناء عمومة، مع تأخر نمو شديد، وصغر الرأس، وعيوب نقص تغلب في الأطراف العلوية (غياب الكعبرة أو الزند والإبهامين)، وساقين قصيرتين مع نقص تنسّج الشظية، وغياب العينين لدى المولودين الإماراتيين، ووفاة داخل الرحم أو حول الولادة. ويعتمد المآل على المتغيرات المحددة، لذا يراجعها المرشد الوراثي قبل أي توقع؛ والتشخيص قبل الولادة وفحص الأجنة (PGT-M) خياران يناقشهما.',
       },
     },
     severity: 'profound',
-    care: { en: 'No treatment; a genetic counsellor explains the options before and during pregnancy.', ar: 'لا علاج له؛ ويشرح المرشد الوراثي الخيارات قبل الحمل وأثناءه.' },
-    source: { label: 'Molecular Syndromology 2019: DONSON microcephaly-micromelia syndrome in an Emirati family', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6528082/' },
+    care: { en: 'No treatment for the condition itself; care depends on the form. A genetic counsellor explains the options before and during pregnancy.', ar: 'لا علاج للحالة نفسها، وتعتمد الرعاية على شكلها. ويشرح المرشد الوراثي الخيارات قبل الحمل وأثناءه.' },
+    source: { label: 'Molecular Syndromology 2019: DONSON microcephaly-micromelia syndrome in an Emirati family (with Reynolds et al., Nature Genetics 2017, for milder forms)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6528082/' },
   },
   F7: {
     gene: 'F7',
@@ -346,6 +360,10 @@ export const CONDITIONS: Record<string, Condition> = {
     },
     severity: 'variable',
     care: { en: 'Treatable: clotting-factor medicine for bleeding and before surgery.', ar: 'قابل للعلاج: دواء من عوامل التجلط للنزف وقبل الجراحة.' },
+    carrierNote: {
+      en: 'Most people with one changed copy have no bleeding problems. Some have mild bleeding, such as nosebleeds, easy bruising or heavy periods, so it is worth mentioning before surgery or dental work.',
+      ar: 'لا يعاني معظم من لديهم نسخة واحدة متغيرة من مشكلات نزف. ولدى بعضهم نزف خفيف، مثل نزف الأنف أو الكدمات السهلة أو الدورة الشهرية الغزيرة، لذا من المفيد ذكر ذلك قبل أي جراحة أو علاج أسنان.',
+    },
     source: { label: 'MedlinePlus Genetics: factor VII deficiency', url: 'https://medlineplus.gov/genetics/condition/factor-vii-deficiency/' },
   },
   ABCA12: {
@@ -497,6 +515,9 @@ export const CONDITIONS: Record<string, Condition> = {
   },
 };
 
-/** HBA1 and HBA2 share one card: together they make alpha globin. */
-export const conditionFor = (gene: string) => CONDITIONS[/^HBA[12]?$/i.test(gene) ? 'HBA' : gene.toUpperCase()] ?? null;
+/** A card for every panel gene (HBA1 and HBA2 share one: together they make alpha globin); null off the panel. */
+export const conditionFor = (gene: string): Condition | null => {
+  const k = /^HBA[12]?$/i.test(gene) ? 'HBA' : gene.toUpperCase();
+  return CONDITIONS[k] ?? PANEL_CARDS[k] ?? null;
+};
 export const tr = (l: L, lang: Locale) => l[lang];

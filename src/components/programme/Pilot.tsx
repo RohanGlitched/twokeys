@@ -1,5 +1,6 @@
 // The phase-1 pilot in one screen: design, size, primary outcome, timeline and price. The numbers match
-// BUSINESS.md (pilot design and three-year plan); change them there first.
+// BUSINESS.md (pilot design and three-year plan); change them there first. The primary outcome counts
+// relatives tested under a family study code at the lab; no relative is ever named or looked up.
 import type { Locale } from '@/i18n/locales';
 
 type L = { en: string; ar: string };
@@ -15,15 +16,15 @@ const ROWS: { term: L; body: L }[] = [
   {
     term: { en: 'Size', ar: 'الحجم' },
     body: {
-      en: 'About 145 couples are newly found at increased chance in six months of recruitment. If three in four agree, about 110 join: 55 per arm, with about 660 married relatives listed. That detects a rise from 20% to 35% of relatives tested (80% power, 5% significance), assuming relatives in one family correlate at 0.25. If fewer agree, recruitment runs two months longer, as registered in advance.',
-      ar: 'يُكتشف نحو 145 زوجاً باحتمال أعلى خلال ستة أشهر من التسجيل. وإن وافق ثلاثة من كل أربعة ينضم نحو 110: أي 55 في كل ذراع، مع نحو 660 قريباً متزوجاً مسجّلاً. ويكفي ذلك لكشف ارتفاع نسبة الأقارب الذين أجروا الفحص من 20% إلى 35% (قوة 80%، ودلالة 5%)، بافتراض ارتباط قدره 0.25 بين أقارب العائلة الواحدة. وإن قلّت الموافقات يمتد التسجيل شهرين، كما سُجّل مسبقاً.',
+      en: 'About 145 couples are newly found at increased chance in six months of recruitment. If three in four agree, about 110 join: 55 per arm, who between them count about 660 married relatives of reproductive age (a number each couple gives, never names). That detects a rise from 20% to 35% of relatives tested (80% power, 5% significance), assuming relatives in one family correlate at 0.25. If fewer agree, recruitment runs two months longer, as registered in advance.',
+      ar: 'يُكتشف نحو 145 زوجاً باحتمال أعلى خلال ستة أشهر من التسجيل. وإن وافق ثلاثة من كل أربعة ينضم نحو 110: أي 55 في كل ذراع، يذكرون معاً نحو 660 قريباً متزوجاً في سن الإنجاب (عدد يعطيه كل زوجين، لا أسماء). ويكفي ذلك لكشف ارتفاع نسبة الأقارب الذين أجروا الفحص من 20% إلى 35% (قوة 80%، ودلالة 5%)، بافتراض ارتباط قدره 0.25 بين أقارب العائلة الواحدة. وإن قلّت الموافقات يمتد التسجيل شهرين، كما سُجّل مسبقاً.',
     },
   },
   {
     term: { en: 'Primary outcome', ar: 'النتيجة الرئيسية' },
     body: {
-      en: 'Married relatives of reproductive age, and their spouses, listed from a family tree drawn at enrolment in both arms, who have a carrier test within six months. Read from lab records (a read-only Malaffi extract), not from the app. The pilot pays for a targeted test of the family’s known change for relatives in both arms, because married relatives are outside the premarital mandate.',
-      ar: 'الأقارب المتزوجون في سن الإنجاب وأزواجهم، المسجّلون من شجرة عائلة تُرسم عند الانضمام في الذراعين، الذين يجرون فحص الصفة الوراثية خلال ستة أشهر. ويُقرأ ذلك من سجلات المختبر (مستخرج من ملفي للقراءة فقط)، لا من التطبيق. وتدفع التجربة كلفة فحص موجّه للتغيّر المعروف في العائلة لأقارب الذراعين، لأن الأقارب المتزوجين خارج إلزام فحص ما قبل الزواج.',
+      en: 'Relatives tested under their family’s study code within six months, as a share of the married relatives of reproductive age each couple counted at enrolment. In both arms the couple gets a family study code to pass on however they like; a relative who brings it to a screening centre and consents to the test is counted at the lab. No relative is named, listed or looked up in Malaffi or any other record. The Two Keys arm adds its explained, anonymous family notes. The pilot pays for a targeted test of the family’s known change in both arms, because married relatives are outside the premarital mandate.',
+      ar: 'الأقارب الذين يجرون الفحص برمز الدراسة الخاص بعائلتهم خلال ستة أشهر، نسبةً إلى عدد الأقارب المتزوجين في سن الإنجاب الذي ذكره كل زوجين عند الانضمام. في الذراعين يحصل الزوجان على رمز دراسة عائلي يوصلانه كما يشاءان؛ والقريب الذي يحضره إلى مركز فحص ويوافق على الفحص يُحتسب في المختبر. ولا يُسمّى أي قريب ولا يُدرج في قائمة ولا يُبحث عنه في ملفي أو أي سجل آخر. وتضيف ذراع مفتاحين رسائلها العائلية المشروحة والمجهولة. وتدفع التجربة كلفة فحص موجّه للتغيّر المعروف في العائلة في الذراعين، لأن الأقارب المتزوجين خارج إلزام فحص ما قبل الزواج.',
     },
   },
   {
@@ -43,8 +44,8 @@ const ROWS: { term: L; body: L }[] = [
   {
     term: { en: 'Price', ar: 'السعر' },
     body: {
-      en: 'No licence fee during the pilot unless the operator signs a paid pilot (AED 150,000 for months 6–18). After procurement: AED 200,000 a year plus AED 30 per screened couple, licensed into the operator’s screening contract, with a quarter of the yearly fee at risk against uptime, notification time, the knowledge margin and the share of couples who send a family note.',
-      ar: 'لا رسوم ترخيص أثناء التجربة ما لم توقّع الجهة المشغّلة على تجربة مدفوعة (150,000 درهم للأشهر 6 إلى 18). وبعد الشراء: 200,000 درهم سنوياً و30 درهماً لكل زوجين يُفحصان، ضمن عقد الفحص لدى الجهة المشغّلة، مع ربط ربع الرسم السنوي بمدة التشغيل، وزمن الإشعار، وفارق المعرفة، ونسبة الأزواج الذين يرسلون رسالة عائلية.',
+      en: 'No licence fee during the pilot unless the operator signs a paid pilot (AED 150,000 for months 6–18). After procurement: AED 200,000 a year plus AED 30 per screened couple, licensed into the operator’s screening contract, with a quarter of the yearly fee at risk against uptime, notification time, the knowledge margin and the share of couples who tell a relative (asked at follow-up, since notes aren’t linked to couples).',
+      ar: 'لا رسوم ترخيص أثناء التجربة ما لم توقّع الجهة المشغّلة على تجربة مدفوعة (150,000 درهم للأشهر 6 إلى 18). وبعد الشراء: 200,000 درهم سنوياً و30 درهماً لكل زوجين يُفحصان، ضمن عقد الفحص لدى الجهة المشغّلة، مع ربط ربع الرسم السنوي بمدة التشغيل، وزمن الإشعار، وفارق المعرفة، ونسبة الأزواج الذين يخبرون قريباً (يُسأل عنها في المتابعة، لأن الرسائل غير مرتبطة بالأزواج).',
     },
   },
 ];

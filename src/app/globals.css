@@ -61,6 +61,18 @@ html[lang="ar"] body { font-family: var(--font-latin), var(--font-naskh), var(--
 html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3, html[lang="ar"] .display { font-family: var(--font-sans); }
 /* Arabic ascenders and dots need more room than Latin at display sizes. */
 html[lang="ar"] h1, html[lang="ar"] h2 { line-height: 1.4; }
+/* Naskh sets smaller and denser than Latin at the same size: Arabic reading text is 6% larger, with
+   more room between lines. Headings and mono gene symbols keep their sizes. */
+html[lang="ar"] body { font-size: 106%; line-height: 1.8; }
+html[lang="ar"] .leading-relaxed { line-height: 1.8; }
+html[lang="ar"] .leading-snug { line-height: 1.55; }
+html[lang="ar"] :not(h1, h2, h3, .font-mono).text-\[12px\] { font-size: calc(12px * 1.06); }
+html[lang="ar"] :not(h1, h2, h3, .font-mono).text-\[12\.5px\] { font-size: calc(12.5px * 1.06); }
+html[lang="ar"] :not(h1, h2, h3, .font-mono).text-\[13px\] { font-size: calc(13px * 1.06); }
+html[lang="ar"] :not(h1, h2, h3, .font-mono).text-\[14px\] { font-size: calc(14px * 1.06); }
+html[lang="ar"] :not(h1, h2, h3, .font-mono).text-\[15px\] { font-size: calc(15px * 1.06); }
+html[lang="ar"] :not(h1, h2, h3, .font-mono).text-\[16px\] { font-size: calc(16px * 1.06); }
+html[lang="ar"] :not(h1, h2, h3, .font-mono).text-\[17px\] { font-size: calc(17px * 1.06); }
 
 :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
 ::selection { background: var(--indigo-2); }

@@ -2,11 +2,11 @@
 // each partner's full results to the other only once both have asked. Asking can't be taken back,
 // and asking alone reveals nothing.
 import type { Role } from '@/lib/lab';
-import { needIdentity, personFrom } from '@/lib/identity';
+import { fail, needIdentity, personFrom } from '@/lib/identity';
 import { readJson } from '@/lib/http';
 import { personById } from '@/lib/people';
 import { limited } from '@/lib/ratelimit';
-import { PAIR_TTL, seats } from '@/lib/seats';
+import { badRole, badSession, notConfirmed, notInPairing, PAIR_TTL, seats, stoppedRes, tooMany } from '@/lib/seats';
 import { store } from '@/lib/store';
 
 export async function POST(req: Request) {
@@ -14,15 +14,17 @@ export async function POST(req: Request) {
   if (!p) return needIdentity();
   const b = await readJson<{ session?: string; role?: Role }>(req);
   if (b instanceof Response) return b;
-  if (b.role !== 'A' && b.role !== 'B') return Response.json({ error: 'Role must be A or B.' }, { status: 400 });
-  if (!b.session || !/^[0-9a-f]{64}$/.test(b.session)) return Response.json({ error: 'Bad session id.' }, { status: 400 });
-  if (await limited(req, 'share', 300, p.id)) return Response.json({ error: 'Too many requests.' }, { status: 429 });
+  if (b.role !== 'A' && b.role !== 'B') return badRole();
+  if (!b.session || !/^[0-9a-f]{64}$/.test(b.session)) return badSession();
+  if (await limited(req, 'share', 300, p.id)) return tooMany();
   const db = store();
   const other: Role = b.role === 'A' ? 'B' : 'A';
   const [mine, theirs] = await Promise.all([db.get<string>(`seat:${b.session}:${b.role}`), db.get<string>(`seat:${b.session}:${other}`)]);
-  if (mine !== p.id) return Response.json({ error: 'You are not in this pairing.' }, { status: 403 });
-  if (!theirs) return Response.json({ error: 'Your partner hasn’t joined yet.' }, { status: 409 });
-  if (!(await seats(b.session)).confirmed) return Response.json({ error: 'Both of you need to confirm each other first.' }, { status: 409 });
+  if (mine !== p.id) return notInPairing();
+  if (!theirs) return fail('partner_not_joined', 'Your partner hasn’t joined yet.', 409);
+  const s = await seats(b.session);
+  if (s.stopped) return stoppedRes();
+  if (!s.confirmed) return notConfirmed();
   await db.putNew(`share:${b.session}:${b.role}`, true, PAIR_TTL);
   if (!(await db.get<boolean>(`share:${b.session}:${other}`))) return Response.json({ waiting: true }, { headers: { 'cache-control': 'no-store' } });
   const partner = personById(theirs);

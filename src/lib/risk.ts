@@ -94,3 +94,8 @@ export function oneIn(p: number, lang: 'en' | 'ar' = 'en'): string {
 
 /** Days left to day 120 after conception (about 19 weeks of pregnancy counted from the last period), from weeks at booking. */
 export const daysTo120 = (weeks: number, bookedAt: number, now = Date.now()) => Math.round(120 - (weeks * 7 - 14) - (now - bookedAt) / 86_400_000);
+/**
+ * The conservative reading: day 120 counted from the last period (about week 17+1), two weeks earlier than
+ * counting from conception. The desk shows both, labelled, until the counsellor confirms which applies.
+ */
+export const daysTo120Lmp = (weeks: number, bookedAt: number, now = Date.now()) => Math.round(120 - weeks * 7 - (now - bookedAt) / 86_400_000);
