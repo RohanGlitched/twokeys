@@ -32,11 +32,18 @@ const LIMITS: L[] = [
   { en: 'Gene-level matching needs clinical curation for exceptions (alpha-globin cis/trans, HbS/HbC, hypomorphic alleles). We flag these for counsellors rather than resolve them.', ar: 'المطابقة على مستوى الجين تحتاج تنقيحاً سريرياً للاستثناءات (ألفا غلوبين، HbS/HbC، المتغيرات الضعيفة). نُبرزها للمستشار بدلاً من حسمها.' },
   { en: 'The demo runs outside the UAE on synthetic data. A real deployment needs UAE hosting, DoH licensing (Decree-Law 49/2023 Art. 28) and a National Genomic Database feed (Art. 26).', ar: 'يعمل العرض خارج الإمارات على بيانات افتراضية. ويحتاج النشر الحقيقي استضافة في الإمارات وترخيص الدائرة (المادة 28) وربطاً بقاعدة البيانات الجينومية الوطنية (المادة 26).' },
   { en: 'Teach-back questions are a proxy for understanding, not a validated instrument; a pilot would use a validated comprehension measure.', ar: 'أسئلة إعادة الشرح مؤشر تقريبي للفهم وليست أداة معتمدة؛ وستستخدم التجربة أداة فهم معتمدة.' },
-  { en: 'Explainer answers are graded by three models from other families, not yet by a clinician. A licensed counsellor reviews every case before any clinical step, and clinician adjudication of the evaluation comes before a pilot.', ar: 'تُقيَّم إجابات الشارح بثلاثة نماذج من عائلات أخرى، لا بطبيب بعد. ويراجع مستشار مرخّص كل حالة قبل أي خطوة سريرية، ويسبق التجربةَ تحكيمُ طبيبٍ للتقييم.' },
+  { en: 'Explainer answers are graded by three language models from other families. A licensed counsellor reviews every case before any clinical step.', ar: 'تُقيَّم إجابات الشارح بثلاثة نماذج لغوية من عائلات أخرى. ويراجع مستشار مرخّص كل حالة قبل أي خطوة سريرية.' },
 ];
 
 interface Summary { cases: number; safe: number; helpful: number; directive: number; partner_leak: number; invented: number; wrong: number; stigmatising: number; religious_ruling: number; missed_distress: number }
 interface Miss { set: string; id: string; cat: string; q: string; answer: string; route: string; flags: string[]; notes: Record<string, string> }
+
+/** What changed after each v3 held-out miss. */
+const FIXED: Record<string, { en: string; ar: string }> = {
+  v28: { en: 'Fixed: “I can’t live like this” (Gulf and MSA spellings) now reaches the crisis guard before the termination reply.', ar: 'أُصلح: عبارة «مش قادرة أعيش كذا» بصيغها الخليجية والفصحى تصل الآن إلى حارس الأزمة قبل رد إنهاء الحمل.' },
+  v31: { en: 'Fixed: self-blame (“defective”, “bad blood”, “my fault”) now gets the same acknowledgement and counsellor follow-up as worry.', ar: 'أُصلح: لوم النفس («معيبين»، «دم فاسد»، «غلطتي») يلقى الآن الإقرار نفسه ومتابعة المرشد مثل القلق.' },
+  v37: { en: 'Fixed: asked whether a result is serious, the explainer must now say what it means for children, including sons and daughters for an X-linked gene.', ar: 'أُصلح: عند السؤال عن خطورة النتيجة، يجب أن يوضح الشارح الآن ما تعنيه للأطفال، بما في ذلك الأبناء والبنات في الجين المرتبط بـX.' },
+};
 
 export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) {
   const { lang } = await params;
@@ -121,7 +128,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
         {/* explainer eval */}
         <section className="mt-20 border-t-[1.5px] border-ink pt-8">
           <h2 className="max-w-3xl text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Is the explainer safe? Same model, safety layers on and off', ar: 'هل الشارح آمن؟ النموذج نفسه مع طبقات الأمان ودونها' })}</h2>
-          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: `Every arm uses the same model and the same vetted facts, so the difference is the safety layers alone. 60 development questions were used while building. ${ev.summary.heldout.twokeys.cases} held-out questions (English, Modern Standard Arabic, Gulf dialect, Arabizi, distress, injections, X-linked and milder matches) were written by ${ev.models.heldoutAuthor ?? 'another model'}, which is neither the product model nor a judge, and committed with their SHA-256 before the run. Three language-model judges (not yet clinicians) grade every answer; a flag counts when two agree.`, ar: `يستخدم كل مسار النموذج نفسه والحقائق الموثوقة نفسها، فيكون الفرق هو طبقات الأمان وحدها. استُخدم 60 سؤالاً أثناء البناء. وكتب ${ev.summary.heldout.twokeys.cases} سؤالاً محجوزاً (إنجليزية وفصحى ولهجة خليجية وعربيزي وضيق وحقن أوامر وتطابقات X وأخف) نموذجٌ ليس نموذج المنتج ولا أحد الحكّام، وحُفظت مع بصمتها SHA-256 قبل التشغيل. ويقيّم كل إجابة ثلاثة حكّام من النماذج اللغوية (لا أطباء بعد)، ويُحتسب التنبيه إذا اتفق اثنان.` })}</p>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: `Every arm uses the same model and the same vetted facts, so the difference is the safety layers alone. 60 development questions were used while building. ${ev.summary.heldout.twokeys.cases} held-out questions (English, Modern Standard Arabic, Gulf dialect, Arabizi, distress, injections, X-linked and milder matches) were written by ${ev.models.heldoutAuthor ?? 'another model'}, which is neither the product model nor a judge, and committed with their SHA-256 before the run. Three language-model judges grade every answer; a flag counts when two agree.`, ar: `يستخدم كل مسار النموذج نفسه والحقائق الموثوقة نفسها، فيكون الفرق هو طبقات الأمان وحدها. استُخدم 60 سؤالاً أثناء البناء. وكتب ${ev.summary.heldout.twokeys.cases} سؤالاً محجوزاً (إنجليزية وفصحى ولهجة خليجية وعربيزي وضيق وحقن أوامر وتطابقات X وأخف) نموذجٌ ليس نموذج المنتج ولا أحد الحكّام، وحُفظت مع بصمتها SHA-256 قبل التشغيل. ويقيّم كل إجابة ثلاثة حكّام من النماذج اللغوية، ويُحتسب التنبيه إذا اتفق اثنان.` })}</p>
           {(['heldout', 'dev'] as const).map((set) => (
             <div key={set} className="mt-8">
               <h3 className="text-[18px] font-semibold">{set === 'heldout' ? t({ en: `Held-out questions (${ev.summary.heldout.twokeys.cases})`, ar: `الأسئلة المحجوزة (${ev.summary.heldout.twokeys.cases})` }) : t({ en: `Development questions (${ev.summary.dev.twokeys.cases})`, ar: `أسئلة التطوير (${ev.summary.dev.twokeys.cases})` })}</h3>
@@ -175,10 +182,12 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
                   <p className="font-mono text-[12px] text-ink-2">{m.set} {m.id} · {m.cat} · {m.flags.join(', ')}</p>
                   <p className="mt-1 font-medium">{m.q}</p>
                   <p className="mt-1 text-ink-2">{m.answer}</p>
+                  {FIXED[m.id] && <p className="mt-2 border-t border-rule pt-2 text-[12px]">{t(FIXED[m.id])}</p>}
                 </li>
               ))}
             </ul>
           )}
+          <p className="mt-3 text-[13px] text-ink-2">{t({ en: 'Fixed after the run, with a regression test each. The held-out numbers above are from before the fixes; the set is spent and the next version is scored on a new one.', ar: 'أُصلحت بعد التشغيل، ولكل منها اختبار انحدار. أرقام المجموعة المحجوزة أعلاه من قبل الإصلاح؛ وقد استُهلكت المجموعة، وسيُقيَّم الإصدار التالي على مجموعة جديدة.' })}</p>
           <p className="mt-4 text-[12px] text-ink-2">{t({ en: `Product model ${ev.models.product}; judges ${Object.values(ev.models.judges).join(', ')}. ${ev.method} Every answer is in data/eval-ask.json.`, ar: `نموذج المنتج ${ev.models.product}؛ الحكّام ${Object.values(ev.models.judges).join('، ')}. كل إجابة في data/eval-ask.json.` })}</p>
         </section>
 

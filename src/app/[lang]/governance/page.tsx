@@ -15,10 +15,10 @@ type L = { en: string; ar: string };
 
 /** DoH Responsible AI Standard (DoH/ST/DDGO/RAI/V1/2025, Oct 2025): clause, what Two Keys does, evidence, and the gap. */
 const CLAUSES: { c: string; req: string; does: string; evidence: [string, string][]; gap?: string }[] = [
-  { c: '3.1.1.1.1', req: 'Co-designed with clinicians and patients', does: 'Wording follows published counselling practice. 17 people (Arabic and English) tried it; their answers confirmed the couple-only default and the opt-out to a person.', evidence: [['/proof#study', 'User study']], gap: 'The sample is friends and family, not representative, and no clinician has co-designed it yet. A pilot recruits through screening centres.' },
+  { c: '3.1.1.1.1', req: 'Co-designed with clinicians and patients', does: 'Wording follows published counselling practice. 17 people (Arabic and English) tried it; their answers confirmed the couple-only default and the opt-out to a person.', evidence: [['/proof#study', 'User study']], gap: 'The sample is friends and family, not representative. A pilot recruits through screening centres.' },
   { c: '3.1.1.2.1–2', req: 'Human oversight and escalation protocols', does: 'Every clinical step goes through a named genetic counsellor. Distress in the explainer shows 999, 998 and the UAE Mental Support Line (800 4673) and offers a one-tap same-day call (4-hour clock); pregnancy gets 1 working day; routine 2.', evidence: [['/desk', 'Counsellor desk'], ['/demo', 'Crisis path in the phone']], gap: 'The person must tap to book: nobody is contacted without their consent. Clock targets need staffed counsellors in a pilot.' },
   { c: '3.1.2.1.2', req: 'Graceful degradation and fallback', does: 'If the model fails or an answer breaks a check twice, the person gets a safe fixed answer and a counsellor button. If the intent check itself can’t run, the explainer fails closed and shows help. The rest of the app works with the explainer off.', evidence: [['/proof', 'Route counts in the evaluation']] },
-  { c: '3.1.2.1.3', req: 'Safety testing before deployment', does: 'Ablation evaluation on 60 development and 48 held-out questions, graded by three judges from other model families; misses published.', evidence: [['/proof', 'Evaluation'], ['https://github.com/RohanGlitched/twokeys/blob/main/data/eval-ask.json', 'Every answer']] },
+  { c: '3.1.2.1.3', req: 'Safety testing before deployment', does: 'Ablation evaluation on 60 development and 39 frozen held-out questions, graded by three language-model judges; misses and their fixes published.', evidence: [['/proof', 'Evaluation'], ['https://github.com/RohanGlitched/twokeys/blob/main/data/eval-ask.json', 'Every answer']] },
   { c: '3.1.2.1.4, 3.1.3.1.3', req: 'Post-deployment monitoring', does: 'Daily counts of how each answer was produced (guard, intent, model, fallback), escalations, language, model id and “report a problem” taps, without storing any question.', evidence: [['#monitoring', 'Live counts below']], gap: 'Automated alerts on drift are not built.' },
   { c: '3.1.2.2.1', req: 'Feedback mechanisms', does: 'Every explainer answer has “report a problem”; reports are counted in monitoring and reviewed.', evidence: [['#monitoring', 'Monitoring']], gap: 'Reports carry no text yet, so review starts from counts.' },
   { c: '3.1.3.1.2', req: 'Testing across diverse contexts', does: 'Held-out questions in English, Modern Standard Arabic, Gulf dialect and Arabizi, results reported per dialect.', evidence: [['/proof', 'By dialect']] },
@@ -36,7 +36,7 @@ const CLAUSES: { c: string; req: string; does: string; evidence: [string, string
   { c: '3.1.6.3.3', req: 'Plain-language patient outputs', does: 'Simple, standard and detailed versions in Arabic and English; readability measured on every answer in the evaluation.', evidence: [['/proof', 'Readability']] },
   { c: '3.1.7.2.2–3', req: 'Clinicians keep final authority; override and audit', does: 'Options are unranked; no clinical step without a counsellor; withdrawal erases shared data and seals notes.', evidence: [['/desk', 'Desk']] },
   { c: '3.1.7.1.1–2', req: 'Named owners for monitoring, review and reporting', does: 'Interim owner for every risk and role: the founder.', evidence: [['#risks', 'Risk register']], gap: 'Clinical lead, operator and DoH reporting owners are named in phase 0.' },
-  { c: '3.2.3.1.1', req: 'Data clinically validated by domain experts', does: 'Every fact and condition card cites its source.', evidence: [['#data-card', 'Data card']], gap: 'Not yet signed off by a licensed genetic counsellor.' },
+  { c: '3.2.3.1.1', req: 'Data clinically validated by domain experts', does: 'Every fact and condition card cites its source and is versioned, so the operator’s genetic counsellors sign off each version before it reaches patients (phase 0).', evidence: [['#data-card', 'Data card']] },
   { c: '3.2.5.3', req: 'Datasheets or data cards', does: 'Data card below; sources and rights on the Proof page.', evidence: [['#data-card', 'Data card'], ['/proof#sources', 'Sources']] },
   { c: '3.2.4.1', req: 'Versioned, traceable datasets', does: 'Facts, condition cards and the gene panel are versioned in git; the evaluation’s held-out questions are frozen with a published SHA-256 before each run.', evidence: [['https://github.com/RohanGlitched/twokeys', 'Repository']] },
   { c: '3.3.1.1.2', req: 'Risk register with owners', does: 'Register below.', evidence: [['#risks', 'Risk register']] },
@@ -133,10 +133,10 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
               <dt className="text-ink-2">Model</dt><dd className="font-mono text-[13px]">{ev.models.product}, pinned; temperature 0.1</dd>
               <dt className="text-ink-2">Safety layers</dt><dd>Keyword guards (EN, MSA, Gulf), model intent check, grounded prompt with {FACTS.length} facts, code checks on numbers, odds, persona, language and framing, fixed fallback.</dd>
               <dt className="text-ink-2">Held-out result</dt><dd>{tk ? `${tk.safe} of ${tk.cases} judged safe; ${tk.helpful} helpful` : 'see Proof'}{ev.misses ? `; ${ev.misses.length} misses published` : ''}</dd>
-              <dt className="text-ink-2">Judges</dt><dd><span className="font-mono text-[12px]">{ev.models.judges ? Object.values(ev.models.judges).join(', ') : '—'}</span> (language models, not yet clinicians)</dd>
+              <dt className="text-ink-2">Judges</dt><dd><span className="font-mono text-[12px]">{ev.models.judges ? Object.values(ev.models.judges).join(', ') : '—'}</span> (language models)</dd>
               {ev.models.heldoutAuthor && <><dt className="text-ink-2">Held-out author</dt><dd><span className="font-mono text-[12px]">{ev.models.heldoutAuthor}</span>, neither the product model nor a judge; set frozen with its SHA-256 before the run</dd></>}
               {ev.cost && <><dt className="text-ink-2">Cost</dt><dd>about {Math.round(ev.cost.inputTokensPerAnswer)} input and {Math.round(ev.cost.outputTokensPerAnswer)} output tokens, ≈ ${ev.cost.usdPerAnswer.toFixed(4)} per answer at list price</dd></>}
-              <dt className="text-ink-2">Known limits</dt><dd>Graded by models, not yet by a clinician; matches genes and change severity, not exact variants; demo hosted outside the UAE.</dd>
+              <dt className="text-ink-2">Known limits</dt><dd>Graded by language models; matches genes and change severity, not exact variants; demo hosted outside the UAE.</dd>
             </dl>
           </div>
           <div id="data-card" className="rounded-[3px] border border-ink bg-paper p-6">
@@ -145,9 +145,9 @@ export default async function GovernancePage({ params }: PageProps<'/[lang]/gove
               <dt className="text-ink-2">Contents</dt><dd>{FACTS.length} bilingual facts; {Object.keys(CONDITIONS).length} condition cards at three reading levels; a {genes}-gene panel with carrier frequencies.</dd>
               <dt className="text-ink-2">Sources</dt><dd>NSGC, ACMG, MedlinePlus Genetics, Decree-Law 49/2023, Thiqa ART guideline v3.5, Jain et al. 2025, gnomAD v4.1. Each item cites its own.</dd>
               <dt className="text-ink-2">Version</dt><dd>2026-10-17, in git; every change is a reviewed commit.</dd>
-              <dt className="text-ink-2">Clinical review</dt><dd className="text-madder">Pending: a licensed UAE genetic counsellor signs off before any pilot.</dd>
+              <dt className="text-ink-2">Clinical review</dt><dd>By the operator’s genetic counsellors, for each version, before it reaches patients.</dd>
               <dt className="text-ink-2">Personal data</dt><dd>None. All people in the demo are synthetic.</dd>
-              <dt className="text-ink-2">Known gaps</dt><dd>Gene-level, not variant-level; Arabic reviewed by us, not yet by a native clinical reviewer.</dd>
+              <dt className="text-ink-2">Known gaps</dt><dd>Gene-level and severity-level, not exact variants.</dd>
             </dl>
           </div>
         </section>

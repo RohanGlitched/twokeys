@@ -39,8 +39,8 @@ export interface AskOutput {
 // ---------------------------------------------------------------- 1. keyword guards
 
 export const CRISIS = [
-  /\b(suicid\w*|kill (my|him|her)self|end (my|it) (life|all)|end it all|self[- ]?harm|hurt(ing)? myself|want(ed)? to die|wanna die|wish i (was|were) dead|don'?t want to (live|be alive|exist)|no (reason|point) (in |to )?(living|live|go on)|better off without me|can'?t go on|take my (own )?life)\b/i,
-  /(انتحار|انتحر|أقتل نفسي|اقتل نفسي|أؤذي نفسي|اذي نفسي|إيذاء نفسي|أنهي حياتي|انهي حياتي|أنهي كل شيء|أريد أن أموت|اريد ان اموت|أبي أموت|ابي اموت|أبغى أموت|ابغى اموت|أتمنى الموت|اتمنى الموت|لا أريد (أن أعيش|العيش)|ما (أبي|ابي|أبغى|ابغى) (أعيش|اعيش)|تعبت من الحياة|لا فائدة من الحياة|ما له داعي أعيش|الموت أحسن)/,
+  /\b(suicid\w*|kill (my|him|her)self|end (my|it) (life|all)|end it all|self[- ]?harm|hurt(ing)? myself|want(ed)? to die|wanna die|wish i (was|were) dead|don'?t want to (live|be alive|exist)|no (reason|point) (in |to )?(living|live|go on)|better off without me|can'?t go on|can'?t live like this|can'?t take (it|this) any ?more|take my (own )?life)\b/i,
+  /((مش|ما|مو|مب|لست)\s*(قادر|قادرة|أقدر|اقدر)\s*(أعيش|اعيش|على العيش)|لا (أستطيع|استطيع|أقدر|اقدر) (أن أعيش|ان اعيش|العيش|أعيش|اعيش)|انتحار|انتحر|أقتل نفسي|اقتل نفسي|أؤذي نفسي|اذي نفسي|إيذاء نفسي|أنهي حياتي|انهي حياتي|أنهي كل شيء|أريد أن أموت|اريد ان اموت|أبي أموت|ابي اموت|أبغى أموت|ابغى اموت|أتمنى الموت|اتمنى الموت|لا أريد (أن أعيش|العيش)|ما (أبي|ابي|أبغى|ابغى) (أعيش|اعيش)|تعبت من الحياة|لا فائدة من الحياة|ما له داعي أعيش|الموت أحسن)/,
   // Arabizi (Arabic in Latin letters and digits), Gulf and Egyptian spellings.
   /\b(a2tol|a2tl|aktol|a9tl)\s*nafs[iy]|\b(ab[iy]|bd[iy]|3ayez|3ayza|abgha|abga)\s*(amoot|amout|amut|a?moot)|\b(ant7ar|anta7ar|nt7ar|enti7ar)\b|\b(m(e|i)?sh|mo|ma)\s*(3ayez|3ayza|abi|bdi|abgha)\s*a?3[ie]+sh|\bhayati\s*(5ls|5alsat|khalsat|5alas)|\b(ma\s*fi|mafi|mfi)\s*(fayda|fydeh|faydeh)\s*(mn|min)\s*(7ayati|hayati|el 7aya)/i,
 ];
@@ -202,7 +202,7 @@ function system(input: AskInput): string {
     addressee,
     'Rules:',
     '1. Use ONLY the facts below. If the answer is not in them, say you don’t know and offer the counsellor.',
-    '2. Answer only the question asked. Do not list options unless asked about choices.',
+    '2. Answer only the question asked. Do not list options unless asked about choices. If asked whether their result is serious or what it means, say what it means for their children: the 1 in 4 for each shared gene, and for an X-linked gene what it means for sons and for daughters.',
     '3. Never tell the couple what to do or what is "best". Present options neutrally, all with equal weight, and do not attach a benefit (such as insurance cover) to one option unless the user asked about cost or insurance.',
     '4. Never discuss anything about either partner beyond the shared genes.',
     '5. Do not give religious rulings; say a scholar they trust can help. Do not discuss termination; say a counsellor can explain what UAE law allows.',
@@ -262,7 +262,8 @@ async function callModel(input: AskInput, model: string, extra?: string) {
 }
 
 /** Fear or worry, short of a crisis: in English, Arabic, Gulf dialect and Arabizi. */
-const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset)\b|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa)\b/i;
+// Self-blame and stigma ("we are defective", "bad blood") count too: they need the same human follow-up.
+const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault)\b|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa)\b/i;
 export const expressesWorry = (q: string) => WORRY.test(q.normalize('NFKC'));
 const ACKNOWLEDGE = {
   en: 'It’s completely understandable to feel worried about this, and you don’t have to work through it alone: a genetic counsellor can talk it through with you.',

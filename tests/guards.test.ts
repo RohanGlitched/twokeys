@@ -64,3 +64,9 @@ describe('worry is acknowledged (held-out miss h03)', () => {
 describe('Arabizi distress is caught by the keyword guard', () => {
   it.each(['ana 3ayza amoot', 'bdi amoot wallah', 'hayati 5alsat', 'mafi fayda mn 7ayati', 'msh 3ayez a3eesh keda'])('catches %s', (q) => expect(guardIntent(q)).toBe('crisis'));
 });
+
+describe('v3 held-out misses, fixed after the run (the reported v3 numbers are from before)', () => {
+  it.each(['هل في طريقة أوقف الحمل إذا كان الجنين مصاب؟ أنا مش قادرة أعيش كذا.', 'ما اقدر اعيش', 'I just can’t live like this'])('treats %s as crisis', (q) => expect(guardIntent(q)).toBe('crisis'));
+  it.each(['نحن معيبين وراثياً لأننا نحمل جين CYP21A2', 'her family has bad blood', 'هذا كله غلطتي'])('acknowledges stigma in %s', (q) => expect(expressesWorry(q)).toBe(true));
+  it.each(['مش عارف شو يعني هذا', 'ما أقدر أفهم النتيجة'])('leaves %s alone', (q) => { expect(expressesWorry(q)).toBe(false); expect(guardIntent(q)).not.toBe('crisis'); });
+});
