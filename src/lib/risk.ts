@@ -80,12 +80,17 @@ export function relativeCarrierChance(relation: keyof typeof RELATIVE_SHARE, q: 
   return r + (1 - r) * carrierFreq(q);
 }
 
-/** "1 in N" with sensible rounding for people, never "1 in 0". */
-export function oneIn(p: number): string {
-  if (!(p > 0)) return 'less than 1 in 1,000,000';
-  if (p >= 0.5) return `${Math.round(p * 100)} in 100`;
+/** "1 in N" with sensible rounding for people, never "1 in 0"; in Arabic "1 من N". */
+export function oneIn(p: number, lang: 'en' | 'ar' = 'en'): string {
+  const of = lang === 'ar' ? 'من' : 'in';
+  const tiny = lang === 'ar' ? 'أقل من 1 من 1,000,000' : 'less than 1 in 1,000,000';
+  if (!(p > 0)) return tiny;
+  if (p >= 0.5) return `${Math.round(p * 100)} ${of} 100`;
   const n = 1 / p;
   const r = n < 20 ? Math.round(n) : n < 200 ? Math.round(n / 5) * 5 : n < 2000 ? Math.round(n / 50) * 50 : Math.round(n / 500) * 500;
-  if (r > 1_000_000) return 'less than 1 in 1,000,000';
-  return `1 in ${r.toLocaleString('en-US')}`;
+  if (r > 1_000_000) return tiny;
+  return `1 ${of} ${r.toLocaleString('en-US')}`;
 }
+
+/** Days left to day 120 after conception (about 19 weeks of pregnancy counted from the last period), from weeks at booking. */
+export const daysTo120 = (weeks: number, bookedAt: number, now = Date.now()) => Math.round(120 - (weeks * 7 - 14) - (now - bookedAt) / 86_400_000);

@@ -1,6 +1,8 @@
 // The relay: a mailbox with three slots, one per protocol message. It holds only AES-GCM
 // ciphertext whose key lives in the URL fragment the two phones share, so the relay can't read
-// even the blinded points. Everything expires after ten minutes.
+// even the blinded points; the double-locked lists inside are sealed again under a key only the two
+// phones can compute, so even someone holding the link can't count matches. Everything expires after
+// ten minutes.
 import { store } from '@/lib/store';
 import { readJson } from '@/lib/http';
 import { limited } from '@/lib/ratelimit';
@@ -8,7 +10,7 @@ import { limited } from '@/lib/ratelimit';
 const TTL = 10 * 60;
 const SLOTS = ['m1', 'm2', 'm3', 'hello'] as const;
 type Slot = (typeof SLOTS)[number];
-const MAX = 16_000; // bytes of base64 per slot (64 points × 3 lists fit easily)
+const MAX = 20_000; // bytes of base64 per slot (m2, the largest, is about 14,000: two lists, one sealed twice)
 
 const okBox = (b: string) => /^[0-9a-f]{32}$/.test(b);
 const okSlot = (s: string | null): s is Slot => !!s && (SLOTS as readonly string[]).includes(s);

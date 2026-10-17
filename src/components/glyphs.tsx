@@ -3,7 +3,7 @@
 // Square = male, circle = female.
 type Fill = 'affected' | 'mild' | 'carrier' | 'clear';
 
-export function Diamond({ fill, size = 40, color = 'var(--madder)', label }: { fill: Fill; size?: number; color?: string; label?: string }) {
+export function Diamond({ fill, size = 40, color = 'var(--ink)', label }: { fill: Fill; size?: number; color?: string; label?: string }) {
   const s = size, h = s / 2;
   const path = `M${h} 2 L${s - 2} ${h} L${h} ${s - 2} L2 ${h}Z`;
   return (
@@ -33,9 +33,9 @@ export function Person({ sex, carrier, color, size = 28 }: { sex: 'F' | 'M'; car
   );
 }
 
-/** Four pregnancies, drawn the way a counsellor sketches them: 1 affected, 2 carriers, 1 neither. */
+/** Four pregnancies, drawn the way a counsellor sketches them, likeliest first: 1 neither, 2 carriers, 1 affected. */
 export function FourChildren({ labels }: { labels: { affected: string; carrier: string; clear: string } }) {
-  const kids: Fill[] = ['affected', 'carrier', 'carrier', 'clear'];
+  const kids: Fill[] = ['clear', 'carrier', 'carrier', 'affected'];
   return (
     <div className="flex items-end gap-3" role="img" aria-label={`${labels.affected}; ${labels.carrier}; ${labels.clear}`}>
       {kids.map((k, i) => (

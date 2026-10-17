@@ -3,6 +3,9 @@
 //   - the session id the lab binds tokens to,
 //   - an AES-GCM key, so the relay stores only ciphertext,
 //   - three words both people read aloud, so a swapped link would be noticed.
+// Anyone else holding the link could open that outer layer too, so the parts that would let them count
+// matches (the double-locked lists, in m2 and m3) are sealed again under the phones' own key K (psi.ts),
+// which no link holder can compute.
 import { hkdf } from '@noble/hashes/hkdf.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import { ed25519 } from '@noble/curves/ed25519.js';
@@ -48,21 +51,40 @@ export function checkWords(l: Link, lang: 'en' | 'ar'): string[] {
   return picked.map((i) => WORDS[lang][i]);
 }
 
-async function aesKey(l: Link) {
-  const raw = derive(l, 'relay');
-  return crypto.subtle.importKey('raw', raw as BufferSource, 'AES-GCM', false, ['encrypt', 'decrypt']);
-}
-async function seal(l: Link, slot: string, obj: unknown): Promise<string> {
+const aesKey = (raw: Uint8Array) => crypto.subtle.importKey('raw', raw as BufferSource, 'AES-GCM', false, ['encrypt', 'decrypt']);
+/** AES-GCM under a raw 32-byte key, bound to a slot label. */
+async function sealRaw(key: Uint8Array, slot: string, obj: unknown): Promise<string> {
   const iv = new Uint8Array(12); crypto.getRandomValues(iv);
-  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(slot) }, await aesKey(l), enc.encode(JSON.stringify(obj))));
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(slot) }, await aesKey(key), enc.encode(JSON.stringify(obj))));
   const out = new Uint8Array(iv.length + ct.length); out.set(iv); out.set(ct, iv.length);
   return b64u(out);
 }
-async function open<T>(l: Link, slot: string, c: string): Promise<T> {
+async function openRaw<T>(key: Uint8Array, slot: string, c: string): Promise<T> {
   const raw = unb64u(c);
-  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.slice(0, 12), additionalData: enc.encode(slot) }, await aesKey(l), raw.slice(12));
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.slice(0, 12), additionalData: enc.encode(slot) }, await aesKey(key), raw.slice(12));
   return JSON.parse(dec.decode(pt)) as T;
 }
+/** The relay layer: under the link key. */
+export const seal = (l: Link, slot: string, obj: unknown) => sealRaw(derive(l, 'relay'), slot, obj);
+export const open = <T>(l: Link, slot: string, c: string) => openRaw<T>(derive(l, 'relay'), slot, c);
+
+/**
+ * m2 and m3 as they go to the relay (inside the link layer). m2 keeps in the link layer only what A needs
+ * to derive K and check the lab's attestation (B's single-locked list, Yb, the signature); B's lock on A's
+ * list and its proof are sealed under K. All of m3 is sealed under K.
+ */
+export interface WireM2 { b: string[]; yb: string; att?: string; k: string }
+export interface WireM3 { k: string }
+export async function wireM2(m: Msg2, key: Uint8Array): Promise<WireM2> {
+  return { b: m.b, yb: m.yb, att: m.att, k: await sealRaw(key, 'm2/k', { ab: m.ab, proof: m.proof }) };
+}
+export async function unwireM2(w: WireM2, key: Uint8Array): Promise<Msg2> {
+  const { ab, proof } = await openRaw<Pick<Msg2, 'ab' | 'proof'>>(key, 'm2/k', w.k);
+  return { ab, proof, b: w.b, yb: w.yb, att: w.att };
+}
+export const wireM3 = async (m: Msg3, key: Uint8Array): Promise<WireM3> => ({ k: await sealRaw(key, 'm3/k', m) });
+export const unwireM3 = (w: WireM3, key: Uint8Array) => openRaw<Msg3>(key, 'm3/k', w.k);
+const unreadable = () => new Error('Your partner’s phone sent a message this phone can’t open. Nothing was revealed. Start a new pairing.');
 
 /** What a finished pairing tells this phone: lab-confirmed shared genes, and whether its own comparison agreed. */
 export interface PairResult { genes: SharedGene[]; agrees: boolean; personal: number; ms: number }
@@ -198,10 +220,12 @@ export async function runInitiator(o: RunOptions): Promise<PairResult> {
   const [att, check] = await Promise.all([attest(o, 'A', me.firstLock), partnerCheck(o, 'B')]);
   const m1 = me.step1(att);
   await send(o, 'm1', m1, m1.a);
-  const m2 = await receive<Msg2>(o, 'm2');
+  const w2 = await receive<WireM2>(o, 'm2');
+  const key = me.channelKey(w2.yb, sessionId(o.link));
+  const m2 = await unwireM2(w2, key).catch(() => { throw unreadable(); });
   const { msg: m3, outcome } = me.step3(m2, check);
   o.onStep?.({ kind: 'proof', ok: true });
-  await send(o, 'm3', m3, m3.ba);
+  await send(o, 'm3', await wireM3(m3, key), m3.ba);
   const r = await reveal(o, 'A', tokensAt(t.tokens, outcome.matched));
   const result: PairResult = { ...r, personal: t.personal, ms: performance.now() - t0 };
   o.onStep?.({ kind: 'done', result });
@@ -218,8 +242,10 @@ export async function runResponder(o: RunOptions): Promise<PairResult> {
   const [att, check] = await Promise.all([attest(o, 'B', me.firstLock), partnerCheck(o, 'A')]);
   const m1 = await receive<Msg1>(o, 'm1');
   const m2 = me.step2(m1, att, check);
-  await send(o, 'm2', m2, m2.b);
-  const m3 = await receive<Msg3>(o, 'm3');
+  const key = me.channelKey(m1.ya, sessionId(o.link));
+  await send(o, 'm2', await wireM2(m2, key), m2.b);
+  const w3 = await receive<WireM3>(o, 'm3');
+  const m3 = await unwireM3(w3, key).catch(() => { throw unreadable(); });
   const outcome = me.step4(m3);
   o.onStep?.({ kind: 'proof', ok: true });
   const r = await reveal(o, 'B', tokensAt(t.tokens, outcome.matched));

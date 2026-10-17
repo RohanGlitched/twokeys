@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Initiator, proveDleq, randomScalar, Responder, runLocally, SET_SIZE, verifyDleq, toHex, type Token } from '../src/lib/psi';
 import { intersection, issue, sessionTokens, type Finding } from '../src/lib/lab';
+import { linkFragment, newLink, open, parseFragment, seal, sessionId, unwireM2, unwireM3, wireM2, wireM3, type WireM2, type WireM3 } from '../src/lib/pairing';
 import { ristretto255 } from '@noble/curves/ed25519.js';
 
 const labKey = new Uint8Array(32).fill(7);
@@ -113,6 +114,19 @@ describe('session-bound authorised PSI with proofs', () => {
     expect(verifyDleq(Y, ins, outs, pr, 'other-label')).toBe(false);
   });
 
+  it('DLEQ proofs with a scalar at or above the group order are rejected (one encoding per proof)', () => {
+    const ORDER = ristretto255.Point.Fn.ORDER;
+    const k = randomScalar();
+    const ins = Array.from({ length: 3 }, () => toHex(ristretto255.Point.BASE.multiply(randomScalar())));
+    const outs = ins.map((h) => toHex(ristretto255.Point.fromHex(h).multiply(k)));
+    const Y = toHex(ristretto255.Point.BASE.multiply(k));
+    const pr = proveDleq(k, ins, outs, 'test');
+    const plus = (h: string) => (BigInt('0x' + h) + ORDER).toString(16).padStart(64, '0');
+    expect(verifyDleq(Y, ins, outs, pr, 'test')).toBe(true);
+    expect(verifyDleq(Y, ins, outs, { ...pr, e: plus(pr.e) }, 'test')).toBe(false);
+    expect(verifyDleq(Y, ins, outs, { ...pr, s: plus(pr.s) }, 'test')).toBe(false);
+  });
+
   it('rejects wrong sizes, duplicates, the identity and non-canonical points', () => {
     const tok: Token[] = issue(labKey, S, 'A', [ar('HBB')]);
     const good = new Initiator(tok).step1();
@@ -157,6 +171,37 @@ describe('round-3 protocol hardening', () => {
   });
 });
 
+describe('the phones’ private channel', () => {
+  it('someone holding only the pairing link opens the relay layer but can’t read either double-locked list', async () => {
+    const link = newLink(), session = sessionId(link);
+    const observer = parseFragment('#' + linkFragment(link))!; // everything in the link, nothing else
+    const ta = issue(labKey, session, 'A', [ar('HBB'), ar('GJB2', 'mild'), ar('CFTR')]), tb = issue(labKey, session, 'B', [ar('HBB'), ar('GJB2')]);
+    const a = new Initiator(ta), b = new Responder(tb);
+    const m1 = a.step1();
+    const m2 = b.step2(m1);
+    const kB = b.channelKey(m1.ya, session);
+    const seen2 = await open<WireM2>(observer, 'm2', await seal(link, 'm2', await wireM2(m2, kB)));
+    // The link layer carries only what A needs to derive K and check the lab's signature (none here).
+    expect(Object.keys(seen2).sort()).toEqual(['b', 'k', 'yb']);
+    expect(JSON.stringify(seen2)).not.toContain(m2.ab[0]);
+    // Neither the link's relay key nor a key from any other secret opens the inner layer.
+    await expect(open(observer, 'm2/k', seen2.k)).rejects.toThrow();
+    await expect(unwireM2(seen2, new Initiator(ta).channelKey(seen2.yb, session))).rejects.toThrow();
+    await expect(unwireM2(seen2, b.channelKey(m1.ya, 'b2'.repeat(32)))).rejects.toThrow(); // bound to the session
+    // A, and only A, gets the same K from its own secret.
+    const kA = a.channelKey(seen2.yb, session);
+    expect(kA).toEqual(kB);
+    const { msg: m3, outcome } = a.step3(await unwireM2(seen2, kA));
+    const seen3 = await open<WireM3>(observer, 'm3', await seal(link, 'm3', await wireM3(m3, kA)));
+    expect(Object.keys(seen3)).toEqual(['k']);
+    await expect(open(observer, 'm3/k', seen3.k)).rejects.toThrow();
+    await expect(unwireM3(seen3, new Responder(tb).channelKey(m1.ya, session))).rejects.toThrow();
+    const bLearns = b.step4(await unwireM3(seen3, kB));
+    expect(outcome.matched.length).toBeGreaterThan(0);
+    expect(bLearns.matched.length).toBe(outcome.matched.length);
+  });
+});
+
 describe('globin genes: the pair decides', () => {
   const g = (a: Finding[], b: Finding[]) => intersection(labKey, S, a, b).genes;
   it('any shared HBB change is a full match until HPLC (HbS with HbC or HbD is serious)', () => {
@@ -167,5 +212,21 @@ describe('globin genes: the pair decides', () => {
     expect(g([ar('HBA1')], [ar('HBA2')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'bart' }]);
     expect(g([ar('HBA1')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'hbh' }]);
     expect(g([ar('HBA2', 'mild')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 0, kind: 'trait' }]);
+  });
+  // Judge round 4: each person has two alpha haplotypes; the pair that can meet in a child decides.
+  const nd = (gene: string): Finding => ({ gene, inheritance: 'AR', severity: 'mild', alpha: 'nondeletional' });
+  it('homozygous -α/-α with an α0 carrier is HbH at worst, never Bart’s', () => {
+    expect(g([ar('HBA1', 'mild'), ar('HBA2', 'mild')], [ar('HBA1')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'hbh' }]);
+  });
+  it('homozygous -α/-α with an α+ carrier is trait only', () => {
+    expect(g([ar('HBA1', 'mild'), ar('HBA2', 'mild')], [ar('HBA2', 'mild')])).toEqual([{ gene: 'HBA', inheritance: 'AR', strength: 0, kind: 'trait' }]);
+  });
+  it('non-deletional changes (αT-Saudi) can give HbH with each other or with a deletional α+', () => {
+    expect(g([nd('HBA2')], [nd('HBA2')])[0].kind).toBe('hbh');
+    expect(g([nd('HBA2')], [ar('HBA2', 'mild')])[0].kind).toBe('hbh');
+  });
+  it('a homozygous person gets distinct tokens, so pairing still works', () => {
+    const t = issue(labKey, S, 'A', [ar('HBA1', 'mild'), ar('HBA2', 'mild'), ar('CFTR')]);
+    expect(new Set(t.map((x) => x.token)).size).toBe(t.length);
   });
 });

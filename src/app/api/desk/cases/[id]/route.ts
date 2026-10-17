@@ -1,13 +1,16 @@
 // One case. Counsellors (named accounts) view and act on it, and every view is logged; the signed-in
 // person who booked it can withdraw consent. Every change is a compare-and-swap, so concurrent views
 // keep all their audit entries and nothing can write erased data back after a withdrawal.
-import { audit, deskView, updateCase, verifyAudit, withdraw, type CaseStatus } from '@/lib/desk';
+import { audit, deskView, partnerBooked, updateCase, verifyAudit, withdraw, type CaseStatus, type DeskCase } from '@/lib/desk';
 import { deskGate, deskUser } from '@/lib/deskauth';
 import { needIdentity, personFrom } from '@/lib/identity';
 import { readJson } from '@/lib/http';
 
 const NEXT: Record<string, CaseStatus> = { contact: 'contacted', counsel: 'counselled', refer: 'referred', close: 'closed' };
 const none = () => Response.json({ error: 'No such case.' }, { status: 404 });
+const NO_STORE = { 'cache-control': 'no-store' };
+/** The opened case; the only place the desk learns that the partner booked too (never the pairing itself). */
+const shown = async (c: DeskCase) => Response.json({ case: deskView(c, await partnerBooked(c)), auditIntact: verifyAudit(c) }, { headers: NO_STORE });
 
 export async function GET(req: Request, ctx: RouteContext<'/api/desk/cases/[id]'>) {
   const gate = await deskGate(req);
@@ -16,7 +19,7 @@ export async function GET(req: Request, ctx: RouteContext<'/api/desk/cases/[id]'
   const c = await updateCase(id, (c) => { audit(c, `counsellor:${deskUser(req)}`, 'viewed the case'); });
   if (!c) return none();
   if (c instanceof Response) return c;
-  return Response.json({ case: deskView(c), auditIntact: verifyAudit(c) });
+  return shown(c);
 }
 
 export async function PATCH(req: Request, ctx: RouteContext<'/api/desk/cases/[id]'>) {
@@ -42,7 +45,7 @@ export async function PATCH(req: Request, ctx: RouteContext<'/api/desk/cases/[id
   });
   if (!c) return none();
   if (c instanceof Response) return c;
-  return Response.json({ case: deskView(c), auditIntact: verifyAudit(c) });
+  return shown(c);
 }
 
 /** The signed-in person withdraws consent: what they shared is erased; the clinical record is sealed. */
@@ -56,5 +59,5 @@ export async function DELETE(req: Request, ctx: RouteContext<'/api/desk/cases/[i
   });
   if (!c) return none();
   if (c instanceof Response) return c;
-  return Response.json({ ok: true, sealedNotes: c.sealed });
+  return Response.json({ ok: true, sealedNotes: c.sealed }, { headers: NO_STORE });
 }

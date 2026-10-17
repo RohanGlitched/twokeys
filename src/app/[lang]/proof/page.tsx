@@ -92,24 +92,44 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
         <h1 className="max-w-3xl text-[clamp(32px,3.6vw,48px)] font-semibold leading-tight tracking-tight">{t({ en: 'Everything we claim, and how we checked it', ar: 'كل ما ندّعيه، وكيف تحققنا منه' })}</h1>
         <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-ink-2">{t({ en: 'Each section below is generated from a script in the repository, so anyone can re-run it.', ar: 'كل قسم أدناه مولّد من سكربت في المستودع، فيمكن لأي شخص إعادة تشغيله.' })}</p>
 
+        {/* the four answers first, each a link to its section */}
+        <ul className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[3px] border border-ink bg-ink md:grid-cols-4">
+          {[
+            { href: '#tests', n: `${tr.numPassedTests}/${tr.numPassedTests + tr.numFailedTests}`, l: { en: 'tests pass: protocol and risk engine', ar: 'اختبارات ناجحة: البروتوكول ومحرك المخاطر' } },
+            { href: '#calibration', n: pct(cal.mixedPopulationAtRisk), l: { en: 'of model couples share a gene; Abu Dhabi found 4.8%', ar: 'من أزواج النموذج يتشاركون جيناً؛ ووجدت أبوظبي 4.8%' } },
+            { href: '#evaluation', n: `${ev.summary.heldout.twokeys.safe}/${ev.summary.heldout.twokeys.cases}`, l: { en: 'held-out questions answered safely', ar: 'أسئلة محجوزة أُجيب عنها بأمان' } },
+            { href: '#study', n: `${st.teachback.allThree}/${st.teachback.people}`, l: { en: 'people got all three teach-back questions right', ar: 'أشخاص أجابوا عن أسئلة إعادة الشرح الثلاثة بشكل صحيح' } },
+          ].map((x) => (
+            <li key={x.href} className="bg-paper">
+              <a href={x.href} className="flex h-full flex-col gap-1 px-4 py-4 hover:bg-wool">
+                <span className="text-[26px] font-semibold leading-none tracking-tight" dir="ltr">{x.n}</span>
+                <span className="text-[13px] leading-snug text-ink-2">{t(x.l)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
         {/* tests */}
         <section id="tests" className="mt-14 border-t-[1.5px] border-ink pt-8">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
             <h2 className="text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'The protocol and the risk engine', ar: 'البروتوكول ومحرك المخاطر' })}</h2>
             <p className="text-[15px]"><span className="text-[28px] font-semibold text-sage">{tr.numPassedTests}</span> / {tr.numPassedTests + tr.numFailedTests} {t({ en: 'tests pass', ar: 'اختبارات ناجحة' })}</p>
           </div>
-          <div className="mt-6 grid gap-6 md:grid-cols-2">
-            {tr.testResults.map((f) => (
-              <ul key={f.name} className="divide-y divide-rule border-y border-rule text-[14px]">
-                {f.assertionResults.map((a) => (
-                  <li key={a.title} className="flex items-start justify-between gap-3 py-2.5">
-                    <span><span className={a.status === 'passed' ? 'text-sage' : 'text-madder'}>{a.status === 'passed' ? '✓' : '✗'}</span> {a.title}</span>
-                    <span className="shrink-0 font-mono text-[12px] text-ink-3">{(a.duration / 1000).toFixed(1)} s</span>
-                  </li>
-                ))}
-              </ul>
-            ))}
-          </div>
+          <details className="mt-5 border-y border-rule">
+            <summary className="cursor-pointer py-3 text-[15px] font-medium">{t({ en: `Every test by name (${tr.numPassedTests + tr.numFailedTests})`, ar: `كل اختبار باسمه (${tr.numPassedTests + tr.numFailedTests})` })}</summary>
+            <div className="grid gap-6 pb-5 md:grid-cols-2">
+              {tr.testResults.map((f) => (
+                <ul key={f.name} className="divide-y divide-rule border-y border-rule text-[14px]">
+                  {f.assertionResults.map((a, i) => (
+                    <li key={`${i}:${a.title}`} className="flex items-start justify-between gap-3 py-2.5">
+                      <span className="min-w-0 break-words" dir="ltr"><span className={a.status === 'passed' ? 'text-sage' : 'text-alert'}>{a.status === 'passed' ? '✓' : '✗'}</span> {a.title}</span>
+                      <span className="shrink-0 font-mono text-[12px] text-ink-2">{(a.duration / 1000).toFixed(1)} s</span>
+                    </li>
+                  ))}
+                </ul>
+              ))}
+            </div>
+          </details>
           <p className="mt-3 text-[13px] text-ink-3">{t({ en: 'Plus 10 end-to-end tests that pair two phones through the real lab and relay routes, run against the live site (tests/pairing.int.test.ts).', ar: 'إضافة إلى 10 اختبارات شاملة تقرن هاتفين عبر مسارات المختبر والوسيط الحقيقية، وتُشغَّل على الموقع المنشور (tests/pairing.int.test.ts).' })}</p>
         </section>
 
@@ -126,11 +146,13 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
             ...cal.targets.map((x) => ({ label: { en: `Observed: ${x.label}`, ar: `المرصود: ${x.label}` }, value: x.value, ci: x.ci, tone: 'observed' as const, source: x.source })),
           ]} />
           <div className="mt-6 grid max-w-4xl gap-4 text-[14px] leading-relaxed text-ink-2 md:grid-cols-2">
-            <p>{t({ en: `The fair comparison for this demo panel is Dubai’s 5.8%, which leaves out alpha-thalassaemia as we do (alpha-globin deletions are invisible to exome data, so we don’t model them). With classic CAH only, the model gives ${pct(cal.mixedPopulationAtRisk)}, below Dubai and close to Abu Dhabi’s programme-wide 4.8% across 11,748 couples. Counting every published CYP21A2 allele, as a programme may report them, gives ${cal.allCyp21a2Alleles ? pct(cal.allCyp21a2Alleles.mixedPopulationAtRisk) : '—'}. We show both rather than pick the closer one.`, ar: `المقارنة العادلة لهذه اللوحة هي نسبة دبي 5.8% التي تستبعد ألفا ثلاسيميا كما نفعل (حذوفات ألفا غلوبين لا تظهر في بيانات الإكسوم، فلا ننمذجها). ومع الشكل التقليدي من CAH فقط يعطي النموذج ${pct(cal.mixedPopulationAtRisk)}، أقل من دبي وقريباً من نسبة برنامج أبوظبي 4.8% من 11,748 زوجين. ومع احتساب كل متغيرات CYP21A2 المنشورة، كما قد يبلّغها البرنامج، يعطي ${cal.allCyp21a2Alleles ? pct(cal.allCyp21a2Alleles.mixedPopulationAtRisk) : '—'}. نعرض الاثنين بدل اختيار الأقرب.` })}</p>
-            <p>{t({ en: 'We under-predict the 11% from Abu Dhabi’s 1,118-couple genome study by more than half. Three reasons: we model about 128 of its 570 genes, our marriage mix is Dubai’s, and that study’s definition of a positive couple isn’t published. The scenarios show the unmodelled genes alone could add 1 to 3 points.', ar: 'يقل النموذج عن نسبة 11% من دراسة أبوظبي على 1,118 زوجين بأكثر من النصف. لثلاثة أسباب: ننمذج نحو 128 من 570 جيناً، ومزيج الزيجات لدينا من دبي، وتعريف تلك الدراسة للزوجين الإيجابيين غير منشور. وتبيّن السيناريوهات أن الجينات غير المنمذجة وحدها قد تضيف 1 إلى 3 نقاط.' })}</p>
+            <p>{t({ en: `Every target is shown, including the ones we miss. The fair comparison for this demo panel is Dubai’s 5.8%, which leaves out alpha-thalassaemia as we do (alpha-globin deletions are invisible to exome data, so we don’t model them). With classic CAH only, the model gives ${pct(cal.mixedPopulationAtRisk)}: below Dubai, whose panel has six times as many genes, and below Abu Dhabi’s 4.8% across 11,748 couples. Abu Dhabi doesn’t publish whether its 4.8% counts haemoglobin pairs, which the premarital blood test (HPLC) also finds, so we show the model both ways: ${pct(cal.mixedPopulationAtRisk)} with HBB and ${pct(calibration.withoutHbb.mixedPopulationAtRisk)} without. Counting every published CYP21A2 allele, as a programme may report them, gives ${cal.allCyp21a2Alleles ? pct(cal.allCyp21a2Alleles.mixedPopulationAtRisk) : '—'} (${pct(calibration.withoutHbb.allCyp21a2AllelesMixed)} without HBB).`, ar: `نعرض كل الأهداف، ومنها ما لا يصيبه النموذج. المقارنة العادلة لهذه اللوحة هي نسبة دبي 5.8% التي تستبعد ألفا ثلاسيميا كما نفعل (حذوفات ألفا غلوبين لا تظهر في بيانات الإكسوم، فلا ننمذجها). ومع الشكل التقليدي من CAH فقط يعطي النموذج ${pct(cal.mixedPopulationAtRisk)}: أقل من دبي التي تضم لوحتها ستة أضعاف عدد الجينات، وأقل من نسبة أبوظبي 4.8% من 11,748 زوجين. ولا تنشر أبوظبي إن كانت نسبة 4.8% تشمل أزواج الهيموغلوبين التي يكشفها أيضاً فحص الدم قبل الزواج (HPLC)، لذا نعرض النموذج بالطريقتين: ${pct(cal.mixedPopulationAtRisk)} مع HBB و${pct(calibration.withoutHbb.mixedPopulationAtRisk)} من دونه. ومع احتساب كل متغيرات CYP21A2 المنشورة، كما قد يبلّغها البرنامج، يعطي ${cal.allCyp21a2Alleles ? pct(cal.allCyp21a2Alleles.mixedPopulationAtRisk) : '—'} (و${pct(calibration.withoutHbb.allCyp21a2AllelesMixed)} من دون HBB).` })}</p>
+            <p>{t({ en: `We under-predict the 11% from Abu Dhabi’s 1,118-couple genome study by more than half, and their 8.5% expected under random mating against our ${pct(cal.byType.unrelated.rate)} for unrelated couples. Three reasons: we model about ${cal.genesModelled} of its 570 genes, our marriage mix is Dubai’s, and that study’s definition of a positive couple isn’t published. The scenarios show the unmodelled genes alone could add 1 to 3 points; even the highest gives ${pct(Math.max(...cal.sensitivity570.map((x) => x.mixed)))}, still short of 11%.`, ar: `يقل النموذج عن نسبة 11% من دراسة أبوظبي على 1,118 زوجين بأكثر من النصف، وعن نسبة 8.5% المتوقعة عندهم لغير الأقارب مقابل ${pct(cal.byType.unrelated.rate)} لدينا. لثلاثة أسباب: ننمذج نحو ${cal.genesModelled} من 570 جيناً، ومزيج الزيجات لدينا من دبي، وتعريف تلك الدراسة للزوجين الإيجابيين غير منشور. وتبيّن السيناريوهات أن الجينات غير المنمذجة وحدها قد تضيف 1 إلى 3 نقاط؛ وحتى أعلاها يعطي ${pct(Math.max(...cal.sensitivity570.map((x) => x.mixed)))}، أي دون 11%.` })}</p>
+            <p>{t({ en: `CAH, corrected for inbreeding. Classic CAH affects 1 in 9,030 UAE newborns, but in a population where parents are often related that rate is q²(1 − F) + qF, not q². Taking q = √(1/9,030) and then simulating cousin marriages counted consanguinity twice. Solving with F = ${calibration.cyp21a2InbreedingAdjusted.F} (the mean inbreeding coefficient of the 1997 UAE survey, the parents’ generation) lowers the classic CAH carrier rate from ${pct(calibration.cyp21a2InbreedingAdjusted.carrierFreqNaive, 2)} to ${pct(calibration.cyp21a2InbreedingAdjusted.carrierFreqAdjusted, 2)}. The overall result barely moves (${pct(calibration.cyp21a2InbreedingAdjusted.mixedPopulationAtRiskNaive)} before, ${pct(cal.mixedPopulationAtRisk)} after), because classic CAH is a small share of matches either way.`, ar: `CAH بعد تصحيح أثر القرابة. يصيب الشكل التقليدي من CAH مولوداً من كل 9,030 في الإمارات، لكن هذا المعدل في مجتمع يكثر فيه زواج الأقارب يساوي q²(1 − F) + qF لا q². وأخذ q = √(1/9,030) ثم محاكاة زواج الأقارب احتسب القرابة مرتين. وبالحل مع F = ${calibration.cyp21a2InbreedingAdjusted.F} (متوسط معامل القرابة في مسح الإمارات 1997، جيل الآباء) تنخفض نسبة حاملي الشكل التقليدي من ${pct(calibration.cyp21a2InbreedingAdjusted.carrierFreqNaive, 2)} إلى ${pct(calibration.cyp21a2InbreedingAdjusted.carrierFreqAdjusted, 2)}. ولا تكاد النتيجة الكلية تتغير (${pct(calibration.cyp21a2InbreedingAdjusted.mixedPopulationAtRiskNaive)} قبل، و${pct(cal.mixedPopulationAtRisk)} بعد)، لأن الشكل التقليدي حصة صغيرة من التطابقات في الحالتين.` })}</p>
+            <p>{t({ en: 'Limits we know of. The Emirati exome frequencies (Jain et al. 2025) come from people referred for clinical testing, not a random sample, so they may run high: referral favours families with a known condition and related parents. The 1997 inbreeding figure is 30 years old. gnomAD’s Middle Eastern group is small and not Emirati.', ar: 'حدود نعرفها. ترددات الإكسوم الإماراتية (Jain وزملاؤه 2025) مأخوذة من أشخاص أُحيلوا لفحص سريري، لا من عينة عشوائية، فقد تكون أعلى من الواقع: فالإحالة ترجّح الأسر التي فيها حالة معروفة والآباء الأقارب. ورقم القرابة من 1997 عمره 30 عاماً. ومجموعة gnomAD الشرق أوسطية صغيرة وليست إماراتية.' })}</p>
           </div>
           <h3 className="mt-10 text-[18px] font-semibold">{t({ en: 'By family type', ar: 'بحسب نوع القرابة' })}</h3>
-          <Bars lang={lang} max={max} rows={Object.entries(cal.byType).map(([k, v]) => ({ label: { en: `Model: ${REL[k]?.en ?? k}`, ar: `النموذج: ${REL[k]?.ar ?? k}` }, value: v.rate, ci: v.ci, tone: 'model' as const }))} />
+          <Bars lang={lang} max={Math.max(...Object.values(cal.byType).map((v) => v.ci?.[1] ?? v.rate))} rows={Object.entries(cal.byType).map(([k, v]) => ({ label: { en: `Model: ${REL[k]?.en ?? k}`, ar: `النموذج: ${REL[k]?.ar ?? k}` }, value: v.rate, ci: v.ci, tone: 'model' as const }))} />
           <p className="mt-4 max-w-3xl text-[14px] leading-relaxed text-ink-2">{t({ en: 'The same genes, several times the chance: this is why consanguinity matters, and why the result screen words it per relationship.', ar: 'الجينات نفسها، واحتمال أضعاف: لهذا تهم القرابة، ولهذا تصوغ شاشة النتيجة الكلام بحسب نوع القرابة.' })}</p>
           <h3 className="mt-10 text-[18px] font-semibold">{t({ en: 'Which genes the model says couples will share, against Abu Dhabi’s observed list', ar: 'الجينات التي يتوقع النموذج أن يتشاركها الأزواج، مقابل القائمة المرصودة في أبوظبي' })}</h3>
           <table className="mt-3 w-full max-w-2xl text-[14px]">
@@ -139,7 +161,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
               <tr key={g.gene} className="border-b border-rule"><td className="py-2 font-mono">{g.gene}</td><td className="py-2 text-end">{pct(g.shareOfMatches)}</td><td className="py-2 text-end text-ink-2">{g.observedM42 === null ? '—' : pct(g.observedM42, 0)}</td></tr>
             ))}</tbody>
           </table>
-          <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-ink-3">{t({ en: 'Where they differ we say so. HBB ranks high in the model but is absent from the observed top genes, likely because haemoglobin disorders are screened separately in Abu Dhabi. CYP21A2 is 14% of observed matches but low in the classic-only model, which suggests the programme’s count includes non-classic alleles; gene-level fit is shown, not tuned.', ar: 'حيث يختلفان نقول ذلك. يحتل HBB مرتبة عالية في النموذج لكنه غائب عن القائمة المرصودة، على الأرجح لأن اضطرابات الهيموغلوبين تُفحص منفصلة في أبوظبي؛ ويمثل CYP21A2 نسبة 14% من التطابقات المرصودة لكنه منخفض في نموذج الشكل التقليدي فقط، ما يشير إلى أن عدّ البرنامج يشمل المتغيرات غير التقليدية؛ ونعرض التطابق على مستوى الجين دون ضبطه.' })}</p>
+          <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-ink-3">{t({ en: `Where they differ we say so. HBB ranks high in the model but is absent from the observed top genes, possibly because haemoglobin pairs are also found by the premarital blood test (HPLC) and counted separately; that isn’t published. CYP21A2 is 14% of observed matches but ${pct(calibration.cyp21a2InbreedingAdjusted.cyp21a2ShareAdjusted)} in the classic-only model (${pct(calibration.allCyp21a2Alleles.cyp21a2Share)} counting every published allele), which suggests the programme’s count includes non-classic alleles. Gene-level fit is shown, not tuned.`, ar: `حيث يختلفان نقول ذلك. يحتل HBB مرتبة عالية في النموذج لكنه غائب عن القائمة المرصودة، وربما لأن أزواج الهيموغلوبين يكشفها أيضاً فحص الدم قبل الزواج (HPLC) وتُعدّ منفصلة، وهذا غير منشور. ويمثل CYP21A2 نسبة 14% من التطابقات المرصودة لكنه ${pct(calibration.cyp21a2InbreedingAdjusted.cyp21a2ShareAdjusted)} في نموذج الشكل التقليدي فقط (و${pct(calibration.allCyp21a2Alleles.cyp21a2Share)} مع احتساب كل المتغيرات المنشورة)، ما يشير إلى أن عدّ البرنامج يشمل المتغيرات غير التقليدية. نعرض التطابق على مستوى الجين دون ضبطه.` })}</p>
         </section>
 
         {/* explainer eval */}
@@ -162,7 +184,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
                       {configs.map(([k]) => <td key={k} className="py-2 text-end font-medium">{ev.summary[set][k]?.strictSafe ?? '—'} / {ev.summary[set][k]?.cases ?? '—'}</td>)}</tr>
                     {failKeys.map(([fk, l]) => (
                       <tr key={fk} className="border-b border-rule"><td className="py-2 text-ink-2">{t(l)}</td>
-                        {configs.map(([k]) => <td key={k} className={`py-2 text-end ${(ev.summary[set][k]?.[fk] ?? 0) > 0 ? 'text-madder' : 'text-ink-2'}`}>{ev.summary[set][k]?.[fk] ?? '—'}</td>)}</tr>
+                        {configs.map(([k]) => <td key={k} className={`py-2 text-end ${(ev.summary[set][k]?.[fk] ?? 0) > 0 ? 'text-alert' : 'text-ink-2'}`}>{ev.summary[set][k]?.[fk] ?? '—'}</td>)}</tr>
                     ))}
                     <tr><td className="py-2 text-ink-2">{t({ en: 'Helpful (answered or redirected sensibly)', ar: 'مفيدة (أجابت أو أحالت بشكل معقول)' })}</td>
                       {configs.map(([k]) => <td key={k} className="py-2 text-end">{ev.summary[set][k]?.helpful ?? '—'}</td>)}</tr>
@@ -197,7 +219,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
           {ev.misses.length === 0 ? <p className="mt-2 text-[14px] text-ink-2">{t({ en: 'None flagged by two or more judges.', ar: 'لم يُنبّه إليها حكمان أو أكثر.' })}</p> : (
             <ul className="mt-3 grid gap-3 md:grid-cols-2">
               {ev.misses.map((m) => (
-                <li key={m.set + m.id} className="rounded-[3px] border border-madder bg-paper p-4 text-[13px] leading-relaxed">
+                <li key={m.set + m.id} className="rounded-[3px] border border-alert bg-paper p-4 text-[13px] leading-relaxed">
                   <p className="font-mono text-[12px] text-ink-2">{m.set} {m.id} · {m.cat} · {m.flags.join(', ')}</p>
                   <p className="mt-1 font-medium">{m.q}</p>
                   <p className="mt-1 text-ink-2">{m.answer}</p>
@@ -291,14 +313,16 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
 type Tone = 'model' | 'scenario' | 'observed';
 function Bars({ lang, max, rows }: { lang: 'en' | 'ar'; max: number; rows: { label: L; value: number; ci?: number[]; tone: Tone; source?: string }[] }) {
   const fill: Record<Tone, string> = { model: 'bg-ink', scenario: 'bg-ink-3', observed: 'bg-camel' };
+  // Each chart has its own scale; a bar never runs past its track.
+  const pctOf = (x: number) => Math.min(100, Math.max(0, (x / max) * 100));
   return (
     <div className="mt-8 grid gap-3">
       {rows.map((row, i) => (
         <div key={i} className="grid grid-cols-1 items-center gap-2 text-[14px] md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_70px]">
           <span className={row.tone === 'model' ? '' : 'text-ink-2'}>{row.label[lang]}{row.source ? <span className="block text-[12px]">{row.source}</span> : null}</span>
-          <div className="relative h-4 bg-wool-2">
-            <div className={`h-4 ${fill[row.tone]}`} style={{ width: `${(row.value / max) * 100}%` }} />
-            {row.ci && <div className="absolute top-1/2 h-px bg-ink" style={{ insetInlineStart: `${(row.ci[0] / max) * 100}%`, width: `${((row.ci[1] - row.ci[0]) / max) * 100}%` }} />}
+          <div className="relative h-4 overflow-hidden bg-wool-2">
+            <div className={`h-4 ${fill[row.tone]}`} style={{ width: `${pctOf(row.value)}%` }} />
+            {row.ci && <div className="absolute top-1/2 h-px bg-ink" style={{ insetInlineStart: `${pctOf(row.ci[0])}%`, width: `${pctOf(row.ci[1]) - pctOf(row.ci[0])}%` }} />}
           </div>
           <span className="text-end font-medium">{(row.value * 100).toFixed(1)}%</span>
         </div>

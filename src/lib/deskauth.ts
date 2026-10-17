@@ -1,5 +1,10 @@
 import 'server-only';
+import { hmac } from '@noble/hashes/hmac.js';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { subkey } from './labkey';
 import { countAll, limited, over } from './ratelimit';
+
+const enc = new TextEncoder();
 
 /**
  * Role check for the counsellor desk. The demo has named counsellor accounts (x-desk-user) behind
@@ -16,25 +21,28 @@ export function deskUser(req: Request): string | null {
 }
 
 /**
- * Checks the desk sign-in. The limit is checked first, so once a client has failed 20 times in an hour
- * even the right passcode is refused until the hour ends; and failures from all clients together are
- * capped at 300 an hour, so spreading guesses across addresses doesn't help either.
+ * Checks the desk sign-in. One client (by platform-set address) that has failed 20 times in an hour is
+ * refused even with the right passcode until the hour ends, so it can't keep guessing. Failures from all
+ * clients together never lock anyone out (that would let anyone shut the escalation path): past 300 an
+ * hour every check is slowed by 1.5 s instead, which a counsellor barely notices. Against guessing spread
+ * over many addresses the bound is the passcode's strength; production uses per-clinician sign-in.
  */
 export async function deskGate(req: Request): Promise<Response | null> {
-  const busy = Response.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
-  if ((await over(req, 'desk-fail', 20)) || (await over(null, 'desk-fail', 300))) return busy;
+  if (await over(req, 'desk-fail', 20)) return Response.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+  if (await over(null, 'desk-fail', 300)) await new Promise((r) => setTimeout(r, 1500));
   if (deskAuthorised(req)) return null;
   await Promise.all([limited(req, 'desk-fail', 20), countAll('desk-fail')]);
   return Response.json({ error: 'Counsellors only.' }, { status: 401 });
 }
 
+/** Compares HMACs of the two passcodes: fixed length, no early exit, nothing learned from timing or length. */
 export function deskAuthorised(req: Request): boolean {
   if (!deskUser(req)) return false;
   const want = process.env.DESK_PASSCODE ?? (process.env.VERCEL_ENV || process.env.NODE_ENV === 'production' ? '' : 'counsellor');
   if (!want) return false;
-  const got = req.headers.get('x-desk') ?? '';
-  if (got.length !== want.length) return false;
+  const k = subkey('desk-passcode');
+  const a = hmac(sha256, k, enc.encode(want)), b = hmac(sha256, k, enc.encode(req.headers.get('x-desk') ?? ''));
   let diff = 0;
-  for (let i = 0; i < want.length; i++) diff |= got.charCodeAt(i) ^ want.charCodeAt(i);
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
   return diff === 0;
 }

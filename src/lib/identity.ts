@@ -4,14 +4,14 @@
 import 'server-only';
 import { hmac } from '@noble/hashes/hmac.js';
 import { sha256 } from '@noble/hashes/sha2.js';
-import { labKey } from './labkey';
+import { subkey } from './labkey';
 import { personById, type Person } from './people';
 
 const enc = new TextEncoder();
 const TTL_MS = 8 * 60 * 60 * 1000;
 const b64u = (b: Uint8Array) => Buffer.from(b).toString('base64url');
 
-function key() { return hmac(sha256, labKey(), enc.encode('twokeys/identity/v1')); }
+const key = () => subkey('identity');
 
 export function mintIdentity(personId: string): { token: string; expires: number } {
   const expires = Date.now() + TTL_MS;
@@ -32,5 +32,8 @@ export function personFrom(req: Request): Person | null {
   for (let i = 0; i < want.length; i++) diff |= want.charCodeAt(i) ^ sig.charCodeAt(i);
   return diff === 0 ? personById(id) : null;
 }
+
+/** A stable pseudonym for a person (HMAC under its own key), for markers that must never hold the raw id. */
+export const pseudonym = (id: string) => Array.from(hmac(sha256, subkey('person'), enc.encode(id)).slice(0, 16), (b) => b.toString(16).padStart(2, '0')).join('');
 
 export const needIdentity = () => Response.json({ error: 'Sign in first.' }, { status: 401 });

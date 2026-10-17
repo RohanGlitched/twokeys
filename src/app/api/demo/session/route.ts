@@ -5,11 +5,20 @@ import { readJson } from '@/lib/http';
 import { personById, publicPerson } from '@/lib/people';
 import { limited } from '@/lib/ratelimit';
 
+/**
+ * Per address and person, per hour. The identities are synthetic and each demo load signs in two of
+ * them (phones reuse a token for the tab), so the limit only stops a script hammering the route.
+ */
+const PER_HOUR = 600;
+const RETRY_S = 20;
+
 export async function POST(req: Request) {
-  if (await limited(req, 'session', 60)) return Response.json({ error: 'Too many sign-ins from here this hour. Try again later.' }, { status: 429 });
   const b = await readJson<{ person?: string }>(req);
   if (b instanceof Response) return b;
   const p = b.person ? personById(b.person) : null;
   if (!p) return Response.json({ error: 'Unknown person.' }, { status: 404 });
+  if (await limited(req, 'session', PER_HOUR, p.id)) {
+    return Response.json({ error: 'The demo is busy.', retryAfter: RETRY_S }, { status: 429, headers: { 'retry-after': String(RETRY_S) } });
+  }
   return Response.json({ ...mintIdentity(p.id), person: publicPerson(p), personal: personalFindings(p.sex, p.findings).length }, { headers: { 'cache-control': 'no-store' } });
 }

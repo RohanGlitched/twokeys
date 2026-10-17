@@ -16,8 +16,15 @@
 //    lock its own list with one secret and re-lock with another to hide a match.
 // 3. Padding. Every list is padded to SET_SIZE with random elements, so nobody learns how many
 //    findings the other person has. The relay sees only random-looking group elements.
+// 4. Channel. The relay key comes from the link, so anyone holding the link can open what the relay
+//    stores. The double-locked lists (t·a·b and u·b·a, whose overlap shows how many tokens match and
+//    with which role tags) therefore travel under K = HKDF(G·a·b, session) (see channelKey), which only
+//    the two phones can compute: A as Yb·a, B as Ya·b, both keys lab-attested. A link holder sees only
+//    single-locked lists and the two public keys.
 import { ristretto255, ristretto255_hasher } from '@noble/curves/ed25519.js';
 import { bytesToNumberLE } from '@noble/curves/utils.js';
+import { hkdf } from '@noble/hashes/hkdf.js';
+import { sha256 } from '@noble/hashes/sha2.js';
 
 const Point = ristretto255.Point;
 type Pt = InstanceType<typeof Point>;
@@ -117,7 +124,8 @@ export function verifyDleq(Yhex: string, ins: string[], outs: string[], proof: D
     if (!/^[0-9a-f]{64}$/.test(proof?.e ?? '') || !/^[0-9a-f]{64}$/.test(proof?.s ?? '')) return false;
     const Y = fromHex(Yhex);
     const { M, Z } = combine(ins, outs, Yhex, label);
-    const e = BigInt('0x' + proof.e) % ORDER, s = BigInt('0x' + proof.s) % ORDER;
+    const e = BigInt('0x' + proof.e), s = BigInt('0x' + proof.s);
+    if (e >= ORDER || s >= ORDER) return false; // one encoding per proof: no aliases mod the order
     // Public values only, so variable-time multiplication is fine (and it accepts zero).
     const T1 = Point.BASE.multiplyUnsafe(s).add(Y.multiplyUnsafe(e));
     const T2 = M.multiplyUnsafe(s).add(Z.multiplyUnsafe(e));
@@ -150,6 +158,11 @@ export interface Msg3 { ba: string[]; proof: Dleq }
 /** Indices (as issued by the lab) of this phone's tokens that the other phone also holds. */
 export interface Outcome { matched: number[] }
 
+/** The phones' private channel key: HKDF over k·Y_peer = G·a·b, bound to the session. */
+function channel(k: bigint, peerY: string, session: string): Uint8Array {
+  return hkdf(sha256, fromHex(peerY).multiply(k).toBytes(), undefined, enc.encode(`twokeys/v2/pair-channel|${session}`), 32);
+}
+
 function checkList(xs: unknown): asserts xs is string[] {
   if (!Array.isArray(xs) || xs.length !== SET_SIZE) throw new Error(`Expected exactly ${SET_SIZE} elements.`);
   if (new Set(xs).size !== xs.length) throw new Error('Duplicate elements are not allowed.');
@@ -170,6 +183,8 @@ export class Initiator {
     this.sent = out.map(toHex);
   }
   step1(att?: string): Msg1 { return { a: this.sent, ya: toHex(Point.BASE.multiply(this.a)), att }; }
+  /** K for the private channel, from the partner's (attested) Yb. */
+  channelKey(yb: string, session: string) { return channel(this.a, yb, session); }
   step3(m: Msg2, check?: AttCheck): { msg: Msg3; outcome: Outcome } {
     checkList(m.ab); checkList(m.b);
     if (check && !check(m.b, m.yb, m.att)) throw new Error('Your partner’s phone sent a list the lab didn’t attest. Nothing was revealed.');
@@ -199,6 +214,8 @@ export class Responder {
     this.pos = at;
     this.sentB = out.map(toHex);
   }
+  /** K for the private channel, from the partner's (attested) Ya. */
+  channelKey(ya: string, session: string) { return channel(this.b, ya, session); }
   step2(m: Msg1, att?: string, check?: AttCheck): Msg2 {
     checkList(m.a);
     fromHex(m.ya);

@@ -28,7 +28,7 @@ const LEARNS: { who: L; learns: L; never: L }[] = [
   { who: { en: 'The relay server', ar: 'خادم الوسيط' }, learns: { en: 'That two phones exchanged three encrypted messages', ar: 'أن هاتفين تبادلا ثلاث رسائل مشفّرة' }, never: { en: 'Any gene, any token, or the result', ar: 'أي جين أو رمز أو النتيجة' } },
   { who: { en: 'The lab', ar: 'المختبر' }, learns: { en: 'That this couple paired, and the match it confirms (it already holds both results, as today)', ar: 'أن هذين الزوجين اقترنا، والتطابق الذي يؤكده (فهو يملك النتيجتين أصلاً، كما اليوم)' }, never: { en: 'Anything new about either person', ar: 'أي شيء جديد عن أي منهما' } },
   { who: { en: 'A counsellor', ar: 'المرشد الوراثي' }, learns: { en: 'Only the items a person ticked when booking', ar: 'البنود التي اختارها الشخص عند الحجز فقط' }, never: { en: 'Anything after consent is withdrawn', ar: 'أي شيء بعد سحب الموافقة' } },
-  { who: { en: 'Relatives', ar: 'الأقارب' }, learns: { en: 'A gene and their own chance of carrying it', ar: 'الجين واحتمال أن يحملوه' }, never: { en: 'Who sent the note', ar: 'من أرسل الرسالة' } },
+  { who: { en: 'Relatives', ar: 'الأقارب' }, learns: { en: 'A gene and their own chance of carrying it', ar: 'الجين واحتمال أن يحملوه' }, never: { en: 'Who sent it, when a counsellor passes it on', ar: 'من أرسلها، حين يوصلها المرشد الوراثي' } },
   { who: { en: 'The health system', ar: 'النظام الصحي' }, learns: { en: 'Counts: understanding, uptake, time to referral', ar: 'أعداد: الفهم، والإقبال، وزمن الإحالة' }, never: { en: 'Any individual, or any marriage decision', ar: 'أي فرد، أو أي قرار زواج' } },
 ];
 
@@ -41,20 +41,26 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
       <Nav lang={lang} />
       <main id="main">
         {/* hero */}
-        <section className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 pb-16 pt-6 md:grid-cols-[5fr_6fr] md:px-8 md:pt-10">
-          <div>
-            <h1 className="text-[clamp(38px,4.6vw,64px)] font-semibold leading-[1.04] tracking-[-0.035em]">
+        {/* Phones: headline, the drawing, then the detail and the buttons. Wider: words left, drawing right. */}
+        <section className="mx-auto grid max-w-[1240px] items-center gap-x-12 gap-y-6 px-6 pb-16 pt-4 md:grid-cols-[5fr_6fr] md:px-8 md:pt-10">
+          <div className="md:self-end">
+            <h1 className="text-[clamp(36px,4.6vw,64px)] font-semibold leading-[1.04] tracking-[-0.035em]">
               {t({ en: 'Know what you could pass on together.', ar: 'اعرفا ما قد تنقلانه معاً.' })}
             </h1>
-            <p className="mt-6 max-w-[34em] text-[18px] leading-relaxed text-ink-2">
-              {t({ en: 'Every carrier result understood, acted on in time, and passed safely to relatives, without needing more counsellors. A couple compares results inside their own phones and learns only the genes they both carry, explained in plain Arabic or English, with a genetic counsellor one tap away. Neither learns any other gene the other carries, and their families learn nothing.', ar: 'كل نتيجة لحمل الصفة الوراثية مفهومة، ويُتصرف بها في وقتها، وتصل بأمان إلى الأقارب، دون الحاجة إلى مزيد من المرشدين. يقارن الزوجان النتائج داخل هاتفيهما ولا يعرفان إلا الجينات التي يحملانها معاً، مشروحة بعربية أو إنجليزية واضحة، والمرشد الوراثي على بُعد ضغطة. ولا يعرف أي منهما أي جين آخر يحمله الآخر، ولا تعرف العائلتان شيئاً.' })}
+            <p className="mt-5 max-w-[30em] text-[19px] leading-relaxed text-ink">
+              {t({ en: 'For couples after UAE premarital screening: see only the genes you both carry, in plain Arabic or English, with a counsellor one tap away.', ar: 'للأزواج بعد الفحص قبل الزواج في الإمارات: اعرفا الجينات التي تحملانها معاً فقط، بعربية أو إنجليزية واضحة، والمرشد الوراثي على بُعد ضغطة.' })}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+          </div>
+          <div className="mx-auto w-full max-w-[420px] md:col-start-2 md:row-span-2 md:row-start-1 md:max-w-none"><HeroWeave lang={lang} /></div>
+          <div className="md:self-start">
+            <p className="max-w-[34em] text-[16px] leading-relaxed text-ink-2">
+              {t({ en: 'The two phones compare results privately. Neither partner learns any other gene the other carries, and nothing reaches either family unless you choose to share it. If you wish, relatives can be told that a test may help them, through your counsellor if you’d rather not be named.', ar: 'يقارن الهاتفان النتائج بخصوصية. لا يعرف أي منكما أي جين آخر يحمله الآخر، ولا يصل شيء إلى أي من العائلتين إلا إذا اخترتما مشاركته. وإن شئتما، يمكن إخبار الأقارب بأن فحصاً قد يفيدهم، عبر المرشد الوراثي إن فضّلتما ألا يُذكر اسمكما.' })}
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
               <Link href={`/${lang}/demo`} className="rounded-[2px] bg-ink px-5 py-3.5 text-[16px] font-medium text-wool">{t({ en: 'Try it with two phones', ar: 'جرّبه بهاتفين' })}</Link>
               <Link href={`/${lang}/how`} className="rounded-[2px] border-[1.5px] border-ink px-5 py-3.5 text-[16px] font-medium">{t({ en: 'See how it works', ar: 'شاهد كيف يعمل' })}</Link>
             </div>
           </div>
-          <HeroWeave lang={lang} />
         </section>
 
         {/* figures */}
@@ -157,11 +163,19 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
               <li>{t({ en: 'X-linked results go to each person first, privately, before any pairing. Only when hers and his match does the couple see it together, after each has read their own.', ar: 'تصل نتائج الكروموسوم X إلى كل شخص أولاً، بخصوصية، قبل أي اقتران. ولا يراها الزوجان معاً إلا إذا تطابقت نتيجتها ونتيجته، وبعد أن يقرأ كل منهما نتيجته.' })}</li>
             </ul>
           </div>
-          <div className="rounded-[3px] border border-madder bg-paper p-6">
-            <p className="text-[13px] text-ink-2">{t({ en: 'Congenital adrenal hyperplasia · CYP21A2', ar: 'تضخم الغدة الكظرية الخلقي · CYP21A2' })}</p>
-            <div className="mt-4 flex gap-4">{(['affected', 'carrier', 'carrier', 'clear'] as const).map((k, i) => <Diamond key={i} fill={k} size={56} />)}</div>
-            <p className="mt-4 text-[17px] leading-relaxed">{t({ en: 'In each pregnancy: 1 in 4 that the child has the condition, 2 in 4 a healthy carrier, 1 in 4 neither.', ar: 'في كل حمل: 1 من 4 أن يصاب الطفل، و2 من 4 أن يحمل التغيّر وهو سليم، و1 من 4 ألا يحمل أي نسخة متغيرة.' })}</p>
-            <p className="mt-2 text-[14px] text-ink-2">{t({ en: 'Treatable with daily medicine; found by newborn screening.', ar: 'قابل للعلاج بدواء يومي، ويُكشف بفحص حديثي الولادة.' })}</p>
+          <div className="rounded-[3px] border border-ink bg-paper p-6">
+            <p className="flex items-center gap-2 text-[13px] text-ink-2">
+              <span className="rounded-[2px] bg-madder px-1.5 py-0.5 text-[12px] font-medium leading-none text-wool">{t({ en: 'Shared', ar: 'مشترك' })}</span>
+              {t({ en: 'Congenital adrenal hyperplasia · CYP21A2', ar: 'تضخم الغدة الكظرية الخلقي · CYP21A2' })}
+            </p>
+            <p className="mt-4 text-[22px] font-semibold leading-snug tracking-tight">{t({ en: '3 in 4 children will not have CAH.', ar: '3 من كل 4 أطفال لن يُصابوا بتضخم الغدة الكظرية.' })}</p>
+            <ul className="mt-5 grid max-w-[360px] grid-cols-4 gap-2">
+              {([['clear', { en: 'no changed copy', ar: 'بلا نسخة متغيرة' }], ['carrier', { en: 'healthy carrier', ar: 'حامل سليم' }], ['carrier', { en: 'healthy carrier', ar: 'حامل سليم' }], ['affected', { en: 'has the condition', ar: 'مصاب بالحالة' }]] as const).map(([k, l], i) => (
+                <li key={i} className="flex flex-col items-center gap-1.5 text-center text-[12.5px] leading-tight text-ink-2"><Diamond fill={k} size={52} />{t(l)}</li>
+              ))}
+            </ul>
+            <p className="mt-5 text-[16px] leading-relaxed">{t({ en: 'In each pregnancy: 1 in 4 that the child has the condition, 2 in 4 a healthy carrier, 1 in 4 neither.', ar: 'في كل حمل: 1 من 4 أن يصاب الطفل، و2 من 4 أن يحمل التغيّر وهو سليم، و1 من 4 ألا يحمل أي نسخة متغيرة.' })}</p>
+            <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'Treatable with daily medicine and found by newborn screening. If you know of the chance, tell the birth team: a salt-wasting crisis can come before the screening result is back.', ar: 'قابل للعلاج بدواء يومي، ويُكشف بفحص حديثي الولادة. وإن كنتما تعرفان بالاحتمال فأخبرا فريق الولادة: فقد تحدث أزمة فقدان الملح قبل وصول نتيجة الفحص.' })}</p>
           </div>
         </section>
 
@@ -170,10 +184,10 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
           <h2 className="max-w-3xl text-[clamp(28px,3vw,40px)] font-semibold leading-tight tracking-tight">{t({ en: 'From result to care, with a person at every decision', ar: 'من النتيجة إلى الرعاية، مع إنسان عند كل قرار' })}</h2>
           <div className="mt-10 grid gap-8 md:grid-cols-4">
             {[
-              { h: { en: 'Options, unranked', ar: 'خيارات بلا ترتيب' }, b: { en: 'Go ahead, test in pregnancy, IVF with embryo testing (Thiqa-covered with approval), reconsider plans together, kafala or no children, or talk first. Equal weight, no advice.', ar: 'المضي، أو الفحص أثناء الحمل، أو أطفال الأنابيب مع فحص الأجنة (يغطيه برنامج ثقة بموافقة مسبقة)، أو إعادة النظر في الخطط معاً، أو الكفالة أو عدم الإنجاب، أو التحدث أولاً. بالوزن نفسه، دون نصيحة.' } },
+              { h: { en: 'Options, unranked', ar: 'خيارات بلا ترتيب' }, b: { en: 'Go ahead, test in pregnancy, IVF with embryo testing, reconsider plans together, kafala or no children, or talk first. Equal weight, no advice, and one plain line on costs and cover under them all.', ar: 'المضي، أو الفحص أثناء الحمل، أو أطفال الأنابيب مع فحص الأجنة، أو إعادة النظر في الخطط معاً، أو الكفالة أو عدم الإنجاب، أو التحدث أولاً. بالوزن نفسه، دون نصيحة، مع سطر واضح عن التكاليف والتغطية تحتها جميعاً.' } },
               { h: { en: 'Questions, answered from sources', ar: 'أسئلة تُجاب من المصادر' }, b: { en: 'An AI explainer answers only from vetted facts, has its numbers checked against them, refuses to probe a partner or decide for anyone, and hands distress to a person the same day. Anyone can ask a person instead.', ar: 'شارح بالذكاء الاصطناعي يجيب من حقائق موثوقة فقط، وتُطابق أرقامه معها، ويرفض التجسس على الشريك أو القرار عن أحد، ويحيل الضيق إلى إنسان في اليوم نفسه. ويمكن لأي شخص أن يسأل إنساناً بدلاً منه.' } },
               { h: { en: 'A counsellor, on the clock', ar: 'مرشد وراثي في الموعد' }, b: { en: 'Booking shares only what you tick. The desk tracks time to first contact, referral and documented closure, with a tamper-evident audit trail.', ar: 'الحجز يشارك ما تختاره فقط. ويتتبع المكتب زمن التواصل الأول والإحالة والإغلاق الموثق، مع سجل تدقيق يكشف أي عبث.' } },
-              { h: { en: 'Relatives, without names', ar: 'الأقارب دون أسماء' }, b: { en: 'Sealed notes tell a cousin or sibling their own chance of carrying the same change. The service can’t read them or tell who sent them.', ar: 'رسائل مختومة تخبر ابن العم أو الأخ باحتمال حمله للتغيّر نفسه. ولا تستطيع الخدمة قراءتها أو معرفة مرسلها.' } },
+              { h: { en: 'Relatives, without names', ar: 'الأقارب دون أسماء' }, b: { en: 'Sealed notes tell a cousin or sibling their own chance of carrying the same change. The service can’t read them or tell who sent them, and a counsellor can pass one on so no name is attached.', ar: 'رسائل مختومة تخبر ابن العم أو الأخ باحتمال حمله للتغيّر نفسه. ولا تستطيع الخدمة قراءتها أو معرفة مرسلها، ويمكن للمرشد الوراثي إيصالها كي لا يُرفق اسم.' } },
             ].map((s, i) => (
               <article key={i} className="border-t border-ink pt-5">
                 <h3 className="text-[18px] font-semibold">{t(s.h)}</h3>
@@ -202,7 +216,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
                   { en: 'Privacy: nothing shared without a logged consent', ar: 'الخصوصية: لا مشاركة دون موافقة مسجلة' },
                 ].map((m) => <li key={m.en} className="flex gap-2.5"><span className="mt-2 h-2 w-2 shrink-0 rotate-45 bg-sage" />{t(m)}</li>)}
               </ul>
-              <p className="mt-6 border-s-2 border-madder ps-4 text-[15px] leading-relaxed text-ink-2">
+              <p className="mt-6 border-s-2 border-ink ps-4 text-[15px] leading-relaxed text-ink-2">
                 {t({ en: 'We never count marriages called off. The challenge says success must not rest on any single personal choice, and a couple’s decision is theirs.', ar: 'لا نحصي الزيجات الملغاة أبداً. فالتحدي ينص على ألا يقوم النجاح على أي خيار شخصي واحد، وقرار الزوجين لهما.' })}
               </p>
             </div>
@@ -231,7 +245,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
           <div className="grid items-center gap-10 rounded-[3px] border-[1.5px] border-ink p-8 md:grid-cols-[1.3fr_1fr]">
             <div>
               <h2 className="text-[clamp(26px,2.6vw,34px)] font-semibold tracking-tight">{t({ en: 'Four couples are waiting in the demo', ar: 'أربعة أزواج بانتظارك في العرض' })}</h2>
-              <p className="mt-3 text-[16px] leading-relaxed text-ink-2">{t({ en: 'First cousins who share a gene, an unrelated couple who share none, double first cousins who share one full and one milder match, and second cousins whose two milder changes are not reported as a match. All synthetic, all running the real protocol.', ar: 'أبناء عمومة يتشاركان جيناً، وزوجان بلا قرابة لا يتشاركان شيئاً، وأبناء عمومة وخؤولة يتشاركان تطابقاً كاملاً وآخر أخف، وأبناء عمومة من الدرجة الثانية لا يُبلَّغ عن تغيّريهما الأخفين كتطابق. كلهم افتراضيون، وكلهم يعملون بالبروتوكول الحقيقي.' })}</p>
+              <p className="mt-3 text-[16px] leading-relaxed text-ink-2">{t({ en: 'First cousins who share a gene, an unrelated couple who share none, double first cousins who share one full and one milder match, and second cousins whose two milder changes are shown as a low-concern match. All synthetic, all running the real protocol.', ar: 'أبناء عمومة يتشاركان جيناً، وزوجان بلا قرابة لا يتشاركان شيئاً، وأبناء عمومة وخؤولة يتشاركان تطابقاً كاملاً وآخر أخف، وقريبان من الدرجة الثانية يظهر تغيّراهما الأخفان كتطابق منخفض الأثر. كلهم افتراضيون، وكلهم يعملون بالبروتوكول الحقيقي.' })}</p>
               <Link href={`/${lang}/demo`} className="mt-6 inline-block rounded-[2px] bg-ink px-5 py-3.5 text-[16px] font-medium text-wool">{t({ en: 'Try it with two phones', ar: 'جرّبه بهاتفين' })}</Link>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-5" aria-hidden>

@@ -1,6 +1,7 @@
 // The hero: a family tree drawn in pedigree notation. Two siblings' children (first cousins) marry —
 // the double line — and the couple's two threads weave into an Al Sadu band where only the shared
-// gene shows, in madder. Drawn once on load; still for reduced motion.
+// gene shows, in madder. Drawn once on load in under two seconds; still for reduced motion. The two
+// captions are HTML so they stay readable when the drawing shrinks to a phone's width.
 import type { Locale } from '@/i18n/locales';
 
 export function HeroWeave({ lang }: { lang: Locale }) {
@@ -11,7 +12,7 @@ export function HeroWeave({ lang }: { lang: Locale }) {
   const w = 520 / motifs;
   return (
     <figure className="hero-weave m-0">
-      <svg viewBox="0 0 640 600" width="100%" role="img" aria-label={ar ? 'شجرة عائلة يلتقي فيها أبناء العم، وتنسج خيوطهما شريطاً لا يظهر فيه إلا الجين المشترك' : 'A family tree in which first cousins marry; their threads weave into one band where only the shared gene shows'}>
+      <svg viewBox="0 18 640 490" width="100%" role="img" aria-label={ar ? 'شجرة عائلة يلتقي فيها أبناء العم، وتنسج خيوطهما شريطاً لا يظهر فيه إلا الجين المشترك' : 'A family tree in which first cousins marry; their threads weave into one band where only the shared gene shows'}>
         <g className="hw-lines" fill="none" stroke="var(--ink)" strokeWidth="2.2">
           <rect x="246" y="30" width="34" height="34" />
           <circle cx="377" cy="47" r="17" />
@@ -31,9 +32,9 @@ export function HeroWeave({ lang }: { lang: Locale }) {
           <rect x="483" y="200" width="22" height="44" fill="var(--camel)" />
         </g>
         <path d="M157 216 H483 M157 228 H483" stroke="var(--ink)" strokeWidth="2.2" pathLength={1} className="draw d3" />
-        <text x="320" y="206" textAnchor="middle" fontSize="12" fill="var(--ink-2)" className="fade d3">{ar ? 'أبناء عمومة' : 'first cousins'}</text>
-        <text x="135" y="282" textAnchor="middle" fontSize="14" fill="var(--indigo)" fontWeight="500" className="fade d3">{ar ? 'مفتاحها' : 'Her key'}</text>
-        <text x="505" y="282" textAnchor="middle" fontSize="14" fill="var(--camel)" fontWeight="500" className="fade d3">{ar ? 'مفتاحه' : 'His key'}</text>
+        <text x="320" y="204" textAnchor="middle" fill="var(--ink-2)" className="fade d3 hw-s">{ar ? 'أبناء عمومة' : 'first cousins'}</text>
+        <text x="135" y="284" textAnchor="middle" fill="var(--indigo)" fontWeight="500" className="fade d3 hw-m">{ar ? 'مفتاحها' : 'Her key'}</text>
+        <text x="505" y="284" textAnchor="middle" fill="var(--camel)" fontWeight="500" className="fade d3 hw-m">{ar ? 'مفتاحه' : 'His key'}</text>
         <path d="M135 300 C 135 360, 300 360, 300 420" stroke="var(--indigo)" strokeWidth="3" fill="none" pathLength={1} className="draw d4" />
         <path d="M505 300 C 505 360, 340 360, 340 420" stroke="var(--camel)" strokeWidth="3" fill="none" pathLength={1} className="draw d4" />
         <g className="fade d5">
@@ -56,15 +57,19 @@ export function HeroWeave({ lang }: { lang: Locale }) {
           })}
           <rect x="60" y="420" width="520" height="80" fill="none" stroke="var(--ink)" strokeWidth="2" />
         </g>
-        <text x="320" y="534" textAnchor="middle" fontSize="16" fontWeight="600" fill="var(--madder)" className="fade d6">{shared}</text>
-        <text x="320" y="558" textAnchor="middle" fontSize="13" fill="var(--ink-2)" className="fade d6">{rest}</text>
       </svg>
+      <figcaption className="fade d6 mt-3 text-center">
+        <span className="block text-[15px] font-semibold text-madder md:text-[16px]">{shared}</span>
+        <span className="mt-1 block text-[13px] text-ink-2 md:text-[14px]">{rest}</span>
+      </figcaption>
       <style>{`
-        .hero-weave .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: hw-draw .9s cubic-bezier(.6,0,.2,1) forwards; }
-        .hero-weave .fade { opacity: 0; animation: hw-fade .6s ease-out forwards; }
-        .hero-weave .d2 { animation-delay: .5s } .hero-weave .d3 { animation-delay: 1s } .hero-weave .d4 { animation-delay: 1.5s }
-        .hero-weave .d5 { animation-delay: 2.1s } .hero-weave .d6 { animation-delay: 2.7s }
-        .hero-weave .lit { transform-origin: center; transform-box: fill-box; animation: hw-lit .7s 2.6s ease-out both; }
+        .hero-weave .hw-s { font-size: 13px } .hero-weave .hw-m { font-size: 15px }
+        @media (max-width: 767px) { .hero-weave .hw-s { font-size: 22px } .hero-weave .hw-m { font-size: 25px } }
+        .hero-weave .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: hw-draw .5s cubic-bezier(.6,0,.2,1) forwards; }
+        .hero-weave .fade { opacity: 0; animation: hw-fade .4s ease-out forwards; }
+        .hero-weave .d2 { animation-delay: .25s } .hero-weave .d3 { animation-delay: .5s } .hero-weave .d4 { animation-delay: .8s }
+        .hero-weave .d5 { animation-delay: 1.05s } .hero-weave .d6 { animation-delay: 1.35s }
+        .hero-weave .lit { transform-origin: center; transform-box: fill-box; animation: hw-lit .45s 1.3s ease-out both; }
         @keyframes hw-draw { to { stroke-dashoffset: 0; } }
         @keyframes hw-fade { to { opacity: 1; } }
         @keyframes hw-lit { from { transform: scale(.3); opacity: 0 } to { transform: scale(1); opacity: 1 } }

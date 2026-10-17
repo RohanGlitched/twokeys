@@ -17,6 +17,8 @@
   --camel-2: #EFE4D4;
   --sage: #4F6F58;      /* clear */
   --sage-2: #DEE8DF;
+  --alert: #A3450D;     /* burnt orange: overdue, errors, undo; never "shared". 5.1:1 on wool */
+  --alert-2: #F6E4D7;
   --focus: #2E3A6E;
 }
 
@@ -36,8 +38,12 @@
   --color-camel-2: var(--camel-2);
   --color-sage: var(--sage);
   --color-sage-2: var(--sage-2);
+  --color-alert: var(--alert);
+  --color-alert-2: var(--alert-2);
   --font-sans: var(--font-alexandria), system-ui, sans-serif;
-  --font-naskh: var(--font-naskh), var(--font-alexandria), serif;
+  /* Arabic text: Alexandria's Latin face (Latin letters and digits only) ahead of Naskh, so numbers and
+     gene symbols never fall to Naskh's serif fallback. --font-latin comes from site/SkipLink. */
+  --font-arabic: var(--font-latin), var(--font-naskh), var(--font-alexandria), sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 }
 
@@ -51,7 +57,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 /* Arabic body text reads best in naskh; headings stay in Alexandria. */
-html[lang="ar"] body { font-family: var(--font-naskh); font-weight: 400; }
+html[lang="ar"] body { font-family: var(--font-latin), var(--font-naskh), var(--font-alexandria), sans-serif; font-weight: 400; }
 html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3, html[lang="ar"] .display { font-family: var(--font-sans); }
 /* Arabic ascenders and dots need more room than Latin at display sizes. */
 html[lang="ar"] h1, html[lang="ar"] h2 { line-height: 1.4; }
@@ -60,6 +66,8 @@ html[lang="ar"] h1, html[lang="ar"] h2 { line-height: 1.4; }
 ::selection { background: var(--indigo-2); }
 /* The skip link focuses <main> itself; the landmark needs no ring, the next Tab lands inside it. */
 main[tabindex="-1"]:focus { outline: none; }
+/* A screen's heading takes focus so it is announced; it is not a control, so it draws no ring. */
+h2[tabindex="-1"]:focus { outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }

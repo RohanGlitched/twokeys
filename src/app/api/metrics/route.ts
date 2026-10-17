@@ -1,23 +1,31 @@
 // Programme metrics. Phones send only anonymous teach-back totals (signed-in people); everything else
 // is counted from desk and family-note records.
 // Privacy, per person and for life:
-// - Each person counts once: their first teach-back ever, their first booking ever, and at most
-//   LETTER_CAP family notes in total (each note count is noised for that many).
-// - Each weekly release counts only records from that one week (the last complete week), so a
-//   person's records fall in one release and repeated releases never re-noise the same people.
-// - Every count gets exact discrete Laplace noise at ε = 1/SCALE per unit; a release has at most
-//   LIVE_COUNTS such counts, so no person's records ever cost more than ε = LIVE_COUNTS/SCALE = 3.
-// - Releases are cached: asking again returns the same numbers. Rates appear only beside a count
-//   that is shown, and are computed from those same noisy counts.
+// - Each person counts once: their first teach-back ever and their first booking ever, and only their
+//   first LETTER_CAP family notes ever (each note count is noised for that many). The markers that
+//   enforce "ever" are keyed by a pseudonym (HMAC of the person) and kept 100 years (dp.FOREVER).
+// - Every count gets exact discrete Laplace noise at ε = 1/SCALE per unit. A first booking touches 7
+//   counts, a first teach-back 4, and all of a person's counted notes together at most 3 counts' worth,
+//   so a person's records cost at most ε = 14/SCALE = 2 over every release ever; we publish the looser
+//   bound EPS_PERSON = 3 (a release also never holds more than LIVE_COUNTS counts).
+// - Each weekly release counts only records from that one week (the last complete week) and is made
+//   once: it is written write-once to an append-only ledger (metrics:ledger:w<week>, with its ε and
+//   count of noised values), never versioned and never deleted, and every later request serves it.
+// - The noise comes from a PRF keyed by the 'dp' subkey over (week, count name), so even if a release
+//   were computed twice it would carry the same noise, not a fresh sample to average.
+// - Released values are made consistent after noising (a part never exceeds its whole, nothing is
+//   negative), which is post-processing and costs no privacy. Rates appear only beside a count that is
+//   shown, and are computed from those same noisy counts.
 // The synthetic month gets the same noise for realism but describes nobody, so it spends nothing.
 // Counsellors see exact queues on the desk; only these published aggregates are noised.
 import { listCases, type DeskCase } from '@/lib/desk';
-import { needIdentity, personFrom } from '@/lib/identity';
+import { needIdentity, personFrom, pseudonym } from '@/lib/identity';
 import { readJson } from '@/lib/http';
+import { subkey } from '@/lib/labkey';
 import { store } from '@/lib/store';
 import { seedDesk } from '@/lib/seed';
 import { rng } from '@/lib/sim';
-import { noisyCount } from '@/lib/dp';
+import { dayAligned, dayStart, FOREVER, noisyCount, prf } from '@/lib/dp';
 import { connection } from 'next/server';
 
 const YEAR = 60 * 60 * 24 * 365;
@@ -36,8 +44,9 @@ export async function POST(req: Request) {
   if (!p) return needIdentity();
   const b = await readJson<{ lang?: string; level?: string; correct?: number }>(req);
   if (b instanceof Response) return b;
-  // Only a person's first teach-back ever is counted.
-  if (!(await store().putNew(`tbdone:${p.id}`, true, YEAR))) return Response.json({ ok: true, counted: false });
+  // Only a person's first teach-back ever is counted (the older per-id marker still counts as done).
+  if (await store().get(`tbdone:${p.id}`)) return Response.json({ ok: true, counted: false });
+  if (!(await store().putNew(`dp:tb:${pseudonym(p.id)}`, true, dayAligned(FOREVER)))) return Response.json({ ok: true, counted: false });
   const lang = b.lang === 'ar' ? 'ar' : 'en';
   const level = LEVELS.includes(b.level ?? '') ? b.level! : 'standard';
   const correct = Math.max(0, Math.min(3, Math.round(Number(b.correct) || 0)));
@@ -102,30 +111,33 @@ function syntheticMonth(): { cases: CaseLike[]; letters: { read: number; booked:
 async function compute(week: number) {
   await seedDesk();
   // Only counts over live records spend privacy budget; the synthetic month describes nobody.
-  let counts = 0, charging = true;
-  const noisy = (n: number, sensitivity = 1) => { if (charging) counts++; return noisyCount(n, SCALE, sensitivity); };
+  let counts = 0, charging = true, part = 'live';
+  const dpKey = subkey('dp');
+  const noisy = (name: string, n: number, sensitivity = 1) => {
+    if (charging) counts++;
+    return noisyCount(n, SCALE, sensitivity, prf(dpKey, `twokeys/v2/release|w${week}|${part}|${name}`));
+  };
   const shown = (v: number) => (v < MIN_CELL ? { value: null, suppressed: true } : { value: v, suppressed: false });
   const inWeek = (t: number) => Math.floor(t / WEEK) === week;
 
-  // Each person's first booking ever, if it was made in this week.
-  const first = new Map<string, DeskCase>();
-  for (const c of (await listCases()).filter((c) => !c.person.id.startsWith('synthetic-')).sort((a, b) => a.createdAt - b.createdAt)) if (!first.has(c.person.id)) first.set(c.person.id, c);
-  const cases = [...first.values()].filter((c) => inWeek(c.createdAt));
+  // Each person's first booking ever (marked when booked, for life), if it was made in this week.
+  const cases = (await listCases()).filter((c) => c.firstEver && !c.person.id.startsWith('synthetic-') && inWeek(c.createdAt));
   const synth = syntheticMonth();
   const live = await teachBackWeek(week);
-  const letters = (await store().list<{ read: number; booked: number; createdAt: number }>('letter:')).map((x) => x.value).filter((l) => inWeek(l.createdAt));
+  const letters = (await store().list<{ read: number; booked: number; createdAt: number; counted?: boolean }>('letter:')).map((x) => x.value).filter((l) => l.counted !== false && inWeek(l.createdAt));
 
   const caseStats = (cs: CaseLike[]) => {
     const contacted = cs.filter((c) => c.firstContactAt);
     const hrs = contacted.map((c) => (c.firstContactAt! - c.createdAt) / 3_600_000).sort((a, b) => a - b);
-    const nb = noisy(cs.length), nc = noisy(contacted.length);
-    const within = noisy(contacted.filter((c) => c.firstContactAt! <= c.dueBy).length), arabic = noisy(cs.filter((c) => c.language === 'ar').length);
+    // Consistency after noising (free): no part exceeds its whole.
+    const nb = noisy('booked', cs.length), nc = Math.min(nb, noisy('contacted', contacted.length));
+    const within = Math.min(nc, noisy('within', contacted.filter((c) => c.firstContactAt! <= c.dueBy).length)), arabic = Math.min(nb, noisy('arabic', cs.filter((c) => c.language === 'ar').length));
     return {
       booked: shown(nb),
       contacted: shown(nc),
-      overdue: shown(noisy(cs.filter((c) => !c.firstContactAt && c.status !== 'withdrawn' && c.dueBy < Date.now()).length)),
-      referred: shown(noisy(cs.filter((c) => c.referral).length)),
-      withdrawn: shown(noisy(cs.filter((c) => c.status === 'withdrawn').length)),
+      overdue: shown(Math.min(nb - nc, noisy('overdue', cs.filter((c) => !c.firstContactAt && c.status !== 'withdrawn' && c.dueBy < Date.now()).length))),
+      referred: shown(Math.min(nb, noisy('referred', cs.filter((c) => c.referral).length))),
+      withdrawn: shown(Math.min(nb, noisy('withdrawn', cs.filter((c) => c.status === 'withdrawn').length))),
       // Medians can't be noised safely with this budget, so only the synthetic month shows one.
       medianHoursToFirstContact: charging ? null : hrs.length >= MIN_CELL ? Math.max(1, Math.round(hrs[Math.floor(hrs.length / 2)] / 4) * 4) : null,
       // Rates only beside a count that is shown, from the same noisy counts.
@@ -133,24 +145,28 @@ async function compute(week: number) {
       arabicShare: nb >= MIN_CELL ? Math.min(1, arabic / nb) : null,
     };
   };
-  const tb = (bucket: Bucket, key: (k: string) => boolean) => {
+  const tb = (bucket: Bucket, name: string, key: (k: string) => boolean) => {
     const rows = Object.entries(bucket).filter(([k]) => key(k)).map(([, v]) => v);
-    const n = noisy(rows.reduce((a, x) => a + x.n, 0));
-    const all3 = noisy(rows.reduce((a, x) => a + x.all3, 0));
-    return n < MIN_CELL ? { people: null, allThreeRight: null } : { people: n, allThreeRight: Math.min(1, all3 / n) };
+    const n = noisy(`tb.${name}.n`, rows.reduce((a, x) => a + x.n, 0));
+    const all3 = Math.min(n, noisy(`tb.${name}.all3`, rows.reduce((a, x) => a + x.all3, 0)));
+    return n < MIN_CELL ? { people: null, allThreeRight: null } : { people: n, allThreeRight: all3 / n };
   };
   const views = (bucket: Bucket) => ({
-    ar: tb(bucket, (k) => k.startsWith('ar:')), en: tb(bucket, (k) => k.startsWith('en:')),
-    simple: tb(bucket, (k) => k.endsWith(':simple')), standard: tb(bucket, (k) => k.endsWith(':standard')), detailed: tb(bucket, (k) => k.endsWith(':detailed')),
+    ar: tb(bucket, 'ar', (k) => k.startsWith('ar:')), en: tb(bucket, 'en', (k) => k.startsWith('en:')),
+    simple: tb(bucket, 'simple', (k) => k.endsWith(':simple')), standard: tb(bucket, 'standard', (k) => k.endsWith(':standard')), detailed: tb(bucket, 'detailed', (k) => k.endsWith(':detailed')),
   });
-  // One sender writes at most LETTER_CAP notes ever, so note counts are noised for that many.
-  const fam = (ls: { read: number; booked: number }[]) => ({
-    notes: shown(noisy(ls.length, LETTER_CAP)),
-    readShared: shown(noisy(ls.filter((l) => l.read > 0).length, LETTER_CAP)),
-    booked: shown(noisy(ls.reduce((a, l) => a + Math.min(1, l.booked), 0), LETTER_CAP)),
-  });
+  // Only a sender's first LETTER_CAP notes ever are counted, so note counts are noised for that many.
+  const fam = (ls: { read: number; booked: number }[]) => {
+    const notes = noisy('fam.notes', ls.length, LETTER_CAP);
+    return {
+      notes: shown(notes),
+      readShared: shown(Math.min(notes, noisy('fam.readShared', ls.filter((l) => l.read > 0).length, LETTER_CAP))),
+      booked: shown(Math.min(notes, noisy('fam.booked', ls.reduce((a, l) => a + Math.min(1, l.booked), 0), LETTER_CAP))),
+    };
+  };
   const liveCounselling = caseStats(cases), liveViews = views(live), liveFamily = fam(letters);
   charging = false;
+  part = 'synthetic';
   if (counts > LIVE_COUNTS) throw new Error('Release would exceed its privacy budget.');
   const release = {
     week,
@@ -159,25 +175,35 @@ async function compute(week: number) {
     family: { live: liveFamily, seededSynthetic: fam(synth.letters) },
     neverCounted: ['marriages', 'individual results', 'which couples are at increased chance'],
   };
-  const releases = await store().incr('metrics:releases', YEAR);
   return {
-    ...release,
-    privacy: {
-      epsilonPerCount: Number((1 / SCALE).toFixed(3)), epsilonThisRelease: Number((counts / SCALE).toFixed(2)), epsilonPerPersonLifetime: EPS_PERSON,
-      releases, minimumCell: MIN_CELL, letterCap: LETTER_CAP, refreshed: 'weekly, covering the last complete week; repeated requests return the same release',
+    counts,
+    release: {
+      ...release,
+      privacy: {
+        epsilonPerCount: Number((1 / SCALE).toFixed(3)), epsilonThisRelease: Number((counts / SCALE).toFixed(2)), epsilonPerPersonLifetime: EPS_PERSON,
+        releases: 0, minimumCell: MIN_CELL, letterCap: LETTER_CAP, refreshed: REFRESHED,
+      },
     },
   };
 }
+type Release = Awaited<ReturnType<typeof compute>>['release'];
+/** One append-only ledger row per weekly release: what was released and what it spent. Never replaced or deleted. */
+interface Ledger { week: number; at: number; counts: number; epsilon: number; release: Release }
+const REFRESHED = 'weekly, covering the last complete week; each week is released once, into an append-only ledger, and every request returns that release';
 
 export async function GET() {
   await connection();
   const week = Math.floor(Date.now() / WEEK) - 1; // the last complete week
-  const key = `metrics:release:v2:w${week}`;
-  let r = await store().get<Awaited<ReturnType<typeof compute>>>(key);
-  if (!r) {
-    r = await compute(week);
-    await store().putNew(key, r, 60 * 60 * 24 * 14);
-    r = (await store().get<typeof r>(key)) ?? r; // whoever wrote first wins, everyone serves the same
+  const key = `metrics:ledger:w${week}`;
+  let entry = await store().get<Ledger>(key);
+  if (!entry) {
+    // A week already released before the ledger existed is adopted as it was, not noised again.
+    const old = await store().get<Release>(`metrics:release:v2:w${week}`);
+    const made = old ? { counts: Math.round(old.privacy.epsilonThisRelease * SCALE), release: old } : await compute(week);
+    const row: Ledger = { week, at: dayStart(), counts: made.counts, epsilon: Number((made.counts / SCALE).toFixed(2)), release: made.release };
+    await store().putNew(key, row, FOREVER); // whoever writes first wins; everyone serves that row
+    entry = (await store().get<Ledger>(key)) ?? row;
   }
-  return Response.json(r, { headers: { 'cache-control': 'no-store' } });
+  const releases = (await store().list('metrics:ledger:')).length;
+  return Response.json({ ...entry.release, privacy: { ...entry.release.privacy, releases, refreshed: REFRESHED } }, { headers: { 'cache-control': 'no-store' } });
 }

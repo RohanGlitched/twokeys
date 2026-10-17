@@ -111,6 +111,38 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
     expect(r.genes).toEqual([]);
   }, 60_000);
 
+  it('booking before reveal names nothing; after an agreed reveal the case gets the lab’s genes', async () => {
+    const link = newLink();
+    const [ia, ib] = await Promise.all([as('mariam'), as('saeed')]);
+    const post = (path: string, identity: string, body: object) => fetch(`${BASE}${path}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ session: sessionId(link), ...body }) }).then((r) => r.json());
+    const book = (identity: string, role: 'A' | 'B') => fetch(`${BASE}/api/desk/cases`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ pairing: sessionId(link), role }) });
+    // The desk passcode is "counsellor" on a local server without DESK_PASSCODE; pass DESK_PASSCODE otherwise.
+    const desk = (id: string) => fetch(`${BASE}/api/desk/cases/${id}`, { headers: { 'x-desk': process.env.DESK_PASSCODE ?? 'counsellor', 'x-desk-user': encodeURIComponent('Judge (demo)') } }).then((r) => r.json());
+    const withdraw = (id: string, identity: string) => fetch(`${BASE}/api/desk/cases/${id}`, { method: 'DELETE', headers: { 'x-person': identity } });
+    await post('/api/lab/tokens', ia, { role: 'A' });
+    await post('/api/lab/tokens', ib, { role: 'B' });
+    await post('/api/lab/confirm', ia, { role: 'A', ok: true });
+    await post('/api/lab/confirm', ib, { role: 'B', ok: true });
+    // Seated and confirmed, but no comparison yet: the booking names nothing, and the receipt never names genes.
+    const early = await book(ia, 'A');
+    expect(early.status).toBe(200);
+    const e = await early.json();
+    expect(e).not.toHaveProperty('sharedGenes');
+    const seenEarly = await desk(e.id);
+    expect(seenEarly.case.sharedGenes).toEqual([]);
+    expect(seenEarly.case.pairing).toBeNull();
+    // One open request per person per pairing.
+    expect((await book(ia, 'A')).status).toBe(409);
+    // The phones compare, the lab agrees, and only then does a booking carry the genes it released.
+    await Promise.all([runInitiator({ identity: ia, link, base: BASE }), runResponder({ identity: ib, link, base: BASE })]);
+    const late = await (await book(ib, 'B')).json();
+    expect(late).not.toHaveProperty('sharedGenes');
+    const seenLate = await desk(late.id);
+    expect(seenLate.case.sharedGenes).toEqual(['CYP21A2']);
+    expect(seenLate.case.partnerBooked).toBe(true);
+    await Promise.all([withdraw(e.id, ia), withdraw(late.id, ib)]);
+  }, 60_000);
+
   it('a person who doesn’t recognise who joined can stop', async () => {
     const link = newLink();
     const [ia, ib] = await Promise.all([as('noura'), as('khalid')]);

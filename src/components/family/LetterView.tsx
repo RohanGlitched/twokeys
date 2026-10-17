@@ -2,6 +2,8 @@
 // A family note, opened on the relative's phone with the key in the link's #fragment. The relative
 // alone decides whether the sender may know that it was read, or that a test was booked.
 import { useEffect, useState } from 'react';
+import { hmac } from '@noble/hashes/hmac.js';
+import { sha256 } from '@noble/hashes/sha2.js';
 import type { Locale } from '@/i18n/locales';
 import { conditionFor } from '@/lib/conditions';
 import { openLetter, per100, type LetterBody, type Relation } from '@/lib/letters';
@@ -23,6 +25,13 @@ const RELATION_AS: Record<Relation, string> = {
   sibling: 'أخاً أو أختاً', parent: 'أحدَ الوالدين', child: 'ابناً أو ابنةً', 'half-sibling': 'أخاً غير شقيق أو أختاً غير شقيقة',
   'aunt-uncle': 'عمّاً أو عمّةً أو خالاً أو خالةً', 'niece-nephew': 'ابنَ أو ابنةَ أخ أو أخت', 'first-cousin': 'ابنَ أو ابنةَ عمّ أو عمّة أو خال أو خالة',
 };
+
+const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+const unb64u = (s: string) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
+/** The acknowledgement token, HMAC(letter key, 'ack'): only someone holding the link's #fragment can make it. */
+export const ackToken = (key: string) => hex(hmac(sha256, unb64u(key), new TextEncoder().encode('ack')));
+/** What the sender registers with the letter (POST /api/family { c, ack }), so the server can check tokens without the key. */
+export const ackHash = (key: string) => hex(sha256(new TextEncoder().encode(ackToken(key))));
 
 export function LetterView({ lang, id }: { lang: Locale; id: string }) {
   const t = (l: L) => l[lang];
@@ -51,7 +60,7 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
   // Each acknowledgement is sent once per device, and only when the relative taps it.
   const tell = async (kind: 'read' | 'booked') => {
     if (told[kind]) return;
-    const r = await fetch(`/api/family/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind }) });
+    const r = await fetch(`/api/family/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind, token: ackToken(window.location.hash.slice(1)) }) });
     if (!r.ok && r.status !== 429) return;
     const next = { ...told, [kind]: true };
     setTold(next);
@@ -62,7 +71,7 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
   return (
     <main id="main" className="mx-auto max-w-xl px-6 py-10">
       <div className="flex items-center gap-2 text-ink-2"><Mark size={22} /><span className="text-[14px]">{t({ en: 'Two Keys: a note from your family', ar: 'مفتاحان: رسالة من عائلتك' })}</span></div>
-      {err && <p role="alert" className="mt-8 border-s-4 border-madder bg-madder-2 px-4 py-3">{err}</p>}
+      {err && <p role="alert" className="mt-8 border-s-4 border-alert bg-alert-2 px-4 py-3">{err}</p>}
       {!body && !err && <div role="status" className="mt-8 h-40 animate-pulse bg-wool-2"><span className="sr-only">{t({ en: 'Loading…', ar: 'جارٍ التحميل…' })}</span></div>}
       {body && (
         <article className="mt-6">

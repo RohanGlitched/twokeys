@@ -19,7 +19,7 @@ export function Nav({ lang, path = '' }: { lang: Locale; path?: string }) {
       <Link href={`/${lang}`} className="flex items-center gap-2.5 text-[18px] font-semibold tracking-tight">
         <Mark size={28} />
         {lang === 'ar' ? 'مفتاحان' : 'Two Keys'}
-        <span className="font-naskh text-[17px] font-medium text-ink-3">{lang === 'ar' ? 'Two Keys' : 'مفتاحان'}</span>
+        <span className="font-arabic text-[17px] font-medium text-ink-3">{lang === 'ar' ? 'Two Keys' : 'مفتاحان'}</span>
       </Link>
       <nav className="hidden items-center gap-7 text-[14px] text-ink-2 md:flex">
         {NAV.map((n) => (
@@ -75,14 +75,14 @@ export function Footer({ lang }: { lang: Locale }) {
         </div>
         {cols.map((c) => (
           <div key={c.title.en}>
-            <h2 className="text-[13px] font-medium text-ink-3">{t(c.title)}</h2>
+            <h2 className="text-[13px] font-medium text-ink-2">{t(c.title)}</h2>
             <ul className="mt-3 space-y-2 text-[14px]">
               {c.links.map((l) => <li key={l.href}>{l.ext ? <a href={l.href} target="_blank" rel="noreferrer" className="hover:underline">{t(l.label)}</a> : <Link href={l.href} className="hover:underline">{t(l.label)}</Link>}</li>)}
             </ul>
           </div>
         ))}
       </div>
-      <div className="mx-auto max-w-[1240px] border-t border-rule px-6 py-5 text-[12px] text-ink-3 md:px-8">
+      <div className="mx-auto max-w-[1240px] border-t border-rule px-6 py-5 text-[12px] text-ink-2 md:px-8">
         {t({ en: 'Pattern after Al Sadu weaving, on UNESCO’s list of intangible cultural heritage. Pedigree notation after the NSGC standard.', ar: 'الزخارف مستوحاة من نسيج السدو المدرج في قائمة اليونسكو للتراث الثقافي غير المادي، ورموز شجرة العائلة وفق معيار NSGC.' })}
       </div>
     </footer>

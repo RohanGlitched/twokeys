@@ -11,6 +11,11 @@ export interface Finding {
   inheritance: Inheritance;
   /** 'mild' = an allele that only matters with a severe one on the other side (e.g. GJB2 V37I). */
   severity: 'severe' | 'mild';
+  /**
+   * Alpha globin only (HBA1/HBA2): a non-deletional alpha-plus change (αT-Saudi, Hb Constant Spring), which
+   * can cause HbH disease even with another alpha-plus change. 'severe' alone means α0 (--), 'mild' α+ (-α).
+   */
+  alpha?: 'nondeletional';
 }
 export type Role = 'A' | 'B';
 export type Sex = 'F' | 'M';
@@ -47,11 +52,28 @@ export const matchGene = (gene: string) => (/^HBA[12]$/i.test(gene) ? 'HBA' : ge
  */
 const PAIR_DECIDES = new Set(['HBB']);
 
+/**
+ * Alpha globin: each person has two alpha haplotypes, and what a child can have depends on which pair
+ * meets. So the lab issues one token per (her class, his class) combination for each distinct class a
+ * person carries: α0 (--), α+ (-α) or αT (non-deletional α+). A token matches only when A carries the
+ * first class and B the second, and the lab grades the worst pair that met. Two copies of the same class
+ * (e.g. -α/-α) give one set of tokens, never duplicates.
+ */
+type AlphaClass = 'a0' | 'a+' | 'aT';
+const ALPHA: AlphaClass[] = ['a0', 'a+', 'aT'];
+const alphaClass = (f: Finding): AlphaClass => (f.severity === 'severe' ? 'a0' : f.alpha === 'nondeletional' ? 'aT' : 'a+');
+
 export function sessionTokens(labKey: Uint8Array, session: string, role: Role, findings: Finding[]): LabelledToken[] {
   if (!/^[0-9a-f]{32,64}$/.test(session)) throw new Error('Bad session id.');
   const out: LabelledToken[] = [];
+  const alpha = [...new Set(findings.filter((f) => f.inheritance === 'AR' && matchGene(f.gene) === 'HBA').map(alphaClass))];
+  for (const c of alpha) for (const d of ALPHA) {
+    const pair = role === 'A' ? `${c}:${d}` : `${d}:${c}`;
+    out.push({ i: out.length, label: `HBA:${pair}`, token: token(labKey, session, `ha:${pair}`, 'HBA') });
+  }
   for (const f of findings) {
     const g = matchGene(f.gene);
+    if (g === 'HBA' && f.inheritance === 'AR') continue;
     if (f.inheritance === 'AR') {
       const severeTag = role === 'A' ? 'r1' : 'r2';
       const anyTag = role === 'A' ? 'r2' : 'r1';
@@ -71,7 +93,8 @@ export function sessionTokens(labKey: Uint8Array, session: string, role: Role, f
  * lab-made decoys that match nothing, and the whole list is put in a lab-keyed order, so a token's
  * position says nothing about which finding it stands for. Everything is derived from the lab key, the
  * session and the seat, so asking again returns the identical list: comparing two answers reveals
- * nothing, and the lab can rebuild the exact list later to check the phone's first lock.
+ * nothing, and the lab can rebuild the exact list later to check the phone's first lock. The routes pass
+ * a per-session key (seats.ts sessionKey: the tokens subkey with a server nonce), not the root key.
  */
 export function issue(labKey: Uint8Array, session: string, role: Role, findings: Finding[]): Token[] {
   const real = sessionTokens(labKey, session, role, findings).map(({ token }) => token);
@@ -86,16 +109,22 @@ const toHex0 = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2
  * strength 2 = both carry a serious change; 1 = one of them carries a milder one; 0 = both milder (low concern).
  * kind, for the globin genes, names what the pair means:
  *   HBB: 'hplc' (a full match until the confirmatory test gives the exact pair);
- *   alpha globin (severe = both genes lost on one chromosome, α0; mild = one gene lost, α+):
- *   'bart' (α0 with α0: Hb Bart's hydrops), 'hbh' (α0 with α+: HbH disease), 'trait' (α+ with α+: harmless trait).
+ *   alpha globin, from the worst pair of haplotype classes that met (α0 = --, α+ = -α, αT = non-deletional):
+ *   'bart' (α0 with α0: Hb Bart's hydrops possible), 'hbh' (α0 with any α+, or αT with αT or α+: HbH disease
+ *   possible), 'trait' (deletional α+ with α+ only: harmless trait). Bart's is never given unless both carry α0.
  */
 export interface SharedGene { gene: string; inheritance: Inheritance; strength: 0 | 1 | 2; kind?: 'hplc' | 'bart' | 'hbh' | 'trait' }
+
+function alphaGraded(pairs: string[]): SharedGene {
+  if (pairs.includes('a0:a0')) return { gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'bart' };
+  if (pairs.some((p) => p.includes('a0') || p.includes('aT'))) return { gene: 'HBA', inheritance: 'AR', strength: 2, kind: 'hbh' };
+  return { gene: 'HBA', inheritance: 'AR', strength: 0, kind: 'trait' };
+}
 
 function graded(label: string, n: number): SharedGene {
   if (label.startsWith('X:')) return { gene: label.slice(2), inheritance: 'XL', strength: 2 };
   const strength = Math.min(2, n - 1) as 0 | 1 | 2;
   if (label === 'HBB') return { gene: label, inheritance: 'AR', strength: 2, kind: 'hplc' };
-  if (label === 'HBA') return strength === 0 ? { gene: label, inheritance: 'AR', strength: 0, kind: 'trait' } : { gene: label, inheritance: 'AR', strength: 2, kind: strength === 2 ? 'bart' : 'hbh' };
   return { gene: label, inheritance: 'AR', strength };
 }
 
@@ -109,7 +138,11 @@ export function intersection(labKey: Uint8Array, session: string, a: Finding[], 
   const bIdx = tb.filter((t) => inA.has(t.token));
   const counts = new Map<string, number>();
   for (const t of aIdx) counts.set(t.label, (counts.get(t.label) ?? 0) + 1);
-  const genes: SharedGene[] = [...counts.entries()].map(([label, n]) => graded(label, n)).sort((x, y) => x.gene.localeCompare(y.gene));
+  const alphaPairs = [...counts.keys()].filter((l) => l.startsWith('HBA:')).map((l) => l.slice(4));
+  const genes: SharedGene[] = [
+    ...[...counts.entries()].filter(([label]) => !label.startsWith('HBA:')).map(([label, n]) => graded(label, n)),
+    ...(alphaPairs.length ? [alphaGraded(alphaPairs)] : []),
+  ].sort((x, y) => x.gene.localeCompare(y.gene));
   return { A: new Set(aIdx.map((t) => t.token)), B: new Set(bIdx.map((t) => t.token)), genes };
 }
 

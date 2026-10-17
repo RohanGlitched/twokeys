@@ -1,0 +1,25 @@
+{
+ "note": "Plain questions a judge or a couple is likely to type first. Every one should get a checked model answer, not a fixed reply. Written by the team as a development check (not held out); run with: npm run debug:ask -- --must",
+ "cases": [
+  { "id": "m01", "lang": "en", "genes": ["CYP21A2"], "related": true, "q": "What is CAH?" },
+  { "id": "m02", "lang": "en", "genes": ["CYP21A2"], "related": true, "q": "Can our children be healthy?" },
+  { "id": "m03", "lang": "en", "genes": ["CYP21A2"], "related": true, "q": "Does being cousins change anything?" },
+  { "id": "m04", "lang": "en", "genes": ["CYP21A2"], "related": true, "q": "Could our daughter be born looking different?" },
+  { "id": "m05", "lang": "en", "genes": ["HBB"], "related": false, "q": "What does it mean that we both carry HBB?" },
+  { "id": "m06", "lang": "en", "genes": ["HBB"], "related": false, "q": "I am a thalassaemia carrier. Can I take iron?" },
+  { "id": "m07", "lang": "en", "genes": ["GJB2"], "strengths": { "GJB2": 1 }, "related": false, "q": "How serious is the hearing gene for us?" },
+  { "id": "m08", "lang": "en", "genes": [], "xl": ["G6PD"], "sex": "M", "related": false, "q": "I have G6PD deficiency. Will my son get it from me?" },
+  { "id": "m09", "lang": "en", "genes": [], "xl": [], "related": false, "q": "Can our children be healthy?" },
+  { "id": "m10", "lang": "en", "genes": ["CFTR"], "related": false, "q": "What does CFTR mean for our children?" },
+  { "id": "m11", "lang": "en", "genes": ["PAH"], "related": false, "q": "Is our result serious?" },
+  { "id": "m12", "lang": "en", "genes": ["HBB"], "related": false, "q": "Does Thiqa cover IVF with embryo testing?" },
+  { "id": "m13", "lang": "ar", "sex": "M", "genes": ["CYP21A2"], "related": true, "q": "ما هو تضخم الغدة الكظرية؟" },
+  { "id": "m14", "lang": "ar", "sex": "F", "genes": ["CYP21A2"], "related": true, "q": "هل يمكن أن يكون أطفالنا أصحاء؟" },
+  { "id": "m15", "lang": "ar", "sex": "F", "genes": ["HBB"], "related": false, "q": "شو يعني إنّا الاثنين نحمل جين الثلاسيميا؟" },
+  { "id": "m16", "lang": "ar", "sex": "F", "genes": ["HBB"], "related": false, "q": "هل الصيام في رمضان آمن لحاملة صفة الأنيميا المنجلية؟" },
+  { "id": "m17", "lang": "ar", "sex": "M", "genes": ["MEFV"], "related": true, "q": "وش تأثير القرابة على نتيجتنا؟" },
+  { "id": "m18", "lang": "ar", "sex": "M", "genes": [], "xl": ["G6PD"], "related": false, "q": "ما معنى نقص إنزيم G6PD بالنسبة لأولادنا؟" },
+  { "id": "m19", "lang": "ar", "sex": "F", "genes": ["SMN1"], "related": false, "q": "ana w khateebi 3andna SMN1, shu ya3ni hatha lel atfal?" },
+  { "id": "m20", "lang": "ar", "sex": "M", "genes": ["CFTR"], "related": false, "q": "هل يغطي التأمين فحص الأجنة؟" }
+ ]
+}
