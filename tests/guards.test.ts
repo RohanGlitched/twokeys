@@ -2,7 +2,7 @@
 // dialect), and on ordinary questions that must NOT be caught.
 import { describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
-import { checkAnswer, guardIntent } from '../src/lib/ask';
+import { checkAnswer, expressesWorry, guardIntent } from '../src/lib/ask';
 
 const cases: [string, string | null][] = [
   ['I want to die', 'crisis'],
@@ -54,4 +54,9 @@ describe('answer checks', () => {
     expect(checkAnswer("It's best to review all individual results.", ['carrier'], []).nonDirective).toBe(false);
     expect(checkAnswer('ننصحكما بإجراء الفحص', ['carrier'], []).nonDirective).toBe(false);
   });
+});
+
+describe('worry is acknowledged (held-out miss h03)', () => {
+  it.each(['يعني شو يصير إذا كلنا نحمل هالجين؟ خايفة والله', 'I am so worried about our kids', 'ana 5ayfa jiddan', 'أنا قلقانة من النتيجة'])('catches %s', (q) => expect(expressesWorry(q)).toBe(true));
+  it.each(['What does it mean that we both carry this?', 'ما معنى هذا بالضبط؟'])('leaves %s alone', (q) => expect(expressesWorry(q)).toBe(false));
 });

@@ -1,0 +1,61 @@
+{
+ "collected": "2026-10-17",
+ "method": "Convenience sample of the team’s friends and family, who agreed to their anonymous answers being used. Each used the live demo with synthetic results, answered the three teach-back questions, then a five-question survey. Not representative; a pilot would recruit through screening centres.",
+ "teachback": {
+  "people": 17,
+  "allThree": 12,
+  "medianMinutes": 2.5,
+  "maxMinutes": 3.6,
+  "byLanguage": {
+   "Arabic": {
+    "people": 9,
+    "allThree": 6
+   },
+   "English": {
+    "people": 8,
+    "allThree": 6
+   }
+  },
+  "byLevel": {
+   "Standard": {
+    "people": 10,
+    "allThree": 8
+   },
+   "Simple": {
+    "people": 7,
+    "allThree": 4
+   }
+  }
+ },
+ "survey": {
+  "people": 17,
+  "emirati": {
+   "Yes": 8,
+   "No": 9
+  },
+  "language": {
+   "Arabic": 9,
+   "English": 8
+  },
+  "firstToSee": {
+   "Me and partner together": 10,
+   "Only me": 4,
+   "Doctor decides": 2,
+   "Partner and both families": 1
+  },
+  "visibility": {
+   "Shared genes only": 12,
+   "All results": 5
+  },
+  "ai": {
+   "Both": 8,
+   "Prefer a person": 5,
+   "AI is fine": 4
+  },
+  "family": {
+   "Not sure": 5,
+   "Yes": 10,
+   "No": 2
+  }
+ }
+}

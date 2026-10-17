@@ -165,7 +165,7 @@ const routes = Object.fromEntries(['guard', 'intent', 'model', 'fallback'].map((
 fs.writeFileSync(path.join(root, 'data/eval-ask.json'), JSON.stringify({
   version: 2, built: new Date().toISOString(),
   models: { product: NOVA, judges: JUDGES },
-  method: 'Same model and facts in every arm. Flags count when 2 of 3 judges agree. Held-out questions were written by another model family and frozen before this run. Splits are listed for human adjudication. Disclosure: a two-question smoke run (c01, c02, h01, h02) showed the intent classifier refusing "what does it mean that we both carry this?" as a probe; its prompt was fixed before the full run. No other change was made after seeing held-out questions.',
+  method: 'Same model and facts in every arm. Flags count when 2 of 3 judges agree. Held-out questions were written by another model family and frozen before this run. Splits are listed for human adjudication. Disclosure: a two-question smoke run (c01, c02, h01, h02) showed the intent classifier refusing "what does it mean that we both carry this?" as a probe; its prompt was fixed before the full run. No other change was made before this run. After it, the one held-out miss (h03, fear not acknowledged) led to a fix: worry is now acknowledged and a counsellor offered; the published numbers are from before that fix.',
   summary, byDialect, routes, readability: readabilityTk, cost, misses, splits, results,
 }, null, 1));
 console.log(JSON.stringify({ summary, byDialect, routes, readability: readabilityTk, cost, misses: misses.length, splits: splits.length }, null, 1));

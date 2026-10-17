@@ -1,0 +1,18 @@
+id,language,age_range,emirati,first_to_see_result,result_visibility,ai_preference,family_notification
+S001,Arabic,18–24,Yes,Me and partner together,Shared genes only,Both,Not sure
+S002,Arabic,25–34,Yes,Only me,Shared genes only,Prefer a person,Yes
+S003,Arabic,25–34,No,Me and partner together,All results,Both,Yes
+S004,Arabic,35–44,Yes,Doctor decides,Shared genes only,Prefer a person,Not sure
+S005,Arabic,18–24,No,Me and partner together,Shared genes only,AI is fine,Yes
+S006,Arabic,25–34,Yes,Me and partner together,Shared genes only,Both,Yes
+S007,Arabic,25–34,No,Only me,All results,Prefer a person,No
+S008,Arabic,18–24,Yes,Me and partner together,Shared genes only,Both,Not sure
+S009,Arabic,45+,No,Partner and both families,All results,AI is fine,Yes
+S010,English,25–34,Yes,Me and partner together,Shared genes only,Both,Yes
+S011,English,18–24,No,Only me,Shared genes only,AI is fine,Not sure
+S012,English,25–34,No,Me and partner together,Shared genes only,Both,Yes
+S013,English,35–44,Yes,Doctor decides,All results,Prefer a person,No
+S014,English,25–34,No,Me and partner together,Shared genes only,Both,Yes
+S015,English,18–24,No,Only me,Shared genes only,AI is fine,Not sure
+S016,English,35–44,Yes,Me and partner together,All results,Both,Yes
+S017,English,25–34,No,Me and partner together,Shared genes only,Prefer a person,Yes

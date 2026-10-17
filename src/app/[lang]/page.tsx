@@ -64,7 +64,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
               <div key={f.src} className="border-b border-rule py-6 md:border-b-0 md:pe-8">
                 <p className="text-[44px] font-semibold leading-none tracking-tight">{t(f.n)}</p>
                 <p className="mt-3 text-[15px] leading-snug text-ink-2">{t(f.label)}</p>
-                <a href={f.href} target="_blank" rel="noreferrer" className="mt-2 inline-block text-[12px] text-ink-3 underline underline-offset-2">{f.src}</a>
+                <a href={f.href} target="_blank" rel="noreferrer" className="mt-2 inline-block text-[12px] text-ink-2 underline underline-offset-2">{f.src}</a>
               </div>
             ))}
           </div>
@@ -114,17 +114,27 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
         {/* who learns what */}
         <section id="learns" className="mx-auto mt-24 max-w-[1240px] px-6 md:px-8">
           <h2 className="text-[clamp(28px,3vw,40px)] font-semibold tracking-tight">{t({ en: 'Who learns what', ar: 'من يعرف ماذا' })}</h2>
-          <div className="mt-8 overflow-x-auto">
-            <table className="w-full min-w-[640px] border-t-[1.5px] border-ink text-[15px]">
-              <thead><tr className="text-start text-[13px] text-ink-3">
-                <th className="py-3 text-start font-normal">{t({ en: 'Who', ar: 'من' })}</th>
-                <th className="py-3 text-start font-normal">{t({ en: 'Learns', ar: 'يعرف' })}</th>
-                <th className="py-3 text-start font-normal">{t({ en: 'Never learns', ar: 'لا يعرف أبداً' })}</th>
+          {/* Cards on phones, a table from tablet up. */}
+          <ul className="mt-8 divide-y divide-rule border-y-[1.5px] border-ink md:hidden">
+            {LEARNS.map((r) => (
+              <li key={r.who.en} className="py-4">
+                <p className="text-[16px] font-semibold">{t(r.who)}</p>
+                <p className="mt-1 text-[15px]"><span className="text-ink-2">{t({ en: 'Learns: ', ar: 'يعرف: ' })}</span>{t(r.learns)}</p>
+                <p className="mt-1 text-[15px]"><span className="text-ink-2">{t({ en: 'Never learns: ', ar: 'لا يعرف أبداً: ' })}</span>{t(r.never)}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8 hidden md:block">
+            <table className="w-full border-t-[1.5px] border-ink text-[15px]">
+              <thead><tr className="text-start text-[13px] text-ink-2">
+                <th scope="col" className="py-3 text-start font-normal">{t({ en: 'Who', ar: 'من' })}</th>
+                <th scope="col" className="py-3 text-start font-normal">{t({ en: 'Learns', ar: 'يعرف' })}</th>
+                <th scope="col" className="py-3 text-start font-normal">{t({ en: 'Never learns', ar: 'لا يعرف أبداً' })}</th>
               </tr></thead>
               <tbody>
                 {LEARNS.map((r) => (
                   <tr key={r.who.en} className="border-t border-rule align-top">
-                    <td className="py-3.5 pe-6 font-medium">{t(r.who)}</td>
+                    <th scope="row" className="py-3.5 pe-6 text-start font-medium">{t(r.who)}</th>
                     <td className="py-3.5 pe-6">{t(r.learns)}</td>
                     <td className="py-3.5 text-ink-2">{t(r.never)}</td>
                   </tr>
@@ -148,7 +158,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
             </ul>
           </div>
           <div className="rounded-[3px] border border-madder bg-paper p-6">
-            <p className="text-[13px] text-ink-3">{t({ en: 'Congenital adrenal hyperplasia · CYP21A2', ar: 'تضخم الغدة الكظرية الخلقي · CYP21A2' })}</p>
+            <p className="text-[13px] text-ink-2">{t({ en: 'Congenital adrenal hyperplasia · CYP21A2', ar: 'تضخم الغدة الكظرية الخلقي · CYP21A2' })}</p>
             <div className="mt-4 flex gap-4">{(['affected', 'carrier', 'carrier', 'clear'] as const).map((k, i) => <Diamond key={i} fill={k} size={56} />)}</div>
             <p className="mt-4 text-[17px] leading-relaxed">{t({ en: 'In each pregnancy: 1 in 4 that the child has the condition, 2 in 4 a healthy carrier, 1 in 4 neither.', ar: 'في كل حمل: 1 من 4 أن يصاب الطفل، و2 من 4 أن يحمل التغيّر وهو سليم، و1 من 4 ألا يحمل أي نسخة متغيرة.' })}</p>
             <p className="mt-2 text-[14px] text-ink-2">{t({ en: 'Treatable with daily medicine; found by newborn screening.', ar: 'قابل للعلاج بدواء يومي، ويُكشف بفحص حديثي الولادة.' })}</p>

@@ -3,6 +3,7 @@ import { hasLocale } from '@/i18n/locales';
 import { Footer, Nav } from '@/components/site/Chrome';
 import tests from '../../../../data/tests.json';
 import calibration from '../../../../data/calibration.json';
+import study from '../../../../data/study/summary.json';
 import evalAsk from '../../../../data/eval-ask.json';
 import { titled } from '@/i18n/meta';
 
@@ -41,6 +42,8 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = (l: L) => l[lang];
+  const st = study as unknown as { teachback: { people: number; allThree: number; medianMinutes: number; maxMinutes: number; byLanguage: Record<string, { people: number; allThree: number }>; byLevel: Record<string, { people: number; allThree: number }> }; survey: { people: number; emirati: Record<string, number>; firstToSee: Record<string, number>; visibility: Record<string, number>; ai: Record<string, number>; family: Record<string, number> } };
+  const LBL: Record<string, L> = { Arabic: { en: 'Arabic', ar: 'العربية' }, English: { en: 'English', ar: 'الإنجليزية' }, Standard: { en: 'Standard reading level', ar: 'المستوى العادي' }, Simple: { en: 'Simple reading level', ar: 'المستوى المبسّط' } };
   const tr = tests as unknown as { numPassedTests: number; numFailedTests: number; testResults: { name: string; assertionResults: { title: string; status: string; duration: number }[] }[] };
   const cal = calibration as unknown as {
     genesModelled: number; genesFromLiterature: number; genesFromGnomad: number; couplesPerType: number; mixedPopulationAtRisk: number;
@@ -173,6 +176,34 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
             </ul>
           )}
           <p className="mt-4 text-[12px] text-ink-2">{t({ en: `Product model ${ev.models.product}; judges ${Object.values(ev.models.judges).join(', ')}. ${ev.method} Every answer is in data/eval-ask.json.`, ar: `نموذج المنتج ${ev.models.product}؛ الحكّام ${Object.values(ev.models.judges).join('، ')}. كل إجابة في data/eval-ask.json.` })}</p>
+        </section>
+
+        {/* user study */}
+        <section id="study" className="mt-20 border-t-[1.5px] border-ink pt-8">
+          <h2 className="max-w-3xl text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: `What ${st.teachback.people} people told us`, ar: `ما أخبرنا به ${st.teachback.people} شخصاً` })}</h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'A small convenience sample of friends and family, collected on 17 October 2026, in Arabic and English, using the demo with synthetic results. It is not representative and proves nothing on its own; it tells us where to look. A pilot would recruit through screening centres.', ar: 'عينة صغيرة متاحة من الأصدقاء والعائلة، جُمعت في 17 أكتوبر 2026 بالعربية والإنجليزية باستخدام العرض بنتائج افتراضية. ليست ممثلة ولا تثبت شيئاً وحدها، لكنها تخبرنا أين ننظر. وستجنّد التجربة المشاركين عبر مراكز الفحص.' })}</p>
+          <div className="mt-8 grid gap-10 md:grid-cols-2">
+            <div>
+              <h3 className="text-[18px] font-semibold">{t({ en: 'Did they understand the result?', ar: 'هل فهموا النتيجة؟' })}</h3>
+              <p className="mt-2 text-[15px]"><span className="text-[32px] font-semibold text-sage">{st.teachback.allThree}</span> / {st.teachback.people} {t({ en: 'answered all three teach-back questions right first time', ar: 'أجابوا عن أسئلة التحقق الثلاثة إجابة صحيحة من المحاولة الأولى' })}</p>
+              <table className="mt-3 w-full text-[14px]"><tbody>
+                {[...Object.entries(st.teachback.byLanguage), ...Object.entries(st.teachback.byLevel)].map(([k, v]) => (
+                  <tr key={k} className="border-b border-rule"><td className="py-2">{t(LBL[k] ?? { en: k, ar: k })}</td><td className="py-2 text-end font-medium">{v.allThree} / {v.people}</td></tr>
+                ))}
+              </tbody></table>
+              <p className="mt-3 text-[14px] leading-relaxed text-ink-2">{t({ en: `Everyone finished in under ${Math.ceil(st.teachback.maxMinutes)} minutes (median ${st.teachback.medianMinutes}). The Simple reading level did worse than Standard, the opposite of what it is for, so its wording is being reviewed.`, ar: `أنهى الجميع في أقل من ${Math.ceil(st.teachback.maxMinutes)} دقائق (الوسيط ${st.teachback.medianMinutes}). وكان أداء المستوى المبسّط أضعف من العادي، عكس الغرض منه، لذا تجري مراجعة صياغته.` })}</p>
+            </div>
+            <div>
+              <h3 className="text-[18px] font-semibold">{t({ en: 'Who should see a carrier result?', ar: 'من يجب أن يرى نتيجة حمل التغيّر؟' })}</h3>
+              <ul className="mt-3 space-y-2 text-[15px] leading-relaxed">
+                <li><b>{st.survey.visibility['Shared genes only']}</b> / {st.survey.people} {t({ en: 'would see only the genes they share; ', ar: 'يفضّلون رؤية الجينات المشتركة فقط، و' })}<b>{st.survey.visibility['All results']}</b> {t({ en: 'would see everything. So couple-only is the default and full openness is a choice both make.', ar: 'يفضّلون رؤية كل شيء. لذا الافتراضي هو الزوجان فقط، والانفتاح الكامل خيار يتخذه الاثنان.' })}</li>
+                <li><b>{(st.survey.firstToSee['Me and partner together'] ?? 0) + (st.survey.firstToSee['Only me'] ?? 0)}</b> / {st.survey.people} {t({ en: 'want the result seen first by themselves or as a couple; only 1 wanted both families to see it.', ar: 'يريدون أن يرى النتيجة أولاً هم أنفسهم أو الزوجان؛ وواحد فقط أراد أن تراها العائلتان.' })}</li>
+                <li><b>{(st.survey.ai['AI is fine'] ?? 0) + (st.survey.ai['Both'] ?? 0)}</b> / {st.survey.people} {t({ en: 'would ask an AI explainer; ', ar: 'يسألون الشارح الآلي؛ و' })}<b>{st.survey.ai['Prefer a person']}</b> {t({ en: 'prefer a person. So “ask a person instead” is one tap away.', ar: 'يفضّلون إنساناً. لذا «اسأل إنساناً بدلاً منه» على بُعد ضغطة.' })}</li>
+                <li><b>{st.survey.family['Yes']}</b> / {st.survey.people} {t({ en: 'would tell a relative if their name stayed hidden; ', ar: 'سيخبرون قريباً إن بقي اسمهم مخفياً؛ و' })}<b>{st.survey.family['Not sure']}</b> {t({ en: 'are not sure.', ar: 'غير متأكدين.' })}</li>
+              </ul>
+              <p className="mt-3 text-[13px] text-ink-2">{t({ en: `${st.survey.emirati['Yes']} of ${st.survey.people} respondents were Emirati. Anonymous answers: data/study/ in the repository.`, ar: `${st.survey.emirati['Yes']} من ${st.survey.people} مشاركين إماراتيون. الإجابات المجهولة: data/study/ في المستودع.` })}</p>
+            </div>
+          </div>
         </section>
 
         {/* sources */}

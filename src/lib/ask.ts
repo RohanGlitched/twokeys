@@ -227,6 +227,14 @@ async function callModel(input: AskInput, model: string, extra?: string) {
   return { answer: String(parsed.answer ?? '').trim(), cites: Array.isArray(parsed.cites) ? parsed.cites.map(String) : [], escalate: !!parsed.escalate };
 }
 
+/** Fear or worry, short of a crisis: in English, Arabic, Gulf dialect and Arabizi. */
+const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset)\b|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa)\b/i;
+export const expressesWorry = (q: string) => WORRY.test(q.normalize('NFKC'));
+const ACKNOWLEDGE = {
+  en: 'It’s completely understandable to feel worried about this, and you don’t have to work through it alone: a counsellor can talk it through with you.',
+  ar: 'من الطبيعي تماماً أن تشعر بالقلق من هذا، ولست وحدك فيه: يمكن لمستشار أن يتحدث معك عنه.',
+};
+
 const SAFE_FALLBACK = {
   en: 'I couldn’t answer that one safely from the checked sources. A counsellor can: tap “Talk to a counsellor”, and they will contact you.',
   ar: 'لم أستطع الإجابة عن هذا السؤال بأمان من المصادر الموثوقة. يمكن للمستشار ذلك: اضغط «تحدّث إلى مستشار» وسيتواصل معك.',
@@ -270,7 +278,11 @@ export async function ask(input: AskInput, model = ASK_MODEL()): Promise<AskOutp
       break;
     }
     const checks = checkAnswer(draft.answer, draft.cites, [...input.genes, ...input.xl], ctx);
-    if (draft.answer && (input.noGuards || allOk(checks))) return { ...draft, urgent: false, route: 'model', checks, model, ms: Date.now() - t0 };
+    if (draft.answer && (input.noGuards || allOk(checks))) {
+      // Someone who says they are scared or worried hears that first, and is offered a person.
+      if (!input.noGuards && expressesWorry(input.question)) return { ...draft, answer: `${ACKNOWLEDGE[input.lang]} ${draft.answer}`, escalate: true, urgent: false, route: 'model', checks, model, ms: Date.now() - t0 };
+      return { ...draft, urgent: false, route: 'model', checks, model, ms: Date.now() - t0 };
+    }
     problem = problems(checks);
   }
   return { answer: SAFE_FALLBACK[input.lang], cites: ['counsellor'], escalate: true, urgent: false, route: 'fallback', checks: okChecks, model, ms: Date.now() - t0 };
