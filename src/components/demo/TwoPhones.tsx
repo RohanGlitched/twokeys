@@ -22,7 +22,7 @@ export function TwoPhones({ lang, couples, names }: { lang: Locale; couples: Cou
         {couples.map((x) => (
           <button key={x.id} aria-pressed={x.id === coupleId} onClick={() => setCoupleId(x.id)}
             className={`rounded-[2px] border px-3.5 py-2 text-[14px] ${x.id === coupleId ? 'border-ink bg-ink text-wool' : 'border-rule text-ink-2 hover:border-ink'}`}>
-            {t(names[x.a])} &amp; {t(names[x.b])}
+            {t(names[x.a])} {lang === 'ar' ? 'و' : '&'} {t(names[x.b])}
           </button>
         ))}
         <button onClick={() => setRound((r) => r + 1)} className="ms-auto text-[14px] text-indigo underline underline-offset-4">{t({ en: 'Reset both phones', ar: 'أعد ضبط الهاتفين' })}</button>

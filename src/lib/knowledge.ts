@@ -1,0 +1,32 @@
+// The only facts the explainer may use. Each has an id the answer must cite, and a source a
+// counsellor can check. Numbers in an answer must appear here or in the condition cards.
+export interface Fact { id: string; en: string; ar: string; source: string }
+
+export const FACTS: Fact[] = [
+  { id: 'carrier', en: 'A carrier has one changed copy and one working copy of a gene. Carriers are healthy; being a carrier is not a disease.',
+    ar: 'حامل الجين لديه نسخة متغيرة ونسخة سليمة. حاملو الجينات أصحاء، والحمل ليس مرضاً.', source: 'MedlinePlus Genetics: What does it mean to be a carrier?' },
+  { id: 'ar-odds', en: 'When both partners carry the same autosomal recessive gene, each pregnancy has a 1 in 4 (25%) chance of an affected child, 2 in 4 (50%) of a carrier child, and 1 in 4 (25%) of a child with neither changed copy. The chance is the same in every pregnancy.',
+    ar: 'عندما يحمل الشريكان الجين المتنحي نفسه، يكون لكل حمل احتمال 1 من 4 (25%) لطفل مصاب، و2 من 4 (50%) لطفل حامل، و1 من 4 (25%) لطفل بلا نسخة متغيرة. والاحتمال نفسه في كل حمل.', source: 'ACMG practice resource, Gregg et al. 2021' },
+  { id: 'xl-odds', en: 'For an X-linked condition, when the mother is a carrier, each son has a 1 in 2 (50%) chance of being affected and each daughter a 1 in 2 (50%) chance of being a carrier.',
+    ar: 'في الحالات المرتبطة بالكروموسوم X، إذا كانت الأم حاملة، فلكل ابن احتمال 1 من 2 (50%) أن يصاب، ولكل ابنة احتمال 1 من 2 (50%) أن تكون حاملة.', source: 'MedlinePlus Genetics: X-linked recessive inheritance' },
+  { id: 'risk-not-diagnosis', en: 'A couple result is about the chance for a future child. It is not a diagnosis of either partner or of any child.',
+    ar: 'نتيجة الزوجين تتعلق باحتمال لطفل في المستقبل، وليست تشخيصاً لأي من الشريكين أو لأي طفل.', source: 'NSGC practice guideline 2023 (Sagaser et al.)' },
+  { id: 'negative', en: 'A result with no shared gene lowers the chance for the conditions tested but cannot rule out every inherited condition.',
+    ar: 'النتيجة بلا جين مشترك تخفض احتمال الحالات المفحوصة، لكنها لا تستبعد كل الحالات الوراثية.', source: 'ACMG practice resource, Gregg et al. 2021' },
+  { id: 'consanguinity', en: 'Children of first cousins have about 1.7 to 2.8 percentage points more risk of a significant birth defect or genetic condition than the background risk for unrelated parents.',
+    ar: 'لدى أطفال أبناء العمومة من الدرجة الأولى خطر إضافي يقارب 1.7 إلى 2.8 نقطة مئوية لعيب خلقي أو حالة وراثية مهمة مقارنة بالخطر العام لدى الوالدين غير الأقارب.', source: 'Bennett et al., J Genet Couns 2002 (NSGC)' },
+  { id: 'options', en: 'Options for a couple who both carry the same gene include: having children without any change; testing during pregnancy; IVF with testing of embryos before transfer (PGT-M); and talking with a counsellor before deciding. No option is right for everyone.',
+    ar: 'تشمل خيارات الزوجين اللذين يحملان الجين نفسه: الإنجاب دون أي تغيير، أو الفحص أثناء الحمل، أو أطفال الأنابيب مع فحص الأجنة قبل نقلها (PGT-M)، أو التحدث مع مستشار قبل القرار. لا يوجد خيار صحيح للجميع.', source: 'NSGC 2023; UAE Decree-Law 49/2023 Arts. 11–12' },
+  { id: 'pgt-cover', en: 'In Abu Dhabi, Thiqa insurance covers IVF with embryo testing (PGT-M) for couples who are both carriers of the same autosomal recessive condition.',
+    ar: 'في أبوظبي، يغطي تأمين ثقة أطفال الأنابيب مع فحص الأجنة (PGT-M) للأزواج الحاملين للحالة المتنحية نفسها.', source: 'Daman Thiqa ART coverage guideline v3.5, Nov 2025' },
+  { id: 'law-marriage', en: 'UAE law requires premarital genetic screening and that the couple is told the results. It does not stop a couple from marrying whatever the result.',
+    ar: 'يُلزم القانون الإماراتي بالفحص الجيني قبل الزواج وبإبلاغ الزوجين بالنتائج، ولا يمنع الزواج أياً كانت النتيجة.', source: 'Federal Decree-Law 49/2023 Art. 15' },
+  { id: 'right-own', en: 'Everyone has the right to see their own results. In this app you choose whether to see yours or only the couple result.',
+    ar: 'لكل شخص الحق في رؤية نتائجه الخاصة. في هذا التطبيق تختار رؤية نتائجك أو نتيجة الزوجين فقط.', source: 'Federal Decree-Law 49/2023 Art. 9' },
+  { id: 'confirm', en: 'Some genes, such as HBA1, HBA2, SMN1 and CYP21A2, can need a separate confirmatory test, which a counsellor can arrange.',
+    ar: 'قد تحتاج بعض الجينات مثل HBA1 وHBA2 وSMN1 وCYP21A2 إلى فحص تأكيدي منفصل يرتّبه المستشار.', source: 'Alblooshi et al., Nature Medicine 2026' },
+  { id: 'relatives', en: 'Relatives can be carriers of the same change. A brother or sister has about a 1 in 2 chance, an aunt or uncle about 1 in 4, and a first cousin about 1 in 8, on top of the general population chance.',
+    ar: 'قد يحمل الأقارب التغيّر نفسه: للأخ أو الأخت احتمال يقارب 1 من 2، وللعم أو الخال أو العمة أو الخالة نحو 1 من 4، ولابن العم من الدرجة الأولى نحو 1 من 8، إضافة إلى الاحتمال العام.', source: 'Standard pedigree coefficients of relationship' },
+  { id: 'counsellor', en: 'A genetic counsellor or trained doctor can explain results, arrange confirmatory tests and referrals, and support decisions. They do not decide for you.',
+    ar: 'يمكن للمستشار الوراثي أو الطبيب المدرَّب شرح النتائج وترتيب الفحوص التأكيدية والإحالات ودعم القرار، لكنه لا يقرر عنك.', source: 'NSGC definition of genetic counselling (Resta et al. 2006)' },
+];

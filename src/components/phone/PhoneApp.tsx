@@ -221,11 +221,20 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded }: 
   );
 }
 
+/** Arabic counts need the dual (2) and plural (3–10) forms; English needs singular/plural. */
+function sharedHeadline(n: number, lang: Locale) {
+  if (lang === 'en') return n === 1 ? 'You both carry one gene in common.' : `You both carry ${n} genes in common.`;
+  if (n === 1) return 'تحملان معاً جيناً واحداً مشتركاً.';
+  if (n === 2) return 'تحملان معاً جينين مشتركين.';
+  if (n <= 10) return `تحملان معاً ${n} جينات مشتركة.`;
+  return `تحملان معاً ${n} جيناً مشتركاً.`;
+}
+
 function StepLine({ s, lang }: { s: Step; lang: Locale }) {
   const t = (l: L) => l[lang];
   switch (s.kind) {
     case 'tokens': return <span>{t({ en: `The lab gave this phone ${s.count} one-time tokens for this pairing only.`, ar: `أعطى المختبرُ هذا الهاتفَ ${s.count} رمزاً لمرة واحدة لهذا الاقتران فقط.` })}</span>;
-    case 'sent': return <span>{t({ en: `Sent ${s.slot === 'm1' ? 'its' : 'its'} locked list to the relay, encrypted (${s.bytes.toLocaleString()} characters).`, ar: `أُرسلت القائمة المقفلة إلى الوسيط مشفّرة (${s.bytes.toLocaleString()} حرفاً).` })}</span>;
+    case 'sent': return <span>{t({ en: `Sent this phone’s locked list to the relay, encrypted (${s.bytes.toLocaleString()} characters).`, ar: `أُرسلت القائمة المقفلة إلى الوسيط مشفّرة (${s.bytes.toLocaleString()} حرفاً).` })}</span>;
     case 'received': return <span>{t({ en: 'Received your partner’s locked list.', ar: 'وصلت قائمة شريكك المقفلة.' })}</span>;
     case 'waiting': return <span className="text-ink-3">{t({ en: 'Waiting for your partner’s phone…', ar: 'بانتظار هاتف شريكك…' })}</span>;
     case 'done': return <span>{t({ en: `Compared on this phone in ${(s.ms / 1000).toFixed(1)} s.`, ar: `تمت المقارنة على هذا الهاتف في ${(s.ms / 1000).toFixed(1)} ث.` })}</span>;
@@ -263,7 +272,7 @@ function Result({ lang, genes, relationship, level, setLevel, me, steps }: {
       ) : (
         <>
           <h2 className="mt-2 text-[26px] font-semibold leading-tight tracking-tight">
-            {t({ en: genes.ar.length + genes.xl.length === 1 ? 'You both carry one gene in common.' : `You both carry ${genes.ar.length + genes.xl.length} genes in common.`, ar: genes.ar.length + genes.xl.length === 1 ? 'تحملان معاً جيناً واحداً مشتركاً.' : `تحملان معاً ${genes.ar.length + genes.xl.length} جينات مشتركة.` })}
+            {sharedHeadline(genes.ar.length + genes.xl.length, lang)}
           </h2>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'You are both healthy carriers. This is about the chance for a future child, not a diagnosis.', ar: 'كلاكما حامل سليم. هذا عن احتمال لطفل في المستقبل، وليس تشخيصاً.' })}</p>
           {genes.ar.map((g) => <SharedGene key={g} gene={g} lang={lang} level={level} />)}
