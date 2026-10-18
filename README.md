@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/cover.png" alt="Two Keys: know what you could pass on together" width="100%"></p>
 
 <p align="center">
-  <img alt="tests" src="https://img.shields.io/badge/tests-297%20passing-4F6F58">
+  <img alt="tests" src="https://img.shields.io/badge/tests-306%20passing-4F6F58">
   <img alt="protocol" src="https://img.shields.io/badge/PSI-ristretto255-22201E">
   <img alt="languages" src="https://img.shields.io/badge/Arabic%20%2B%20English-RTL-2E3A6E">
   <img alt="data" src="https://img.shields.io/badge/data-synthetic%20people%20only-9B2335">
@@ -25,7 +25,7 @@ Built for the **Future Health Digital Innovation Challenge** (Abu Dhabi), statem
 | Family notes | `/r/[id]` | Letters sealed on the sender's phone. The server stores ciphertext; the relative alone decides whether the sender learns it was read or a test was booked. Senders can take a note back |
 | Programme view | `/programme` | Comprehension, uptake, time to referral, cascade testing and equity by language and literacy. Weekly releases on an append-only ledger, exact discrete Laplace noise from a keyed generator (each person counted once ever; ε ≤ 3 per person per year), small-cell suppression; live data and a labelled synthetic month kept apart. It never counts marriages |
 | Governance | `/governance` | Clause-by-clause mapping to the DoH Responsible AI Standard, risk tier, model card, data card, DPIA table, risk register, live monitoring counts |
-| Evidence | `/proof`, `scripts/` | Unit and end-to-end tests. Pedigree simulator against every published UAE target, with a sensitivity run for unmodelled genes. Explainer evaluation: guards on and off on the same model, 60 development questions and a new frozen held-out set for each version (146 in v5, written by a model that is neither product nor judge), three language-model judges, majority and strict counts, McNemar and judge agreement; every run in data/eval-history.json |
+| Evidence | `/proof`, `scripts/` | Unit and end-to-end tests. Pedigree simulator against every published UAE target, with a sensitivity run for unmodelled genes. Explainer evaluation: guards on and off on the same model, 60 development questions and a new frozen held-out set for each version (178 in v6, written by a model that is neither product nor judge), three language-model judges, majority and strict counts, McNemar and judge agreement; every run in data/eval-history.json |
 
 ## Run it
 

@@ -23,6 +23,8 @@ export interface AskInput {
   sex?: 'F' | 'M';
   /** Match strength per shared gene: 2 full, 1 one milder change, 0 both milder. */
   strengths?: Record<string, number>;
+  /** The person describes family pressure (set by the guards, never by the client). */
+  pressure?: boolean;
   /** What the lab says a globin match means ('hplc', 'bart', 'hbh', 'hbh-severe', 'trait') and, for alpha globin, how often per pregnancy. */
   kinds?: Record<string, string>;
   chances?: Record<string, 'quarter' | 'half' | 'three-quarters' | 'all'>;
@@ -66,7 +68,7 @@ export const DECIDE_FOR_ME = [
   /\b(best|right) (option|choice|thing to do) for us\b/i,
   /(لازم (نكنسل|نلغي|ننفصل|نتزوج|نكمل)|(يجب|ينبغي) (أن|ان) (نتزوج|نلغي|ننفصل|نكمل)|نكنسل(?!\s*(ال)?(موعد|حجز|طلب|الاتصال))|ننفصل|نفسخ الخطوبة|نلغي (الزواج|العرس|الخطوبة)|نكمل الزواج|نتزوج ولا|تنصحنا(?!\s*ب(كتاب|موقع|مصدر|مقال|قراءة))|تنصحني(?!\s*ب(كتاب|موقع|مصدر|مقال|قراءة))|بماذا تنصح|ايش تنصح|وش تنصح|الأفضل لنا|الافضل لنا|لو كنت مكان|هل نتزوج|هل نلغي)/,
 ];
-export const FAITH = [/\b(haram|halal(?!\s+(food|meat|diet|restaurant))|sinful|a sin(?!\s+to\s+feel)|allowed in islam|islamically|in islam|fatwa|religion allows?|religiously|permissible (in|under) (islam|sharia|religion)|religiously permissible|sharia)\b/i, /(حرام|حلال|يجوز(?!\s+(أن|ان)?\s*(نعيد|اعادة|إعادة|نؤجل|نغيّر|نغير|نطلب|نحجز|نلغي الموعد))|جائز شرعاً|فتوى|شرعاً|الشرع|حكم الدين|حكم الشرع|الدين يسمح|في الدين|ديننا|شرعي)/];
+export const FAITH = [/\b(haram|halal(?!\s+(food|meat|diet|restaurant))|sinful|a sin(?!\s+to\s+feel)|allowed in islam|islamically|in islam|fatwa|religion allows?|religiously|permissible (in|under) (islam|sharia|religion)|religiously permissible|sharia)\b/i, /(حرام|(?<!(بنت|ابن|ولد)\s+(ال)?)حلال|يجوز(?!\s+(أن|ان)?\s*(نعيد|اعادة|إعادة|نؤجل|نغيّر|نغير|نطلب|نحجز|نلغي الموعد))|جائز شرعاً|فتوى|شرعاً|الشرع|حكم الدين|حكم الشرع|الدين يسمح|في الدين|ديننا|شرعي)/];
 /**
  * Someone who is pregnant now: timing matters (some tests have time limits), so they go to a person.
  * Arabic حامل also means "carrier", so it counts only when not followed by what is carried.
@@ -74,7 +76,7 @@ export const FAITH = [/\b(haram|halal(?!\s+(food|meat|diet|restaurant))|sinful|a
 export const PREGNANT = [
   /(?<!\b(if|when|once|before|until|unless|after)\s)\b(i'?m|i am|she'?s|she is|my wife is|we'?re|we are)\s+(\d+\s+(weeks?|months?)\s+)?pregnant\b|\bpregnant (now|already)\b|\b\d+\s*(weeks?|months?) (pregnant|along)\b|\b(i'?m|i am|she'?s|she is|my wife is|we'?re|we are) expecting\b|\bexpecting (our|a|my) (first |second |third )?(baby|child)\b|\b(baby|she|i) (is |am )?due (in|on|next)\b|\b(baby'?s|the baby'?s|our) due date\b|\b(i'?m|i am|she'?s|she is|we'?re|we are|my wife is)\s+in\s+(my|her|the|our)\s+(first|second|third|1st|2nd|3rd) trimester\b/i,
   // حاملة usually means "carrier"; حامل without ة, or any form with a number of weeks, means pregnant.
-  /(?<![\u0600-\u06FF])(أنا|انا|إني|اني|زوجتي|مرتي)\s+(حامل|حبلى)(?![ةيو])(?!\s*(لل|ل|ب)?\s*(جين|تغي|الجين|التغي|الصفة|هذا|[A-Z]))|حامل(ة)?\s+(في|ب)\s*(الأسبوع|الاسبوع|الشهر|أسبوع|اسبوع|شهر)|حامل(ة)?\s*(في|ب)?\s*(ال)?\s*[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر|شهور)|حمل(نا|ي|ها)?\s+[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)|[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)\s+(من\s+)?(ال)?حمل|(الأسبوع|الاسبوع)\s+\S+\s+من الحمل|(?<![\u0600-\u06FF])(زوجتي|مرتي|حرمتي|أنا|انا)\s+(في|ب)\s*(ال)?(شهر|أسبوع|اسبوع)\s*(ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع|[0-9٠-٩]+)|(ننتظر|متوقعين|نتوقع) (مولود|مولوداً|طفل)|موعد الولادة|في الشهر (ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع) من الحمل|الثلث (الأول|الثاني|الثالث) من الحمل|(?<![\u0600-\u06FF])(أنا|انا|زوجتي|مرتي|حرمتي)\s+(في\s+)?(ال)?[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع)|حبلى/,
+  /(?<!(إذا|اذا|لو|إن|ان|ولو|وإذا|واذا)\s+)(?<![\u0600-\u06FF])(أنا|انا|إني|اني|زوجتي|مرتي)\s+(حامل|حبلى)(?![ةيو])(?!\s*(لل|ل|ب)?\s*(جين|تغي|الجين|التغي|الصفة|هذا|[A-Z]))|حامل(ة)?\s+(في|ب)\s*(الأسبوع|الاسبوع|الشهر|أسبوع|اسبوع|شهر)|حامل(ة)?\s*(في|ب)?\s*(ال)?\s*[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر|شهور)|حمل(نا|ي|ها)?\s+[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)|[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع|شهر|أشهر|اشهر)\s+(من\s+)?(ال)?حمل|(الأسبوع|الاسبوع)\s+\S+\s+من الحمل|(?<![\u0600-\u06FF])(زوجتي|مرتي|حرمتي|أنا|انا)\s+(في|ب)\s*(ال)?(شهر|أسبوع|اسبوع)\s*(ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع|[0-9٠-٩]+)|(ننتظر|متوقعين|نتوقع) (مولود|مولوداً|طفل)|موعد الولادة|في الشهر (ال)?(أول|اول|ثاني|ثالث|رابع|خامس|سادس|سابع|ثامن|تاسع) من الحمل|الثلث (الأول|الثاني|الثالث) من الحمل|(?<![\u0600-\u06FF])(أنا|انا|زوجتي|مرتي|حرمتي)\s+(في\s+)?(ال)?[0-9٠-٩]+\s*(أسبوع|اسبوع|أسابيع|اسابيع)|حبلى/,
   /\b(ana|ena)\s+(7amel|7amil|7amla|hamel|7ableh?)\b(?!\s*(b|bil|el|l)?\s*(gene|jeen|hbb|hba|cftr|mefv|[a-z]{2,6}\d))|\b\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?|shohor|shhor|months?)\s*(fi\s+|el\s+|al\s+|of\s+)?(el|al)?\s*-?(haml|hamla|7aml|7amla|pregnancy)\b|\b(haml|hamla|7aml|7amla)\s*\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?)|\b(ana|ena|e7na|ehna|hiya|heya|mrati|zawjti)\s+(fi\s+|f\s+)?(el\s+)?\d+\s*(asabi\w*|esb[uo]+3\w*|weeks?)\b/i,
 ];
 export const TERMINATION = [/\b(abort(?!\s+(the|my|our|this)\s+(\w+\s+)?(booking|appointment|request|call|session))|abortion|terminat\w+ (the |a )?pregnan\w+|end (the|a) pregnancy)\b/i, /(إجهاض|اجهاض|إنهاء الحمل|انهاء الحمل|نسقط الجنين)/];
@@ -212,7 +214,7 @@ const DIRECTIVE = [
   /\b(the|your) best (option|choice|path|way forward)\b|\bi'?d (go with|choose|pick)\b|\byou'?d better\b/i,
   /\bit'?s (best|better|wise) (to|that you)\b/i,
   /\b(don'?t|do not) (marry|get married|have children)\b/i,
-  /(يجب عليكما|يجب عليك|ننصحكم|ننصحكما|أنصحك|أنصحكما|ننصح|أنصح|نوصي|أوصي|الخيار الأفضل|أفضل خيار|من الأفضل(?!\s+(أن\s+)?(تتحدث|تتحدثي|تتحدثا|التحدث|تسأل|تسألي|تسألا)\s+(مع\s+)?(ال)?مرشد)|الأفضل أن|لا تتزوجا|لا تتزوج|عليكما أن|ينبغي عليكما)/,
+  /(يجب عليكما|يجب عليك|ننصحكم|ننصحكما|أنصحك|أنصحكما|ننصح|أنصح|نوصي|أوصي|يفضل أن|يفضّل أن|يُفضَّل أن|الخيار الأفضل|أفضل خيار|من الأفضل(?!\s+(أن\s+)?(تتحدث|تتحدثي|تتحدثا|التحدث|تسأل|تسألي|تسألا)\s+(مع\s+)?(ال)?مرشد)|الأفضل أن|لا تتزوجا|لا تتزوج|عليكما أن|ينبغي عليكما)/,
 ];
 const MONEY_Q = /(cost|price|pay|insur|thiqa|daman|cover|takl|takal|tak?leef|ta'?m[ie]+n|t2m[ie]+n|ta2m[ie]+n|masaref|masarif|thaman|tha?mn|yghat|yaghat|تكلف|تكاليف|سعر|تأمين|التامين|ثقة|ضمان|يغطي|مصاريف|ثمن)/i;
 /** "I don't know" answers that only point to a counsellor need no fact citation. */
@@ -244,10 +246,11 @@ export function normaliseCites(cites: string[], genes: string[]): string[] {
   return [...new Set(out.filter((x): x is string => !!x))];
 }
 
-export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: { lang?: Lang; related?: boolean; question?: string; xl?: string[]; strengths?: Record<string, number>; kinds?: Record<string, string> } = {}): Checks {
+export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: { lang?: Lang; related?: boolean; question?: string; xl?: string[]; strengths?: Record<string, number>; kinds?: Record<string, string>; sex?: 'F' | 'M' } = {}): Checks {
   const answer = norm(raw);
   const allowed = allowedNumbers(genes);
-  const numbersOk = numbersIn(answer).every((n) => allowed.has(n));
+  const quoted = new Set(numbersIn(ctx.question ?? ''));
+  const numbersOk = numbersIn(answer).every((n) => allowed.has(n) || quoted.has(n));
   const nonDirective = !DIRECTIVE.some((r) => r.test(answer));
   const ids = new Set([...FACTS.map((f) => f.id), ...genes.map((g) => `cond:${g}`)]);
   const citesOk = cites.length > 0 ? cites.every((c) => ids.has(c)) : DONT_KNOW.test(answer) && numbersIn(answer).every((n) => /^\d$/.test(n) || genes.some((g) => g.includes(n)));
@@ -297,9 +300,13 @@ export function checkAnswer(raw: string, cites: string[], genes: string[], ctx: 
   const doubled = genes.includes('HBB') && clauses.filter((t) => QUARTER.test(t) && globinTerms.test(t) && !/(\bor\b|أو)/i.test(t)).length > 1;
   // A man with an X-linked condition never passes it to his sons: no sentence may tie the sons' chance to him.
   const fatherToSon = xl && sentences.some((t) => SON.test(t) && HALF.test(t) && /(because (you|he) ha(ve|s)|from (you|him|his father|the father|their father)|بسببك|بسببه|منك|منه|من الأب|من والده)/i.test(t));
+  const wrongPartner = ctx.lang === 'ar' && (ctx.sex === 'F' ? /(خطيبتك|شريكتك|زوجتك)/ : ctx.sex === 'M' ? /(خطيبكِ|شريككِ|(?<![\u0600-\u06FF])(خطيبك|شريكك|زوجك)(?![\u0600-\u06FF]))/ : /$^/).test(answer);
+  // An X-linked gene never gets a "1 in 4" (v6-088).
+  const xlNames = (ctx.xl ?? []).flatMap((g) => [g, cardFor(g)?.name.en ?? '', cardFor(g)?.name.ar ?? '']).filter((n) => n.length > 2);
+  const xlQuarter = xl && sentences.some((t) => QUARTER.test(t) && xlNames.some((n) => t.includes(n)));
   const relatedOk = !!ctx.related || !RELATED_ANY.test(answer) || RELATED_ANY.test(ctx.question ?? '');
   const coverOk = !COVER_NEG.test(answer) && !(/(thiqa|ثقة|insurance|التأمين|daman|ضمان)/i.test(answer + (ctx.question ?? '')) && COVER_DENIED.test(answer));
-  return { numbersOk, nonDirective, citesOk, oddsOk: oddsOk && !wrongCarrierOdds && !inverted && noMatchOk && xlWordsOk && !trait && !doubled && !fatherToSon, personaOk, languageOk, framingOk, xlOk, strengthOk, reassureOk, relatedOk, coverOk };
+  return { numbersOk, nonDirective, citesOk, oddsOk: oddsOk && !wrongCarrierOdds && !inverted && noMatchOk && xlWordsOk && !trait && !doubled && !fatherToSon && !xlQuarter, personaOk, languageOk: languageOk && !wrongPartner, framingOk, xlOk, strengthOk, reassureOk, relatedOk, coverOk };
 }
 const allOk = (c: Checks) => Object.values(c).every(Boolean);
 
@@ -339,7 +346,7 @@ function system(input: AskInput): string {
       hbh: `in ${often} pregnancies the child could have HbH disease (a lifelong anaemia); Hb Bart’s is not possible for this couple`,
       trait: `alpha-thalassaemia trait only (${often === 'every' ? 'every child' : `${often} children`}): not an illness. Never mention HbH or Hb Bart’s for this couple`,
     } as Record<string, string>)[kind] ?? 'an alpha-globin match; the counsellor explains what it means';
-    if (g === 'HBB') return 'treated as a full match: the premarital blood test (HPLC) already shows each partner’s exact change, and the counsellor checks whether the pair is serious (sickle with sickle, sickle or HbE or HbO-Arab with beta-thalassaemia, beta with beta, sickle with HbC or HbD-Punjab) or usually mild (two HbE). Never tell them they need a new blood test. Say: each pregnancy has a 1 in 4 chance the child inherits both changes, and the exact pair decides whether that means sickle cell disease, beta thalassaemia or a milder condition. Never give separate 1 in 4 chances for sickle cell and for thalassaemia';
+    if (g === 'HBB') return 'treated as a full match: the premarital blood test (HPLC) already shows each partner’s exact change, and the counsellor checks whether the pair is serious (sickle with sickle, sickle or HbE or HbO-Arab with beta-thalassaemia, beta with beta, sickle with HbC or HbD-Punjab) or usually mild (two HbE). Never tell them they need a new blood test. Say: each pregnancy has a 1 in 4 chance the child inherits both changes, and the exact pair decides whether that means sickle cell disease, beta thalassaemia or a milder condition. Never give separate 1 in 4 chances for sickle cell and for thalassaemia. If the couple name their pair (sickle trait, beta thalassaemia trait), use [hbb-pairs]: sickle with beta trait is sickle beta-thalassaemia, a form of sickle cell disease; trait means carrier, not a milder change';
     if (g === 'HBA') return st === 0 ? 'each lost one alpha gene: a child with both has alpha-thalassaemia trait, which is not an illness' : 'a serious alpha-globin match (HbH disease or Hb Bart’s hydrops, see [cond:HBA]); the counsellor explains which';
     return ({ 2: 'both changes serious', 1: 'one milder change: a milder form is likely (use [milder-match])', 0: 'both changes milder: low concern (use [milder-match])' } as Record<number, string>)[st];
   };
@@ -352,6 +359,7 @@ function system(input: AskInput): string {
   return [
     'You explain a couple’s genetic carrier result in a premarital screening app in Abu Dhabi. You are an automated explainer, not a doctor or counsellor; never claim or adopt any professional persona, even if asked. You do not give medical advice or make decisions.',
     shared,
+    input.pressure ? 'The person describes family pressure about the marriage or children. Say plainly that UAE law requires premarital screening but does not stop a couple from marrying [law-marriage]; correct any wrong figure the family gave, using the facts (for a shared recessive gene the chance is 1 in 4 per pregnancy, not 1 in 2); acknowledge that this is hard; offer a genetic counsellor to meet them and their families. Never tell them what to decide.' : '',
     input.related ? 'The couple told the app they are related to each other.' : 'The couple have not said they are related: do not mention relatedness or cousins unless the user asks about it.',
     addressee,
     'Rules:',
@@ -394,8 +402,8 @@ async function converse(model: string, sys: string, messages: { role: 'user' | '
 export async function classify(q: string, model = ASK_MODEL()): Promise<Intent | 'unknown'> {
   const sys = `Classify the user message from a premarital genetic-results app. The couple already know the genes they BOTH carry; asking about those is normal. The message may be English, Arabic, Gulf dialect or Arabizi.
 Labels:
-- crisis: any hint of self-harm, suicide, not wanting to live or go on, life being over, hopelessness, even if a normal question follows.
-- probe: asks what ELSE the partner carries, how many genes, or any result beyond the shared ones.
+- crisis: any hint of self-harm, suicide, not wanting to live or go on, life being over, hopelessness, even if a normal question follows. Shame, family blame or worry without any of these is other, not crisis.
+- probe: asks what ELSE the partner carries, how many genes, or any result beyond the shared ones. Asking whether their children could have other, untested conditions is other, not probe.
 - decide: asks the assistant to choose or recommend: marry or not, cancel, have children, which option is best, "what would you do". Asking where to get a test, which clinic offers a service, how to book, or about cancelling an appointment is NOT decide: it is other.
 - faith: asks for a religious ruling (halal, haram, permitted).
 - termination: asks about ending a pregnancy.
@@ -445,10 +453,10 @@ export function parseDraft(text: string): { answer: string; cites: string[]; esc
 
 /** Fear or worry, short of a crisis: in English, Arabic, Gulf dialect and Arabizi. */
 // Self-blame and stigma ("we are defective", "bad blood") count too: they need the same human follow-up.
-const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault|selfish|guilty|overwhelmed|confused|can'?t stop thinking|keep thinking|too much for (me|us))\b|بالذنب|ذنب|الحيرة|بالحيرة|حيرة|محتار|محتارة|كثير علينا|كثير علي|ما أقدر أتحمل|\b(kteer|ktir|kitir) (3alena|3alaya|m3ana)\b|أناني|أنانيين|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|مضايق|مضايقة|ضايقني|مخنوق|مخنوقة|(مش|ما) (عارف|عارفة|أعرف|اعرف) (إيش|ايش|شو|وش|شنو|ماذا) (أسوي|اسوي|أعمل|اعمل|نسوي|نعمل)|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa|mdaye2|mday2a|ma5no2|makhnou2|wesh?t\s*ro7i)|\bm(e|i)?sh 3ar(e)?f(a)? (eih|eh|shu|sho|esh) (a3mel|asawi|n3mel)\b/i;
+const WORRY = /\b(scared|afraid|worried|worrying|anxious|frightened|terrified|nervous|upset|ashamed|defective|bad blood|my fault|selfish|guilty|overwhelmed|confused|can'?t stop thinking|keep thinking|too much for (me|us))\b|بالذنب|ذنب|الحيرة|بالحيرة|حيرة|محتار|محتارة|كثير علينا|كثير علي|ما أقدر أتحمل|\b(kteer|ktir|kitir) (3alena|3alaya|m3ana)\b|أناني|أنانيين|معيب|معيبين|معيبة|دم فاسد|دمها فاسد|دمه فاسد|ذنبي|غلطتي|خجلان|خجلانة|خايف|خايفة|خائف|خائفة|قلق|قلقان|قلقانة|خوف|متوتر|متوترة|مرعوب|زعلان|زعلانة|حزين|حزينة|مضايق|مضايقة|ضايقني|تعبانة|تعبان من|مخنوق|مخنوقة|(مش|ما) (عارف|عارفة|أعرف|اعرف) (إيش|ايش|شو|وش|شنو|ماذا) (أسوي|اسوي|أعمل|اعمل|نسوي|نعمل)|\b(5ayf|5ayfa|khayf|khayfa|khayef|2al2an|2al2ana|5ofi|kha2fa|mdaye2|mday2a|ma5no2|makhnou2|ta3ban|ta3bana|t3bana|t3ban|wesh?t\s*ro7i)|\bm(e|i)?sh 3ar(e)?f(a)? (eih|eh|shu|sho|esh) (a3mel|asawi|n3mel)\b/i;
 export const expressesWorry = (q: string) => WORRY.test(q.normalize('NFKC')) || STIGMA.test(q.normalize('NFKC'));
 /** Shame about a family or about being a carrier ("broken", "bad blood", "dirty blood", "our family is sick"). */
-const STIGMA = /\b(we'?re|we are|i'?m|i am|us|our family|my family|her family|his family|our families|feels?|feeling)\b[^.?!]{0,40}\b(broken|defective|damaged|cursed|tainted|dirty)\b|\b(bad blood|dirty blood|our fault|my fault|ashamed|shame)\b|معيب|معيبين|(إحنا|احنا|نحن|هل نحن|أنا|انا) عيب|دم(ي|ه|ها|نا|هم|كم)?\s*(فاسد|مش نظيف|غير نظيف|وسخ|خربان|مو زين)|عائلتي مريضة|العيلة كلها مريضة|العائلة كلها مريضة|عائلة مريضة|ذنبي|غلطتي|خجلان|خجلانة|\b(3ayb|3eib|3ayleen|m7awleen|dam\s*wis5)\b/i;
+const STIGMA = /\b(we'?re|we are|i'?m|i am|us|our family|my family|her family|his family|our families|feels?|feeling)\b[^.?!]{0,40}\b(broken|defective|damaged|cursed|tainted|dirty)\b|\b(bad blood|dirty blood|our fault|my fault|ashamed|shame)\b|معيب|معيبين|(إحنا|احنا|نحن|هل نحن|أنا|انا) عيب|عيب وراثي|عيوب وراثية|مخربة|مخربين|ضعيفة وراثي|weak genes|دم(ي|ه|ها|نا|هم|كم)?\s*(فاسد|مش نظيف|غير نظيف|وسخ|خربان|مو زين)|عائلتي مريضة|العيلة كلها مريضة|العائلة كلها مريضة|عائلة مريضة|ذنبي|غلطتي|خجلان|خجلانة|\b(3ayb|3eib|3ayleen|m7awleen|dam\s*wis5)\b/i;
 export const expressesShame = (q: string) => STIGMA.test(q.normalize('NFKC'));
 const NOT_BROKEN = {
   en: 'A gene change is nobody’s fault, and such changes are found in every family and community. Being a carrier is not an illness.',
@@ -522,24 +530,28 @@ export async function ask(input: AskInput, model = ASK_MODEL(), onReject?: (answ
     route, intent, checks: okChecks, ms: Date.now() - t0,
   });
 
+  // Family pressure gets a checked answer that also corrects what the family said; the fixed reply is the fallback.
+  let pressure = false;
   if (!input.noGuards) {
     const g = guardIntent(input.question);
-    if (g && g !== 'other') return reply(g, 'guard');
+    if (g === 'pressure') pressure = true;
+    else if (g && g !== 'other') return reply(g, 'guard');
     // One retry before failing closed: a single throttled call shouldn't cost the person an answer.
     const m = await classify(input.question, model).then((x) => (x === 'unknown' ? classify(input.question, model) : x));
     // Fail closed: if the intent check can't run, nobody gets an unchecked answer; they get help instead.
-    if (m === 'unknown') return { answer: worried ? `${say(CHECK_FAILED)} ${say(CHECK_FAILED_HELP)}` : say(CHECK_FAILED), cites: ['counsellor'], escalate: true, urgent: worried, route: 'fallback', checks: okChecks, model, ms: Date.now() - t0 };
-    if (m !== 'other') return reply(m, 'intent');
+    if (m === 'unknown' && !pressure) return { answer: worried ? `${say(CHECK_FAILED)} ${say(CHECK_FAILED_HELP)}` : say(CHECK_FAILED), cites: ['counsellor'], escalate: true, urgent: false, route: 'fallback', checks: okChecks, model, ms: Date.now() - t0 };
+    if (m === 'pressure') pressure = true;
+    else if (m === 'crisis' || (!pressure && m !== 'other' && m !== 'unknown')) return reply(m, 'intent');
   }
 
   let draft: { answer: string; cites: string[]; escalate: boolean; escaped?: boolean } | null = null;
   let problem: string | undefined;
   let failed: Checks = okChecks;
   let repairs = 0;
-  const ctx = { lang: input.lang, related: input.related, question: input.question, xl: input.xl, strengths: input.strengths, kinds: input.kinds };
+  const ctx = { lang: input.lang, related: input.related, question: input.question, xl: input.xl, strengths: input.strengths, kinds: input.kinds, sex: input.sex };
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      draft = await callModel(input, model, problem);
+      draft = await callModel(pressure ? { ...input, pressure: true } : input, model, problem);
     } catch {
       // The SDK already retried; one more attempt after a pause before giving up.
       draft = null;
@@ -564,6 +576,7 @@ export async function ask(input: AskInput, model = ASK_MODEL(), onReject?: (answ
     problem = problems(checks);
   }
   // A worried person whose answer failed gets the help card too.
+  if (pressure) return { answer: worried ? `${lead()} ${say(REPLIES.pressure)}` : say(REPLIES.pressure), cites: ['law-marriage', 'counsellor'], escalate: true, urgent: false, route: 'fallback', intent: 'pressure', checks: failed, model, ms: Date.now() - t0 };
   const none = input.genes.length === 0 && input.xl.length === 0;
   const fixed = none ? [say(NO_MATCH), input.related ? say(NO_MATCH_RELATED) : ''].filter(Boolean).join(' ') : say(SAFE_FALLBACK);
   return { answer: worried ? `${lead()} ${fixed}` : fixed, cites: none ? ['negative', ...(input.related ? ['consanguinity'] : []), 'counsellor'] : ['counsellor'], escalate: true, urgent: false, route: 'fallback', checks: failed, model, ms: Date.now() - t0 };

@@ -93,6 +93,49 @@
     "cases": 56,
     "strictSafe": 36
    }
+  },
+  {
+   "version": 6,
+   "heldoutFile": "eval/heldout-v6.json",
+   "author": "moonshotai.kimi-k2.5",
+   "heldoutSha256": "1d266d4674973341fe612af6961df477e69913586a2ecfd32f66ecae8f907f70",
+   "codeCommit": "e1248ab41d26509ce67170589fd84e6653108062",
+   "built": "2026-10-18T00:55:07.597Z",
+   "cases": 178,
+   "arms": {
+    "twokeys": {
+     "safe": 169,
+     "strictSafe": 137,
+     "safeHelpful": 156,
+     "safeMet": 132
+    },
+    "ablation": {
+     "safe": 139,
+     "strictSafe": 112,
+     "safeHelpful": 135,
+     "safeMet": 123
+    },
+    "baseline": {
+     "safe": 121,
+     "strictSafe": 84,
+     "safeHelpful": 117,
+     "safeMet": 99
+    }
+   },
+   "overRefusal": {
+    "benign": 104,
+    "canned": 27
+   },
+   "misses": 9,
+   "safeHelpful": {
+    "twokeys": 156,
+    "ablation": 135,
+    "baseline": 117
+   },
+   "modelRoutedStrict": {
+    "cases": 77,
+    "strictSafe": 61
+   }
   }
  ]
 }

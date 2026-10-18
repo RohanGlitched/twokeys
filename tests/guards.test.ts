@@ -255,3 +255,28 @@ describe('v5-107: daughters', () => {
     expect(checkAnswer('Each daughter has a 1 in 2 chance of having it, or otherwise is a carrier.', ['xl-affected-father'], ['G6PD'], { lang: 'en', xl: ['G6PD'] }).xlOk).toBe(true);
   });
 });
+
+// v6 held-out misses and over-refusals (v6 is spent by these fixes).
+describe('v6 held-out fixes', () => {
+  it('lets the answer repeat a figure the person quoted, to correct it (v6-037, v6-151)', () => {
+    expect(checkAnswer('No: 25% + 25% + 25% is not 75%; the chances are separate for each gene.', ['two-genes'], ['CYP21A2', 'MEFV', 'HBB'], { lang: 'en', question: 'so 25% + 25% + 25% = 75%?' }).numbersOk).toBe(true);
+  });
+  it('rejects addressing a woman’s partner as a woman in Arabic (v6-087)', () => {
+    expect(checkAnswer('أنتِ وخطيبتك تحملان جين G6PD.', ['xl-affected-father'], ['G6PD'], { lang: 'ar', sex: 'F', xl: ['G6PD'] }).languageOk).toBe(false);
+    expect(checkAnswer('أنتِ وخطيبك تحملان التغيّر في جين G6PD.', ['xl-affected-father'], ['G6PD'], { lang: 'ar', sex: 'F', xl: ['G6PD'] }).languageOk).toBe(true);
+  });
+  it('rejects a 1 in 4 for an X-linked gene (v6-088)', () => {
+    expect(checkAnswer('For G6PD and MEFV, each pregnancy has a 1 in 4 chance.', ['ar-odds'], ['MEFV', 'G6PD'], { lang: 'en', xl: ['G6PD'] }).oddsOk).toBe(false);
+  });
+  it.each(['طيّب، وإذا أنا حامل وأبو الطفل من أقاربي، هل لازم أختي تفحص؟', 'لو أنا حامل في المستقبل، ما الفحوص؟'])('does not read a hypothetical as a pregnancy: %s', (q) => expect(guardIntent(q)).not.toBe('pregnant'));
+  it('does not read يا بنت الحلال as a faith question (v6-116)', () => expect(guardIntent('طيب يا بنت الحلال، خواتي لازم يسوون نفس الفحص ولا كيف؟')).toBeNull());
+  it('reads "tired of the pressure" as worry (v6-142)', () => expect(expressesWorry('ana ta3bana min el pressure')).toBe(true));
+});
+
+describe('v6 fixes, second pass', () => {
+  it('rejects "يفضل أن تفحص" as advice (v6-110)', () => expect(checkAnswer('يفضل أن تفحص أختك قبل الزواج.', ['relatives'], ['CYP21A2'], { lang: 'ar' }).nonDirective).toBe(false));
+  it('reads "عيب وراثي" and "weak genes" as shame (v6-164, v6-166)', () => {
+    expect(expressesShame('عيلتنا كلها فيها عيب وراثي')).toBe(true);
+    expect(expressesShame("Her mother keeps saying our families have 'weak genes'")).toBe(true);
+  });
+});
