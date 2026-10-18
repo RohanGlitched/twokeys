@@ -243,6 +243,7 @@ export default async function Home({ params }: PageProps<'/[lang]'>) {
               </article>
             ))}
           </div>
+          <p className="mt-6 max-w-3xl border-s-[3px] border-indigo ps-4 text-[16px] leading-relaxed">{t({ en: 'We are looking for a genetic counsellor in the UAE to work with us, starting with the phase-0 sign-off of every condition card, fact and Arabic string before any real use.', ar: 'نبحث عن مرشد وراثي في الإمارات للعمل معنا، بدءاً باعتماد كل بطاقة حالة ومعلومة ونص عربي في المرحلة صفر قبل أي استخدام فعلي.' })}</p>
         </section>
 
         {/* cast */}
