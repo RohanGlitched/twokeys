@@ -1,6 +1,8 @@
 // Demo identity: picking a synthetic person mints a short-lived signed token (HMAC-SHA-256) that the
-// phone keeps in memory and sends as `x-person`. Every person-scoped route derives the person from
-// it and ignores ids in the body. Production replaces this with UAE PASS.
+// phone keeps for its tab and sends as `x-person`. Every person-scoped route derives the person from
+// it and ignores ids in the body. Each sign-in gets its own visitor id, `<person>~<10 hex>` (people.ts),
+// so two judges both signed in as Latifa don't share her open case, note cap or markers; the visitor id
+// resolves to the same synthetic person everywhere. Production replaces this with UAE PASS.
 import 'server-only';
 import { hmac } from '@noble/hashes/hmac.js';
 import { sha256 } from '@noble/hashes/sha2.js';
@@ -14,16 +16,19 @@ const b64u = (b: Uint8Array) => Buffer.from(b).toString('base64url');
 
 const key = () => subkey('identity');
 
+/** A token for a fresh visitor of this synthetic person: a new random tag on every call. */
 export function mintIdentity(personId: string): { token: string; expires: number } {
   const expires = Date.now() + TTL_MS;
-  const body = `${personId}.${expires}`;
+  const tag = Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => b.toString(16).padStart(2, '0')).join('');
+  const body = `${personId}~${tag}.${expires}`;
   return { token: `${body}.${b64u(hmac(sha256, key(), enc.encode(body)))}`, expires };
 }
 
 /** The person a request acts as, or null. */
 export function personFrom(req: Request): Person | null {
   const t = req.headers.get('x-person') ?? '';
-  const m = /^([a-z0-9-]{2,40})\.(\d{13})\.([A-Za-z0-9_-]{43})$/.exec(t);
+  // A visitor id (person~tag); a bare person id is a token minted before visitor tags, still honoured until it expires.
+  const m = /^([a-z0-9-]{2,40}(?:~[0-9a-f]{10})?)\.(\d{13})\.([A-Za-z0-9_-]{43})$/.exec(t);
   if (!m) return null;
   const [, id, exp, sig] = m;
   if (Number(exp) < Date.now()) return null;
@@ -43,7 +48,7 @@ export function personFrom(req: Request): Person | null {
  */
 export const pseudonym = (id: string, year = new Date().getUTCFullYear()) => Array.from(hmac(sha256, subkey(`person:${year}`), enc.encode(id)).slice(0, 16), (b) => b.toString(16).padStart(2, '0')).join('');
 
-/** Every identity minted here is a demo identity, shared by every visitor (UAE PASS replaces this in production). */
+/** Every identity minted here is a demo identity: a synthetic person, one visitor tag per sign-in (UAE PASS replaces this in production). */
 export const isDemoIdentity = (p: Person) => !!personById(p.id);
 
 /** An error response with a stable code (ErrorCode in lib/pairing) beside the English text, so the app can word it in either language. */

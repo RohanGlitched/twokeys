@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import QRCode from 'qrcode';
 import type { Locale } from '@/i18n/locales';
-import type { Finding, SharedGene } from '@/lib/lab';
+import type { AlphaOutcome, Finding, SharedGene } from '@/lib/lab';
 import { checkWords, linkFragment, newLink, parseFragment, runInitiator, runResponder, sessionId, type Link, type PairResult, type Partner, type Step } from '@/lib/pairing';
 import { conditionFor, type Level } from '@/lib/conditions';
 import { F, type Relationship } from '@/lib/risk';
@@ -62,33 +62,55 @@ export const chanceOf = (g: SharedGene): Chance => {
 };
 /** "1 in 4" as a number phrase, for sentences that already say "a … chance". */
 export const ONE_IN: Record<Chance, L> = { quarter: { en: '1 in 4', ar: '1 من 4' }, half: { en: '1 in 2', ar: '1 من 2' }, 'three-quarters': { en: '3 in 4', ar: '3 من 4' }, all: { en: 'every', ar: 'كل' } };
-/** The opening of a globin sentence: "In each pregnancy there is a 1 in 4 chance the child inherits both changes". */
-const inherits = (chance: Chance, who: 'baby' | 'child'): L => {
-  const ar = who === 'baby' ? 'الجنين' : 'الطفل';
-  return chance === 'all'
-    ? { en: `In every pregnancy the ${who} inherits both changes`, ar: `في كل حمل يرث ${ar} التغيّرين` }
-    : { en: `In each pregnancy there is a ${ONE_IN[chance].en} chance the ${who} inherits both changes`, ar: `في كل حمل احتمال ${ONE_IN[chance].ar} أن يرث ${ar} التغيّرين` };
-};
 
-/** What a shared globin gene means, when the pair of changes decides it (see lab.ts). */
-function globinText(kind: string | undefined, chance: Chance): L | undefined {
-  const i = inherits(chance, kind === 'bart' ? 'baby' : 'child');
-  switch (kind) {
-    case 'bart': return { en: `You both carry a change where both alpha-globin genes on one chromosome are lost. ${i.en}: Hb Bart’s hydrops, a very severe anaemia before birth that most babies don’t survive without treatment in the womb, and that can make the pregnancy dangerous for the mother (for example very high blood pressure). A genetic counsellor will talk with you both before any pregnancy.`, ar: `كلاكما يحمل تغيّراً فُقد فيه جينا ألفا غلوبين على كروموسوم واحد. ${i.ar}: استسقاء الجنين بخضاب بارت، وهو فقر دم شديد جداً قبل الولادة لا ينجو منه معظم الأجنة دون علاج داخل الرحم، وقد يجعل الحمل خطراً على الأم (مثل ارتفاع شديد في ضغط الدم). وسيتحدث المرشد الوراثي معكما قبل أي حمل.` };
-    case 'hbh': return { en: `${i.en} and has HbH disease: lifelong anaemia, usually moderate, with some children needing regular blood transfusions.`, ar: `${i.ar} ويصاب بمرض الهيموغلوبين H: فقر دم مدى الحياة، متوسط عادة، ويحتاج بعض الأطفال إلى نقل دم منتظم.` };
-    case 'hbh-severe': return { en: `${i.en} and has HbH disease, which with your pair of changes can be severe. Some babies with it develop hydrops (severe anaemia before birth), so a genetic counsellor will talk with you both about fetal medicine care before any pregnancy.`, ar: `${i.ar} ويصاب بمرض الهيموغلوبين H، وقد يكون شديداً مع هذا الزوج من التغيّرات. وقد يصاب بعض هؤلاء الأجنة باستسقاء (فقر دم شديد قبل الولادة)، لذلك سيتحدث المرشد الوراثي معكما عن رعاية طب الأجنة قبل أي حمل.` };
-    case 'trait': return { en: `You each carry one lost alpha-globin gene. ${i.en}, which gives alpha-thalassaemia trait: small red cells, like a carrier’s, but not an illness.`, ar: `كل منكما فقد جيناً واحداً من جينات ألفا غلوبين. ${i.ar}، فتكون لديه سمة ألفا ثلاسيميا: خلايا دم حمراء صغيرة مثل حامل التغيّر، لكنها ليست مرضاً.` };
-    default: return undefined;
+/** Each alpha-globin outcome as a noun phrase (en) and as "أن …" (ar), for "a 1 in 4 chance of …". */
+const ALPHA_WHAT: Record<AlphaOutcome, L> = {
+  bart: { en: 'Hb Bart’s hydrops, a very severe anaemia before birth that most babies don’t survive without treatment in the womb, and that can make the pregnancy dangerous for the mother (for example very high blood pressure)', ar: 'أن يصاب الجنين باستسقاء خضاب بارت، وهو فقر دم شديد جداً قبل الولادة لا ينجو منه معظم الأجنة دون علاج داخل الرحم، وقد يجعل الحمل خطراً على الأم (مثل ارتفاع شديد في ضغط الدم)' },
+  'hbh-severe': { en: 'HbH disease that can be severe with your pair of changes, and that rarely causes hydrops (severe anaemia before birth)', ar: 'أن يصاب الطفل بمرض الهيموغلوبين H الذي قد يكون شديداً مع هذا الزوج من التغيّرات، ونادراً ما يسبب استسقاء (فقر دم شديد قبل الولادة)' },
+  hbh: { en: 'HbH disease (lifelong anaemia, usually moderate, with some children needing regular blood transfusions)', ar: 'أن يصاب الطفل بمرض الهيموغلوبين H (فقر دم مدى الحياة، متوسط عادة، ويحتاج بعض الأطفال إلى نقل دم منتظم)' },
+  trait: { en: 'alpha-thalassaemia trait (small red cells, like a carrier’s, but not an illness)', ar: 'أن تكون لدى الطفل سمة ألفا ثلاسيميا (خلايا دم حمراء صغيرة مثل حامل التغيّر، لكنها ليست مرضاً)' },
+  carrier: { en: 'a healthy carrier', ar: 'أن يكون الطفل حاملاً سليماً للتغيّر' },
+  unaffected: { en: 'no changed copy', ar: 'ألا يحمل الطفل أي نسخة متغيرة' },
+};
+const N_CHANCE: Record<number, Chance> = { 1: 'quarter', 2: 'half', 3: 'three-quarters', 4: 'all' };
+/** Shown first when one partner's two alpha-plus changes could sit on one chromosome (lab.ts arrangementUnknown). */
+const ALPHA_AS_READ: L = { en: 'These are your results as read, with each change on a different chromosome. A confirmatory test checks how the changes sit: two changes on the same chromosome act like a bigger change, and the chances below would differ. A genetic counsellor will arrange it before you act on this.', ar: 'هذه نتيجتكما كما قُرئت، على أن كل تغيّر على كروموسوم مختلف. ويتحقق فحص تأكيدي من موضع التغيّرات: فالتغيّران على الكروموسوم نفسه يعملان مثل تغيّر أكبر، وتختلف الاحتمالات أدناه حينها. وسيرتّب المرشد الوراثي ذلك قبل أي قرار.' };
+
+/**
+ * What a shared alpha-globin gene means: every outcome of the four combinations with its chance, from the
+ * lab's outcomes (lab.ts). Older results without outcomes fall back to the most serious one.
+ */
+function alphaText(g: SharedGene): L | undefined {
+  const kind = g.kind as AlphaOutcome | undefined;
+  const outcomes = g.outcomes?.length ? g.outcomes : kind ? [{ kind, n: ({ quarter: 1, half: 2, 'three-quarters': 3, all: 4 } as const)[chanceOf(g)] }] : null;
+  if (!outcomes) return undefined;
+  const named = outcomes.filter((o) => o.n > 0 && o.kind !== 'carrier' && o.kind !== 'unaffected');
+  const others = outcomes.filter((o) => o.n > 0 && (o.kind === 'carrier' || o.kind === 'unaffected'));
+  const has = (k: AlphaOutcome) => named.some((o) => o.kind === k);
+  const en: string[] = [], ar: string[] = [];
+  if (has('bart')) { en.push('You both carry a change where both alpha-globin genes on one chromosome are lost.'); ar.push('كلاكما يحمل تغيّراً فُقد فيه جينا ألفا غلوبين على كروموسوم واحد.'); }
+  if (named.length === 1 && named[0].n === 4) {
+    en.push(`In every pregnancy the child is expected to have ${ALPHA_WHAT[named[0].kind].en}.`);
+    ar.push(`في كل حمل يُتوقع ${ALPHA_WHAT[named[0].kind].ar}.`);
+  } else {
+    const pe = named.map((o) => `a ${ONE_IN[N_CHANCE[o.n]].en} chance of ${ALPHA_WHAT[o.kind].en}`);
+    const pa = named.map((o) => `احتمال ${ONE_IN[N_CHANCE[o.n]].ar} ${ALPHA_WHAT[o.kind].ar}`);
+    en.push(`In each pregnancy there is ${pe.length > 1 ? `${pe.slice(0, -1).join('; ')}; and ${pe.at(-1)}` : pe[0]}.`);
+    ar.push(`في كل حمل ${pa.join('؛ و')}.`);
   }
+  if (others.length) {
+    const c = others.some((o) => o.kind === 'carrier'), u = others.some((o) => o.kind === 'unaffected');
+    en.push(`Otherwise the child ${c && u ? 'is a healthy carrier or has no changed copy' : c ? 'is a healthy carrier' : 'has no changed copy'}.`);
+    ar.push(`وفي غير ذلك يكون الطفل ${c && u ? 'حاملاً سليماً للتغيّر أو بلا نسخة متغيرة' : c ? 'حاملاً سليماً للتغيّر' : 'بلا نسخة متغيرة'}.`);
+  }
+  if (g.arrangementUnknown && !has('bart')) { en.push('Hb Bart’s is not expected from your results as read.'); ar.push('ولا يُتوقع خضاب بارت من نتيجتكما كما قُرئت.'); }
+  if (has('bart')) { en.push('A genetic counsellor will talk with you both before any pregnancy.'); ar.push('وسيتحدث المرشد الوراثي معكما قبل أي حمل.'); }
+  else if (has('hbh-severe')) { en.push('A genetic counsellor will talk with you both about fetal medicine care before any pregnancy.'); ar.push('وسيتحدث المرشد الوراثي معكما عن رعاية طب الأجنة قبل أي حمل.'); }
+  return { en: en.join(' '), ar: ar.join(' ') };
 }
 
-/** X-linked genes whose chances or carrier health differ from the usual pattern. */
-const XL_NOTE: Record<string, L> = {
-  FMR1: { en: 'For this gene the chance depends on the size of the change (repeat number), which can grow when passed on; carriers can have health effects of their own. A genetic counsellor will explain your exact result.', ar: 'في هذا الجين يعتمد الاحتمال على حجم التغيّر (عدد التكرارات)، وقد يكبر عند انتقاله، وقد تظهر لدى الحاملين آثار صحية خاصة بهم. وسيشرح المرشد الوراثي نتيجتك بدقة.' },
-  GLA: { en: 'Women who carry this can have symptoms of their own, often later in life; it is worth telling your doctor.', ar: 'قد تظهر أعراض لدى النساء اللواتي يحملن هذا التغيّر، غالباً في سن متقدمة؛ ومن المفيد إخبار الطبيب.' },
-  OTC: { en: 'Some women who carry this can become unwell with illness or a high-protein load; tell your doctor.', ar: 'قد تتعب بعض النساء اللواتي يحملن هذا التغيّر عند المرض أو تناول كثير من البروتين؛ أخبري طبيبك.' },
-  ABCD1: { en: 'Many women who carry this develop symptoms of their own in adulthood; a genetic counsellor can advise on follow-up.', ar: 'تظهر أعراض لدى كثير من النساء الحاملات لهذا التغيّر في سن الرشد؛ ويمكن للمرشد الوراثي أن ينصح بالمتابعة.' },
-};
+/** For FMR1 the chance itself differs; carrier health is on the card (panelcards.ts carrierNote), shown once. */
+const FMR1_CHANCE: L = { en: 'For this gene the chance depends on the size of the change (repeat number), which can grow when passed on. A genetic counsellor will explain your exact result.', ar: 'في هذا الجين يعتمد الاحتمال على حجم التغيّر (عدد التكرارات)، وقد يكبر عند انتقاله. وسيشرح المرشد الوراثي نتيجتك بدقة.' };
 
 /** What relatedness adds for conditions this screening did not test, for the actual relationship (Bennett et al. 2002). */
 const KIN: Partial<Record<Relationship, { en: string; ar: string }>> = {
@@ -546,7 +568,7 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded, pa
               <button className="min-h-12 rounded-[2px] border border-ink px-3 py-3" onClick={() => go('family')}>{t({ en: 'Tell relatives', ar: 'أخبر أقاربك', arF: 'أخبري أقاربك' })}</button>
             </div>
 
-            <TeachBack lang={lang} t={t} level={level} thal={thal} seed={`${me.id}:${link ? sessionId(link) : ''}`} kind={xlGenes.length && !arGenes.some((g) => g.strength === 2) ? 'xl' : arGenes.length ? (['low', 'milder', 'shared'] as const)[Math.max(...arGenes.map((g) => g.strength))] : 'none'} chance={arGenes.length ? chanceOf(arGenes[0]) : 'quarter'} identity={identity} onCounsellor={() => book(false)} />
+            <TeachBack lang={lang} t={t} level={level} thal={thal} seed={`${me.id}:${link ? sessionId(link) : ''}`} kind={xlGenes.length && !arGenes.some((g) => g.strength === 2) ? 'xl' : arGenes.length ? (['low', 'milder', 'shared'] as const)[Math.max(...arGenes.map((g) => g.strength))] : 'none'} chance={arGenes.length ? chanceOf(arGenes[0]) : 'quarter'} outcomes={arGenes[0]?.gene === 'HBA' ? arGenes[0].outcomes : undefined} identity={identity} onCounsellor={() => book(false)} />
 
             {link && role && identity && (
               <details className="mt-6 text-[13px] text-ink-2">
@@ -576,11 +598,11 @@ export function PhoneApp({ lang, me, relationship, role: fixedRole, embedded, pa
             booking={booking} onBooking={setBooking} initialQuestion={prefill} />
         )}
         {view === 'ask' && (
-          <Ask lang={lang} t={t} sex={me.sex} identity={identity ?? undefined} onBack={() => go('result')} genes={arGenes.map((g) => ({ gene: g.gene, strength: g.strength, kind: g.kind as string | undefined, chance: (g as { chance?: Chance }).chance }))} xl={xlGenes.map((g) => g.gene)} level={level} related={related}
+          <Ask lang={lang} t={t} sex={me.sex} identity={identity ?? undefined} onBack={() => go('result')} genes={arGenes.map((g) => ({ gene: g.gene, strength: g.strength, kind: g.kind as string | undefined, chance: (g as { chance?: Chance }).chance, outcomes: g.outcomes, arrangementUnknown: g.arrangementUnknown }))} xl={xlGenes.map((g) => g.gene)} level={level} related={related}
             onCounsellor={() => book(false)} onUrgent={(sig) => book(true, '', sig)} headingId={vid} />
         )}
         {view === 'family' && (
-          <Family lang={lang} t={t} identity={identity ?? ''} onBack={() => go(home)} headingId={vid} onCounsellor={(q) => book(false, q)}
+          <Family lang={lang} t={t} identity={identity ?? ''} pairing={link && result ? sessionId(link) : null} role={role} onBack={() => go(home)} headingId={vid} onCounsellor={(q) => book(false, q)}
             genes={[...new Map([...genes.map((g) => [g.gene, g.inheritance] as const), ...(mine ?? []).map((f) => [f.gene, f.inheritance] as const)]).entries()].map(([gene, inheritance]) => ({ gene, inheritance }))} />
         )}
       </main>
@@ -673,9 +695,9 @@ function JoinerSheet({ t, lang, partner, onAnswer }: { t: T; lang: Locale; partn
   return (
     <Sheet labelledBy="joiner-title" onCancel={() => onAnswer(false)}>
       <h3 id="joiner-title" tabIndex={-1} data-autofocus className="text-[18px] font-semibold outline-none">
-        {lang === 'en' ? `${name} joined this comparison. Is this your partner?` : partner.sex === 'F' ? `انضمّت ${name} إلى هذه المقارنة. هل هي شريكتك؟` : `انضمّ ${name} إلى هذه المقارنة. هل هو شريكك؟`}
+        {lang === 'en' ? `${name} is on the other phone. Is this your partner?` : partner.sex === 'F' ? `${name} على الهاتف الآخر. هل هي شريكتك؟` : `${name} على الهاتف الآخر. هل هو شريكك؟`}
       </h3>
-      <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'The name comes from their signed-in identity. If it isn’t who you expected, stop: nothing about you is shown to them.', ar: 'يأتي الاسم من الهوية التي سجّل بها الدخول. إن لم يكن من تتوقعه فأوقف المقارنة، ولن يُعرض عنك شيء.', arF: 'يأتي الاسم من الهوية التي سجّل بها الدخول. إن لم يكن من تتوقعينه فأوقفي المقارنة، ولن يُعرض عنك شيء.' })}</p>
+      <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'The name comes from their signed-in identity. If it isn’t who you expected, stop: no result is shown to either of you.', ar: 'يأتي الاسم من الهوية التي سجّل بها الدخول. إن لم يكن من تتوقعه فأوقف المقارنة، ولن تُعرض أي نتيجة لأيّ منكما.', arF: 'يأتي الاسم من الهوية التي سجّل بها الدخول. إن لم يكن من تتوقعينه فأوقفي المقارنة، ولن تُعرض أي نتيجة لأيّ منكما.' })}</p>
       <div className="mt-4 grid grid-cols-2 gap-2.5">
         <button onClick={() => onAnswer(false)} className="min-h-12 rounded-[2px] border border-ink px-3 py-3 text-[15px]">{t({ en: 'No, stop', ar: 'لا، أوقف', arF: 'لا، أوقفي' })}</button>
         <button onClick={() => onAnswer(true)} className="min-h-12 rounded-[2px] bg-ink px-3 py-3 text-[15px] text-wool">{t({ en: 'Yes, continue', ar: 'نعم، تابع', arF: 'نعم، تابعي' })}</button>
@@ -777,12 +799,11 @@ function FindingCard({ f, t, sex, level, partner }: { f: Finding; t: T; sex: 'F'
         <p className="mt-2 text-[14px] leading-relaxed">{t({ en: 'This gene is on the X chromosome, so it matters for this person’s own children whoever their partner is. A genetic counsellor can explain what it means for you both.', ar: 'يقع هذا الجين على الكروموسوم X، لذا يهم أطفال هذا الشخص أياً كان شريكه. ويمكن للمرشد الوراثي شرح ما يعنيه لكما.' })}</p>
       )}
       {f.inheritance === 'XL' && sex === 'F' && !partner && (
-        <p className="mt-2 text-[14px] leading-relaxed">{t(XL_NOTE[f.gene] && f.gene === 'FMR1' ? XL_NOTE.FMR1 : { en: 'This gene is on the X chromosome. For each son: a 1 in 2 chance of having the condition, whoever your partner is. For each daughter it depends on your partner: if he doesn’t have the condition, a 1 in 2 chance of carrying it, as you do; if he has it, a 1 in 2 chance of having it, and otherwise she carries it.', ar: 'يقع هذا الجين على الكروموسوم X. لكل ابن: احتمال 1 من 2 أن يصاب بالحالة، أياً كان شريكك. أما البنات فيعتمد الأمر على شريكك: إن لم يكن مصاباً بالحالة فلكل ابنة احتمال 1 من 2 أن تكون حاملةً للتغيّر مثلك، وإن كان مصاباً فلكل ابنة احتمال 1 من 2 أن تصاب بها، وإلا فهي حاملة له.' })}</p>
+        <p className="mt-2 text-[14px] leading-relaxed">{t(f.gene === 'FMR1' ? FMR1_CHANCE : { en: 'This gene is on the X chromosome. For each son: a 1 in 2 chance of having the condition, whoever your partner is. For each daughter it depends on your partner: if he doesn’t have the condition, a 1 in 2 chance of carrying it, as you do; if he has it, a 1 in 2 chance of having it, and otherwise she carries it.', ar: 'يقع هذا الجين على الكروموسوم X. لكل ابن: احتمال 1 من 2 أن يصاب بالحالة، أياً كان شريكك. أما البنات فيعتمد الأمر على شريكك: إن لم يكن مصاباً بالحالة فلكل ابنة احتمال 1 من 2 أن تكون حاملةً للتغيّر مثلك، وإن كان مصاباً فلكل ابنة احتمال 1 من 2 أن تصاب بها، وإلا فهي حاملة له.' })}</p>
       )}
       {f.inheritance === 'XL' && sex === 'M' && !partner && (
         <p className="mt-2 text-[14px] leading-relaxed">{t({ en: 'This gene is on the X chromosome, and men have one X, so this result is about your own health. All your daughters will carry it; your sons will not inherit it from you.', ar: 'يقع هذا الجين على الكروموسوم X، وللرجل نسخة واحدة منه، لذا تخص هذه النتيجة صحتك أنت. ستكون بناتك جميعاً حاملاتٍ للتغيّر، ولن يرثه أبناؤك الذكور منك.' })}</p>
       )}
-      {f.inheritance === 'XL' && sex === 'F' && !partner && XL_NOTE[f.gene] && f.gene !== 'FMR1' && <p className="mt-1 text-[13px] text-ink-2">{t(XL_NOTE[f.gene])}</p>}
       {f.severity === 'mild' && <p className="mt-1 text-[13px] text-ink-2">{t({ en: 'A milder change: with a partner’s more serious change in the same gene it can cause a milder form; with another milder change, at most a mild form.', ar: 'تغيّر أخف: مع تغيّر أشد في الجين نفسه لدى الشريك قد يسبب شكلاً أخف من الحالة، ومع تغيّر أخف آخر يسبب شكلاً خفيفاً على الأكثر.' })}</p>}
       {c?.carrierNote && (f.inheritance === 'AR' || sex === 'F') && <p className="mt-1 text-[13px] text-ink-2">{t(c.carrierNote)}</p>}
       {/* A man's own X-linked result: what it can mean for his health, where the card says so. */}
@@ -829,7 +850,9 @@ function SharedGeneCard({ g, lang, t, level, part = 'card' }: { g: SharedGene; l
   const chance = chanceOf(g);
   // Ink for a full match; the milder tones stay as the card's own signal. Madder is only the tag.
   const tone = g.strength === 2 ? 'ink' : g.strength === 1 ? 'camel' : 'sage';
-  const globin = globinText(kind, chance);
+  const alpha = g.gene === 'HBA' && kind !== undefined;
+  const globin = alpha ? alphaText(g) : undefined;
+  const asRead = alpha && !!g.arrangementUnknown;
   const odds: L = globin ? globin : g.strength === 0
     ? { en: 'You both carry a milder change. In each pregnancy there is a 1 in 4 chance the child inherits both, which can cause a mild form of the condition. Counselling is available but often not needed.', ar: 'كلاكما يحمل تغيّراً أخف. في كل حمل احتمال 1 من 4 أن يرث الطفل التغيّرين معاً، وقد يسبب ذلك شكلاً خفيفاً من الحالة. الإرشاد الوراثي متاح، لكنه غالباً غير ضروري.' }
     : g.strength === 1
@@ -843,7 +866,7 @@ function SharedGeneCard({ g, lang, t, level, part = 'card' }: { g: SharedGene; l
   const lead: L | null = !plain ? null : simple
     ? { en: '3 in 4 children won’t have it.', ar: '3 من كل 4 أطفال لن يُصابوا بها.' }
     : { en: `3 in 4 children will not have ${lowerFirst(name.en)}.`, ar: `3 من كل 4 أطفال لن يُصابوا ${biAr(name.ar)}.` };
-  const title = kind === 'trait' ? { en: 'Not an illness', ar: 'ليست مرضاً' } : g.strength === 0 ? { en: 'Low concern', ar: 'احتمال منخفض الأثر' } : g.strength === 1 ? { en: 'Milder form possible', ar: 'شكل أخف محتمل' } : null;
+  const title = asRead ? { en: 'Results as read: confirm first', ar: 'النتيجة كما قُرئت: يلزم التأكيد أولاً' } : kind === 'trait' ? { en: 'Not an illness', ar: 'ليست مرضاً' } : g.strength === 0 ? { en: 'Low concern', ar: 'احتمال منخفض الأثر' } : g.strength === 1 ? { en: 'Milder form possible', ar: 'شكل أخف محتمل' } : null;
   const first = kind === 'trait' ? 'carrier' : g.strength === 0 ? 'mild' : 'affected';
   const firstLabel: L = kind === 'trait' ? { en: 'trait, not an illness', ar: 'سمة، ليست مرضاً' }
     : kind === 'bart' ? { en: 'Hb Bart’s hydrops', ar: 'استسقاء بخضاب بارت' }
@@ -857,14 +880,25 @@ function SharedGeneCard({ g, lang, t, level, part = 'card' }: { g: SharedGene; l
   const clear: L = simple ? { en: 'not a carrier', ar: 'غير حامل للتغيّر' } : { en: 'no changed copy', ar: 'بلا نسخة متغيرة' };
   const carrier: L = { en: 'healthy carrier', ar: 'حامل سليم' };
   type Kid = { fill: 'affected' | 'mild' | 'carrier' | 'clear'; label: L };
-  const kids: Kid[] = chance === 'all'
+  // Alpha globin: the four children are the lab's four combinations, each labelled with its outcome.
+  const ALPHA_KID: Record<AlphaOutcome, Kid> = {
+    unaffected: { fill: 'clear', label: clear }, carrier: { fill: 'carrier', label: carrier },
+    trait: { fill: 'carrier', label: { en: 'trait, not an illness', ar: 'سمة، ليست مرضاً' } },
+    hbh: { fill: 'affected', label: { en: 'HbH disease', ar: 'مرض الهيموغلوبين H' } },
+    'hbh-severe': { fill: 'affected', label: { en: 'HbH, can be severe', ar: 'مرض H، قد يكون شديداً' } },
+    bart: { fill: 'affected', label: { en: 'Hb Bart’s hydrops', ar: 'استسقاء بخضاب بارت' } },
+  };
+  const alphaKids = alpha && g.outcomes?.length ? [...g.outcomes].reverse().flatMap((o) => Array.from({ length: o.n }, () => ALPHA_KID[o.kind])) : null;
+  const kids: Kid[] = alphaKids?.length === 4 ? alphaKids : chance === 'all'
     ? [0, 1, 2, 3].map(() => ({ fill: first, label: firstLabel }))
     : chance === 'half'
       ? [{ fill: 'carrier', label: carrier }, { fill: 'carrier', label: carrier }, { fill: first, label: firstLabel }, { fill: first, label: firstLabel }]
       : chance === 'three-quarters'
         ? [{ fill: 'carrier', label: carrier }, { fill: first, label: firstLabel }, { fill: first, label: firstLabel }, { fill: first, label: firstLabel }]
         : [{ fill: 'clear', label: clear }, { fill: 'carrier', label: carrier }, { fill: 'carrier', label: carrier }, { fill: first, label: firstLabel }];
-  const same: L = chance === 'all'
+  const same: L = alphaKids && new Set(g.outcomes!.map((o) => o.kind)).size > 1
+    ? { en: 'What happened before doesn’t change it: the chances are the same in every pregnancy.', ar: 'لا يتأثر الاحتمال بما سبق: تبقى الاحتمالات نفسها في كل حمل.' }
+    : chance === 'all'
     ? { en: 'It is the same in every pregnancy.', ar: 'ويبقى ذلك في كل حمل.' }
     : { en: `What happened before doesn’t change it: it is ${ONE_IN[chance].en} in every pregnancy.`, ar: `لا يتأثر الاحتمال بما سبق: يبقى ${ONE_IN[chance].ar} في كل حمل.` };
   const what = c ? split(t(c.what[level])) : null;
@@ -880,7 +914,7 @@ function SharedGeneCard({ g, lang, t, level, part = 'card' }: { g: SharedGene; l
           {simple && what?.rest && <p className="mt-3 text-[15px] leading-relaxed text-ink">{what.rest}</p>}
           {!careUp && <p className="mt-2 text-[13px] text-ink-2"><span className="font-medium text-ink">{t({ en: 'Care today: ', ar: 'الرعاية اليوم: ' })}</span>{t(c.care)}</p>}
           {c.carrierNote && <p className="mt-1.5 text-[13px] text-ink-2"><span className="font-medium text-ink">{t({ en: 'For you as carriers: ', ar: 'لكما كحاملين للتغيّر: ' })}</span>{t(c.carrierNote)}</p>}
-          {CONFIRM[g.gene] && <p className="mt-3 border-s-2 border-camel ps-3 text-[13px] leading-relaxed text-ink">{t(CONFIRM[g.gene])}</p>}
+          {CONFIRM[g.gene] && !asRead && <p className="mt-3 border-s-2 border-camel ps-3 text-[13px] leading-relaxed text-ink">{t(CONFIRM[g.gene])}</p>}
           <SourceLink c={c} t={t} />
         </>
       )}
@@ -895,19 +929,21 @@ function SharedGeneCard({ g, lang, t, level, part = 'card' }: { g: SharedGene; l
     );
   }
   const listen = simple
-    ? [t(name), lead ? t(lead) : t(odds), what?.first ?? '', careUp && c ? t(c.care) : ''].filter(Boolean).join(' ')
-    : [t(name), lead ? t(lead) : '', t(odds), c ? t(c.what[level]) : '', c ? t(c.care) : ''].filter(Boolean).join(' ');
+    ? [t(name), asRead ? t(ALPHA_AS_READ) : '', lead ? t(lead) : t(odds), what?.first ?? '', careUp && c ? t(c.care) : ''].filter(Boolean).join(' ')
+    : [t(name), asRead ? t(ALPHA_AS_READ) : '', lead ? t(lead) : '', t(odds), c ? t(c.what[level]) : '', c ? t(c.care) : ''].filter(Boolean).join(' ');
   return (
     <article className={`mt-5 rounded-[3px] border bg-paper ${tone === 'ink' ? 'border-ink' : tone === 'camel' ? 'border-camel' : 'border-sage'}`}>
       <div className="flex items-start justify-between gap-3 border-b border-rule px-4 py-3">
         <div>
           <p className="flex items-center gap-2"><SharedTag t={t} /><span dir="ltr" className="font-mono text-[12px] text-ink-2">{g.gene}</span></p>
           <h3 className="mt-1.5 text-[17px] font-semibold leading-snug">{t(name)}</h3>
-          {title && <p className={`text-[13px] font-medium ${tone === 'camel' ? 'text-camel' : 'text-sage'}`}>{t(title)}</p>}
+          {title && <p className={`text-[13px] font-medium ${tone === 'camel' || asRead ? 'text-camel' : 'text-sage'}`}>{t(title)}</p>}
         </div>
         <Listen lang={lang} text={listen} />
       </div>
       <div className="px-4 py-4">
+        {/* The confirm note comes first: everything below is the result as read. */}
+        {asRead && <p className="mb-3 border-s-2 border-camel ps-3 text-[14px] leading-relaxed text-ink">{t(ALPHA_AS_READ)}</p>}
         {lead ? <p className="text-[17px] font-semibold leading-snug">{t(lead)}</p> : simple && <p className="text-[15px] leading-relaxed">{t(odds)}</p>}
         <ul className={`grid grid-cols-4 gap-1.5 ${lead || simple ? 'mt-3' : ''}`} role="img" aria-label={t(odds)}>
           {kids.map((k, i) => (

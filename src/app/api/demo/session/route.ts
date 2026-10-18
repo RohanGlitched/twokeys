@@ -1,4 +1,7 @@
-// The demo's stand-in for signing in: choose a synthetic person, get a signed identity token.
+// The demo's stand-in for signing in: choose a synthetic person, get a signed identity token for a new
+// visitor of that person (`<person>~<tag>`, identity.mintIdentity). The phone keeps it for its tab, so the
+// visitor id is stable across reloads; each phone of the two-phone demo signs in on its own, and the
+// two visitor ids pair as the couple because each resolves to its synthetic person.
 import { fail, mintIdentity } from '@/lib/identity';
 import { personalFindings } from '@/lib/lab';
 import { readJson } from '@/lib/http';

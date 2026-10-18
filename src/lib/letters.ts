@@ -1,12 +1,14 @@
 // Family letters, written and sealed on the sender's phone. A letter holds facts, not names:
 // the gene, how the relative is related, and the chance that follows from it.
+import { sha256 } from '@noble/hashes/sha2.js';
 import { carrierFreq, oneIn, RELATIVE_SHARE } from './risk';
 import { geneQ } from './genefreq';
 
 export type Relation = 'sibling' | 'half-sibling' | 'aunt-uncle' | 'niece-nephew' | 'first-cousin' | 'parent' | 'child';
 export const RELATIONS: Relation[] = ['sibling', 'parent', 'child', 'half-sibling', 'aunt-uncle', 'niece-nephew', 'first-cousin'];
 
-export interface LetterBody { v: 1 | 2; gene: string; relation: Relation; chance: number | null; population: number | null; lang: 'en' | 'ar'; inheritance?: 'AR' | 'XL' }
+/** `nonce` (32 hex, made on the sender's phone) ties the sealed body to the lab's signature on the note's facts (noteDigest). */
+export interface LetterBody { v: 1 | 2; gene: string; relation: Relation; chance: number | null; population: number | null; lang: 'en' | 'ar'; inheritance?: 'AR' | 'XL'; nonce?: string }
 
 /**
  * The panel's genes and how each is inherited (from data/panel.json, version 2026-10-17; HBA is the
@@ -56,7 +58,34 @@ export function checkLetter(body: unknown): LetterBody | null {
   const gene = b.gene.toUpperCase();
   const inh = PANEL_INHERITANCE[gene];
   if (!inh || (b.inheritance ?? 'AR') !== inh) return null;
-  return letterFor(gene, b.relation as Relation, b.lang, inh);
+  const nonce = typeof b.nonce === 'string' && NONCE.test(b.nonce) ? b.nonce : undefined;
+  return { ...letterFor(gene, b.relation as Relation, b.lang, inh), ...(nonce ? { nonce } : {}) };
+}
+
+export const NONCE = /^[0-9a-f]{32}$/;
+
+/**
+ * The facts the lab signs for a note, once it has checked that the gene is in the sender's own results
+ * (api/family): SHA-256 of the letter version, gene, relation, inheritance, the sender's nonce and the UTC
+ * day it was made. The nonce lives only inside the sealed body, so the signature, stored beside the
+ * ciphertext, can't be tested against guesses by anyone without the link.
+ */
+export function noteDigest(f: { gene: string; relation: Relation; inheritance: 'AR' | 'XL'; nonce: string; day: number }): Uint8Array {
+  return sha256(new TextEncoder().encode(`2|${f.gene}|${f.relation}|${f.inheritance}|${f.nonce}|${f.day}`));
+}
+
+/**
+ * Domain separation for everything the lab signs other than first-lock attestations: a tag, a zero byte,
+ * then a 32-byte digest. Attestations start "twokeys/v2|first-lock|" (psi.attestMessage), so the two
+ * formats can never be mistaken for each other. labsign.labSignTagged signs these bytes; a relative's
+ * phone rebuilds them to check.
+ */
+export function labTagged(tag: 'family-note', digest: Uint8Array): Uint8Array {
+  if (digest.length !== 32) throw new Error('A tagged lab message signs a 32-byte digest.');
+  const head = new TextEncoder().encode(`twokeys/lab-sign/${tag}/v1`);
+  const out = new Uint8Array(head.length + 1 + 32);
+  out.set(head); out.set(digest, head.length + 1);
+  return out;
 }
 
 export { oneIn };

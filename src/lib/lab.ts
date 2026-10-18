@@ -57,9 +57,11 @@ const PAIR_DECIDES = new Set(['HBB']);
  * Alpha globin: each person has two alpha haplotypes, each αα (normal), α0 (--), α+ (-α) or αT (a
  * non-deletional α+ such as αT-Saudi or Hb Constant Spring). A child takes one from each parent, so the four
  * combinations are equally likely, and each person's pair sets the chance. The lab reads a person's pair
- * from their HBA findings: two findings of one class are that class on both chromosomes (-α/-α); a single
- * finding is that class with αα; with more than two, the two most serious are kept (the lab's confirmatory
- * test settles cis or trans, see the HBA card).
+ * from their HBA findings: two findings are read as one on each chromosome (trans, e.g. -α/-α); a single
+ * finding is that class with αα; with more than two, the two most serious are kept. Two alpha-plus findings
+ * could instead sit on the same chromosome (cis), where together they act like α0 (--/αα): sequencing alone
+ * doesn't say which, so such a person is marked alphaArrangementUnknown and the couple's result says to
+ * confirm first (see intersection; the lab's confirmatory test settles cis or trans, see the HBA card).
  *
  * Tokens: a person gets one token for every pair of genotypes that could meet, with their own genotype in
  * their own seat (A gets "mine|g" for each of the nine carrier genotypes g, B gets "g|mine"). Exactly one
@@ -70,6 +72,9 @@ const PAIR_DECIDES = new Set(['HBB']);
  * people's two copies, so read with your own result it can tell you part of your partner's. For example, if
  * you carry -α on one chromosome and the result is "trait, 1 in 2", your partner carries -α on both; a result
  * that names Hb Bart's says both of you carry α0. A correct chance needs that; the count adds nothing to it.
+ * The spread of outcomes (outcomes) says no more than the four combinations already do, and the
+ * arrangementUnknown flag adds one fact: one of you has two alpha-plus findings whose arrangement changes the
+ * result. The other reading's worst outcome (ifRearranged) goes to the counsellor desk only (lab/reveal).
  */
 type Hap = 'a0' | 'aT' | 'a+' | 'aa';
 /** Most serious first; a genotype is written most serious haplotype first, e.g. 'a0/a+', 'a+/aa'. */
@@ -78,10 +83,22 @@ const byRank = (p: Hap, q: Hap) => RANK.indexOf(p) - RANK.indexOf(q);
 const alphaClass = (f: Finding): Hap => (f.severity === 'severe' ? 'a0' : f.alpha === 'nondeletional' ? 'aT' : 'a+');
 /** The nine genotypes of anyone with at least one alpha change. */
 const CARRIER_GENOTYPES = RANK.slice(0, 3).flatMap((x, i) => RANK.slice(i).map((y) => `${x}/${y}`));
+const alphaHaps = (findings: Finding[]) => findings.filter((f) => f.inheritance === 'AR' && matchGene(f.gene) === 'HBA').map(alphaClass).sort(byRank);
 function alphaGenotype(findings: Finding[]): string | null {
-  const haps = findings.filter((f) => f.inheritance === 'AR' && matchGene(f.gene) === 'HBA').map(alphaClass).sort(byRank);
+  const haps = alphaHaps(findings);
   return haps.length ? `${haps[0]}/${haps[1] ?? 'aa'}` : null;
 }
+/**
+ * The other reading of a person's alpha findings, when there is one: two alpha-plus findings (-α, αT) on the
+ * same chromosome leave it without a working gene, like α0, so -α/-α read in trans is --/αα in cis. An α0
+ * finding has no gene left beside it, so a pair that includes α0 has only one reading.
+ */
+function alphaCis(findings: Finding[]): string | null {
+  const haps = alphaHaps(findings);
+  return haps.length >= 2 && haps[0] !== 'a0' ? `a0/${haps[2] ?? 'aa'}` : null;
+}
+/** Two alpha-plus findings whose arrangement (one per chromosome, or both on one) sequencing can't read. */
+export const alphaArrangementUnknown = (findings: Finding[]) => alphaCis(findings) !== null;
 
 export function sessionTokens(labKey: Uint8Array, session: string, role: Role, findings: Finding[]): LabelledToken[] {
   if (!/^[0-9a-f]{32,64}$/.test(session)) throw new Error('Bad session id.');
@@ -131,38 +148,81 @@ const toHex0 = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2
  *   HBB: 'hplc' (a full match until the confirmatory test gives the exact pair);
  *   alpha globin, the most serious outcome any of the four haplotype combinations gives (α0 = --, α+ = -α,
  *   αT = non-deletional α+): 'bart' (α0 with α0: Hb Bart's hydrops possible), 'hbh-severe' (α0 with αT, e.g.
- *   --/αCSα: severe HbH disease, hydrops before birth possible), 'hbh' (α0 with α+, αT with αT, or αT with
- *   α+: HbH disease possible), 'trait' (α+ with α+ only: trait, not an illness). Bart's needs α0 from both.
- * chance, alpha globin only: the chance per pregnancy of that outcome, from both people's two copies:
- *   'quarter' (1 in 4), 'half' (1 in 2), 'three-quarters' (3 in 4: only αT/α+ with αT/α+) or 'all' (every
- *   child; -α/-α with -α/-α gives trait every time). Every other autosomal match is 1 in 4.
+ *   --/αCSα: severe HbH disease, which rarely causes hydrops before birth), 'hbh' (α0 with α+, αT with αT, or
+ *   αT with α+: HbH disease possible), 'trait' (α+ with α+ only: trait, not an illness). Bart's needs α0 from
+ *   both.
+ * chance, alpha globin only: the chance per pregnancy of that most serious outcome, from both people's two
+ *   copies: 'quarter' (1 in 4), 'half' (1 in 2), 'three-quarters' (3 in 4) or 'all' (every child). Every other
+ *   autosomal match is 1 in 4. kind and chance stay for older readers; outcomes has the whole spread.
+ * outcomes, alpha globin only: every outcome among the four equally likely combinations, most serious first,
+ *   with n of 4 (only n > 0 is listed; the n add up to 4). 'trait' is two genes lost or not working (-α/-α or
+ *   --/αα), 'carrier' one (-α/αα or αT/αα), 'unaffected' none. E.g. --/-α with --/-α: bart 1, hbh 2, trait 1.
+ * arrangementUnknown, alpha globin only: one partner has two alpha-plus findings, and reading them on one
+ *   chromosome instead of one on each would change this result. Everything above is the result as read (one
+ *   per chromosome); a confirmatory test checks how the changes sit. strength then counts the other reading
+ *   too, so a trait result that could be HbH is never "low concern". ifRearranged is the most serious outcome
+ *   the other reading gives; the lab keeps it for the counsellor desk and the phones don't receive it.
  */
+export type AlphaKind = 'bart' | 'hbh-severe' | 'hbh' | 'trait';
+export type AlphaOutcome = AlphaKind | 'carrier' | 'unaffected';
 export interface SharedGene {
   gene: string;
   inheritance: Inheritance;
   strength: 0 | 1 | 2;
-  kind?: 'hplc' | 'bart' | 'hbh-severe' | 'hbh' | 'trait';
+  kind?: 'hplc' | AlphaKind;
   chance?: 'quarter' | 'half' | 'three-quarters' | 'all';
+  outcomes?: { kind: AlphaOutcome; n: 0 | 1 | 2 | 3 | 4 }[];
+  arrangementUnknown?: true;
+  ifRearranged?: AlphaKind;
 }
 
-type AlphaKind = 'bart' | 'hbh-severe' | 'hbh' | 'trait';
+/** Most serious first. */
+export const ALPHA_OUTCOMES: AlphaOutcome[] = ['bart', 'hbh-severe', 'hbh', 'trait', 'carrier', 'unaffected'];
 const WORST: AlphaKind[] = ['bart', 'hbh-severe', 'hbh', 'trait'];
-/** What a child with one haplotype from each parent has, when it is more than a silent carrier state. */
-function childKind(x: Hap, y: Hap): AlphaKind | null {
-  if (x === 'aa' || y === 'aa') return null;
+/** What a child with one haplotype from each parent has. */
+function childOutcome(x: Hap, y: Hap): AlphaOutcome {
   const p = [x, y].sort(byRank).join('/');
-  return p === 'a0/a0' ? 'bart' : p === 'a0/aT' ? 'hbh-severe' : p === 'a+/a+' ? 'trait' : 'hbh';
+  if (p === 'a0/a0') return 'bart';
+  if (p === 'a0/aT') return 'hbh-severe';
+  if (p === 'a0/a+' || p === 'aT/aT' || p === 'aT/a+') return 'hbh';
+  if (p === 'a+/a+' || p === 'a0/aa') return 'trait';
+  return p === 'aa/aa' ? 'unaffected' : 'carrier';
 }
 const CHANCE = { 1: 'quarter', 2: 'half', 3: 'three-quarters', 4: 'all' } as const;
 
+/** The nine genotypes of anyone with at least one alpha change, most serious first: 'a0/a0', 'a0/aT', … 'a+/aa'. */
+export const ALPHA_GENOTYPES: readonly string[] = CARRIER_GENOTYPES;
+/** The four equally likely children of two alpha genotypes (e.g. 'a0/a+' and 'a+/aa'), as outcomes with n of 4. */
+export function alphaOutcomes(a: string, b: string): NonNullable<SharedGene['outcomes']> {
+  const [x, y] = [a, b].map((g) => g.split('/') as Hap[]);
+  const kids = x.flatMap((p) => y.map((q) => childOutcome(p, q)));
+  return ALPHA_OUTCOMES.map((kind) => ({ kind, n: kids.filter((k) => k === kind).length as 0 | 1 | 2 | 3 | 4 })).filter((o) => o.n > 0);
+}
+const worstOf = (outcomes: NonNullable<SharedGene['outcomes']>) => WORST.find((k) => outcomes.some((o) => o.kind === k));
+
 /** Grades an alpha-globin match from the two genotypes in its label, e.g. 'a+/a+|a0/aa' (A's, then B's). */
 function alphaGraded(pair: string): SharedGene {
-  const [a, b] = pair.split('|').map((g) => g.split('/') as Hap[]);
-  const kids = a.flatMap((x) => b.map((y) => childKind(x, y)));
+  const [a, b] = pair.split('|');
+  const outcomes = alphaOutcomes(a, b);
   // Both carry at least one change, so at least one of the four combinations meets two changes.
-  const kind = WORST.find((k) => kids.includes(k))!;
-  const n = kids.filter((k) => k === kind).length as 1 | 2 | 3 | 4;
-  return { gene: 'HBA', inheritance: 'AR', strength: kind === 'trait' ? 0 : 2, kind, chance: CHANCE[n] };
+  const kind = worstOf(outcomes)!;
+  const n = outcomes.find((o) => o.kind === kind)!.n as 1 | 2 | 3 | 4;
+  return { gene: 'HBA', inheritance: 'AR', strength: kind === 'trait' ? 0 : 2, kind, chance: CHANCE[n], outcomes };
+}
+
+/**
+ * When either person's two alpha-plus findings could sit on one chromosome: the result under every other
+ * reading, and whether any of them differs from the result as read.
+ */
+function alphaRearranged(g: SharedGene, pair: string, a: Finding[], b: Finding[]): SharedGene {
+  const [ga, gb] = pair.split('|');
+  const ca = alphaCis(a), cb = alphaCis(b);
+  if (!ca && !cb) return g;
+  const others = [[ca, gb], [ga, cb], [ca, cb]].filter((r): r is [string, string] => !!r[0] && !!r[1]).map(([x, y]) => alphaOutcomes(x, y));
+  const differ = others.filter((o) => JSON.stringify(o) !== JSON.stringify(g.outcomes));
+  if (!differ.length) return g;
+  const ifRearranged = WORST.find((k) => differ.some((o) => o.some((x) => x.kind === k)))!;
+  return { ...g, strength: g.strength === 2 || ifRearranged !== 'trait' ? 2 : g.strength, arrangementUnknown: true, ifRearranged };
 }
 
 function graded(label: string, n: number): SharedGene {
@@ -186,7 +246,7 @@ export function intersection(labKey: Uint8Array, session: string, a: Finding[], 
   const alphaPair = [...counts.keys()].find((l) => l.startsWith('HBA:'))?.slice(4);
   const genes: SharedGene[] = [
     ...[...counts.entries()].filter(([label]) => !label.startsWith('HBA:')).map(([label, n]) => graded(label, n)),
-    ...(alphaPair ? [alphaGraded(alphaPair)] : []),
+    ...(alphaPair ? [alphaRearranged(alphaGraded(alphaPair), alphaPair, a, b)] : []),
   ].sort((x, y) => x.gene.localeCompare(y.gene));
   return { A: new Set(aIdx.map((t) => t.token)), B: new Set(bIdx.map((t) => t.token)), genes };
 }

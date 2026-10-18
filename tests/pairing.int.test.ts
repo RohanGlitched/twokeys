@@ -1,10 +1,30 @@
 // End-to-end over HTTP: two "phones" sign in and pair through the real lab and relay routes.
 // Runs only when BASE is set (e.g. BASE=http://localhost:3410 npx vitest run tests/pairing.int.test.ts).
 import { describe, expect, it } from 'vitest';
+import { ed25519 } from '@noble/curves/ed25519.js';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { labTagged, noteDigest } from '../src/lib/letters';
 import { checkWords, demoSignIn, linkFragment, newLink, parseFragment, runInitiator, runResponder, sessionId, type Step } from '../src/lib/pairing';
+
+const hexOf = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+const unhex = (s: string) => Uint8Array.from(s.match(/../g) ?? [], (x) => parseInt(x, 16));
 
 const BASE = process.env.BASE;
 const as = (person: string) => demoSignIn(person, BASE);
+
+// Node's fetch reuses keep-alive sockets the server may already have closed; a browser retries those by
+// itself, Node doesn't. Retry once, only for a socket that was reset before any response (the request
+// never reached the server), so the tests measure the app, not the test client's connection pool.
+const realFetch = globalThis.fetch;
+globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
+  try {
+    return await realFetch(input, init);
+  } catch (e) {
+    const code = (e as { cause?: { code?: string } }).cause?.code;
+    if (code === 'ECONNRESET' || code === 'UND_ERR_SOCKET') return realFetch(input, init);
+    throw e;
+  }
+}) as typeof fetch;
 
 describe.skipIf(!BASE)('pairing over the real routes', () => {
   it('Mariam and Saeed learn only CYP21A2, and the lab agrees', async () => {
@@ -214,17 +234,61 @@ describe.skipIf(!BASE)('pairing over the real routes', () => {
 
   it('a new family note needs its acknowledgement hash, and no response is cached', async () => {
     const ih = await as('hessa');
-    const send = (body: object) => fetch(`${BASE}/api/family`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': ih }, body: JSON.stringify({ c: 'AAAA', ...body }) });
+    const nonce = hexOf(crypto.getRandomValues(new Uint8Array(16)));
+    const send = (body: object) => fetch(`${BASE}/api/family`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': ih }, body: JSON.stringify({ c: 'AAAA', gene: 'HBB', relation: 'sibling', nonce, ...body }) });
     const bare = await send({});
     expect(bare.status).toBe(400);
     expect(bare.headers.get('cache-control')).toBe('no-store');
     const ok = await send({ ack: 'ab'.repeat(32) });
-    if (ok.status === 429) return; // today's demo cap for this shared identity is spent
-    expect(ok.status).toBe(200);
+    expect(ok.status).toBe(200); // a fresh visitor id each sign-in: no cap shared with other visitors
     expect(ok.headers.get('cache-control')).toBe('no-store');
     const { id, manage } = await ok.json();
     expect((await fetch(`${BASE}/api/family/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'read' }) })).status).toBe(403);
     await fetch(`${BASE}/api/family/${id}`, { method: 'DELETE', headers: { 'x-manage': manage } });
+  }, 60_000);
+
+  it('a family note only for a gene the lab found in the sender, signed over its checked facts', async () => {
+    const iN = await as('noura'); // carries ABCA4 only
+    const nonce = hexOf(crypto.getRandomValues(new Uint8Array(16)));
+    const token = hexOf(crypto.getRandomValues(new Uint8Array(32)));
+    const ack = hexOf(sha256(new TextEncoder().encode(token)));
+    const send = (gene: string) => fetch(`${BASE}/api/family`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': iN }, body: JSON.stringify({ c: 'AAAA', ack, gene, relation: 'first-cousin', nonce }) });
+    const forged = await send('DMD');
+    expect(forged.status).toBe(403);
+    expect(await forged.json()).toMatchObject({ reason: 'not_your_gene' });
+    const ok = await send('ABCA4');
+    expect(ok.status).toBe(200);
+    const { id, manage } = await ok.json();
+    const got = await (await fetch(`${BASE}/api/family/${id}`)).json();
+    const { publicKey } = await (await fetch(`${BASE}/api/lab/key`)).json();
+    const msg = (gene: string) => labTagged('family-note', noteDigest({ gene, relation: 'first-cousin', inheritance: gene === 'DMD' ? 'XL' : 'AR', nonce, day: got.day }));
+    expect(ed25519.verify(unhex(got.sig), msg('ABCA4'), unhex(publicKey))).toBe(true);
+    // The same signature says nothing for another gene, relation or nonce.
+    expect(ed25519.verify(unhex(got.sig), msg('DMD'), unhex(publicKey))).toBe(false);
+    // A relative can report it with the link's token; the sender never sees reports.
+    const report = await fetch(`${BASE}/api/family/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind: 'report', token }) });
+    expect(report.status).toBe(200);
+    expect(await (await fetch(`${BASE}/api/family/${id}`, { headers: { 'x-manage': manage } })).json()).toEqual({ read: 0, booked: 0 });
+    await fetch(`${BASE}/api/family/${id}`, { method: 'DELETE', headers: { 'x-manage': manage } });
+  }, 60_000);
+
+  it('two visitors signed in as the same person each have their own open request, and can withdraw it', async () => {
+    const [v1, v2] = await Promise.all([as('latifa'), as('latifa')]);
+    const book = (identity: string) => fetch(`${BASE}/api/desk/cases`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({}) });
+    const withdraw = (id: string, identity: string) => fetch(`${BASE}/api/desk/cases/${id}`, { method: 'DELETE', headers: { 'x-person': identity } });
+    const [a, b] = await Promise.all([book(v1), book(v2)]);
+    expect([a.status, b.status]).toEqual([200, 200]);
+    const [ja, jb] = await Promise.all([a.json(), b.json()]);
+    const again = await book(v1);
+    expect(again.status).toBe(409);
+    expect(await again.json()).toMatchObject({ code: 'open_case', id: ja.id, error: expect.stringMatching(/withdraw it below/) });
+    // Another visitor can't withdraw it; its own visitor can.
+    expect((await withdraw(ja.id, v2)).ok).toBe(false);
+    expect((await withdraw(ja.id, v1)).ok).toBe(true);
+    const fresh = await book(v1);
+    expect(fresh.status).toBe(200);
+    const jf = await fresh.json();
+    await Promise.all([withdraw(jf.id, v1), withdraw(jb.id, v2)]);
   }, 60_000);
 
   it('the lab refuses tokens without a signed identity', async () => {

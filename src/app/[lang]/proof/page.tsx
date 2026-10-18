@@ -8,6 +8,8 @@ import evalAsk from '../../../../data/eval-ask.json';
 import evalHistory from '../../../../data/eval-history.json';
 import { titled } from '@/i18n/meta';
 import { EXPLAINER_VERSION } from '@/lib/ask';
+import { ALPHA_GENOTYPES, alphaOutcomes } from '@/lib/lab';
+import { alphaSpread } from '@/lib/conditions';
 
 export const generateMetadata = titled('Proof', 'الإثبات');
 type L = { en: string; ar: string };
@@ -170,7 +172,7 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
               ))}
             </div>
           </details>
-          <p className="mt-3 text-[13px] text-ink-3">{t({ en: 'Plus 11 end-to-end tests that pair two phones through the real lab and relay routes, run against the live site (tests/pairing.int.test.ts).', ar: 'إضافة إلى 10 اختبارات شاملة تقرن هاتفين عبر مسارات المختبر والوسيط الحقيقية، وتُشغَّل على الموقع المنشور (tests/pairing.int.test.ts).' })}</p>
+          <p className="mt-3 text-[13px] text-ink-3">{t({ en: 'Plus 16 end-to-end tests that pair two phones through the real lab and relay routes, run against the live site (tests/pairing.int.test.ts).', ar: 'إضافة إلى 16 اختباراً شاملاً تقرن هاتفين عبر مسارات المختبر والوسيط الحقيقية، وتُشغَّل على الموقع المنشور (tests/pairing.int.test.ts).' })}</p>
         </section>
 
         {/* calibration */}
@@ -202,6 +204,35 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
             ))}</tbody>
           </table>
           <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-ink-3">{t({ en: `Where they differ we say so. HBB ranks high in the model but is absent from the observed top genes, possibly because haemoglobin pairs are also found by the premarital blood test (HPLC) and counted separately; that isn’t published. CYP21A2 is 14% of observed matches but ${pct(calibration.cyp21a2InbreedingAdjusted.cyp21a2ShareAdjusted)} in the classic-only model (${pct(calibration.allCyp21a2Alleles.cyp21a2Share)} counting every published allele), which suggests the programme’s count includes non-classic alleles. Gene-level fit is shown, not tuned.`, ar: `حيث يختلفان نقول ذلك. يحتل HBB مرتبة عالية في النموذج لكنه غائب عن القائمة المرصودة، وربما لأن أزواج الهيموغلوبين يكشفها أيضاً فحص الدم قبل الزواج (HPLC) وتُعدّ منفصلة، وهذا غير منشور. ويمثل CYP21A2 نسبة 14% من التطابقات المرصودة لكنه ${pct(calibration.cyp21a2InbreedingAdjusted.cyp21a2ShareAdjusted)} في نموذج الشكل التقليدي فقط (و${pct(calibration.allCyp21a2Alleles.cyp21a2Share)} مع احتساب كل المتغيرات المنشورة)، ما يشير إلى أن عدّ البرنامج يشمل المتغيرات غير التقليدية. نعرض التطابق على مستوى الجين دون ضبطه.` })}</p>
+        </section>
+
+        {/* alpha-globin table, generated from lab.ts */}
+        <section id="alpha" className="mt-20 border-t-[1.5px] border-ink pt-8">
+          <h2 className="max-w-3xl text-[clamp(24px,2.6vw,32px)] font-semibold tracking-tight">{t({ en: 'Alpha-thalassaemia: every pair of genotypes', ar: 'ثلاسيميا ألفا: كل زوج من الأنماط الجينية' })}</h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'Each person has two alpha-globin chromosomes: αα (both genes work), −α (one lost, α+), αTα (one not working, non-deletional α+) or −− (both lost, α0). A child takes one from each parent, so each cell is the four equally likely children of one partner’s pair (row) and the other’s (column), with every outcome beyond a silent carrier state. This table is generated from the lab’s engine (src/lib/lab.ts) each time the page is built, and tests/psi.test.ts checks that engine against an independent count of all 81 pairs.', ar: 'لكل إنسان كروموسومان لألفا غلوبين: αα (يعمل الجينان)، أو −α (فُقد جين، ألفا+)، أو αTα (جين لا يعمل، ألفا+ غير حذفي)، أو −− (فُقد الجينان، ألفا صفر). ويأخذ الطفل واحداً من كل والد، لذا تعرض كل خانة الأطفال الأربعة المتساوين في الاحتمال لزوج أحد الشريكين (الصف) وزوج الآخر (العمود)، مع كل نتيجة تتجاوز حمل التغيّر الصامت. ويُولَّد هذا الجدول من محرك المختبر (src/lib/lab.ts) عند كل بناء للصفحة، ويتحقق tests/psi.test.ts من هذا المحرك مقابل عدّ مستقل لكل الأزواج الـ81.' })}</p>
+          <div className="mt-5 overflow-x-auto">
+            <table className="min-w-[900px] border-collapse text-[11px] leading-snug">
+              <thead>
+                <tr className="border-b border-ink text-ink-3">
+                  <th className="py-1.5 pe-2 text-start font-normal">{t({ en: 'Rows: one partner · columns: the other', ar: 'الصفوف: أحد الشريكين · الأعمدة: الآخر' })}</th>
+                  {ALPHA_GENOTYPES.map((b) => <th key={b} dir="ltr" className="px-1.5 py-1.5 text-start font-mono font-normal">{alphaGlyph(b)}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {ALPHA_GENOTYPES.map((a) => (
+                  <tr key={a} className="border-b border-rule align-top">
+                    <th dir="ltr" className="py-1.5 pe-2 text-start font-mono font-normal text-ink-2">{alphaGlyph(a)}</th>
+                    {ALPHA_GENOTYPES.map((b) => {
+                      const o = alphaOutcomes(a, b);
+                      const grave = o.some((x) => x.kind === 'bart' || x.kind === 'hbh-severe');
+                      return <td key={b} className={`px-1.5 py-1.5 ${a === 'a0/a0' || b === 'a0/a0' ? 'text-ink-3' : grave ? 'font-medium text-alert' : 'text-ink'}`}>{alphaSpread(o, lang)}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 max-w-3xl text-[13px] leading-relaxed text-ink-3">{t({ en: 'Pale: −−/−− is Hb Bart’s itself, so that row and column are rarely an adult (64 of the 81 pairs are two adults). Red: Hb Bart’s or severe HbH is possible. Two α+ changes found in one person are read as one on each chromosome; on the same chromosome they act like −−, so the app shows those results as read and asks for a confirmatory test first.', ar: 'الباهت: −−/−− هو خضاب بارت نفسه، لذا نادراً ما يكون صاحب هذا الصف والعمود بالغاً (64 من الأزواج الـ81 لبالغَين). الأحمر: خضاب بارت أو مرض H الشديد ممكن. ويُقرأ تغيّرا ألفا+ لدى شخص واحد على أنهما كلٌّ على كروموسوم؛ وعلى الكروموسوم نفسه يعملان مثل −−، لذا يعرض التطبيق هذه النتائج كما قُرئت ويطلب فحصاً تأكيدياً أولاً.' })}</p>
         </section>
 
         {/* explainer eval */}
@@ -386,6 +417,9 @@ export default async function ProofPage({ params }: PageProps<'/[lang]/proof'>) 
 }
 
 type Tone = 'model' | 'scenario' | 'observed';
+/** 'a0/a+' → '−−/−α': the haplotype notation counsellors read. */
+const alphaGlyph = (g: string) => g.split('/').map((h) => ({ a0: '−−', aT: 'αTα', 'a+': '−α', aa: 'αα' } as Record<string, string>)[h]).join('/');
+
 function Bars({ lang, max, rows }: { lang: 'en' | 'ar'; max: number; rows: { label: L; value: number; ci?: number[]; tone: Tone; source?: string }[] }) {
   const fill: Record<Tone, string> = { model: 'bg-ink', scenario: 'bg-ink-3', observed: 'bg-camel' };
   // Each chart has its own scale; a bar never runs past its track.

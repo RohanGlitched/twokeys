@@ -126,6 +126,17 @@ export default async function HowPage({ params }: PageProps<'/[lang]/how'>) {
           </div>
         </section>
 
+        <section className="mt-20" aria-labelledby="crosslab">
+          <h2 id="crosslab" className="text-[clamp(26px,2.8vw,36px)] font-semibold tracking-tight">{t({ en: 'When the two partners were screened by different labs', ar: 'حين فحص الشريكين مختبران مختلفان' })}</h2>
+          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-ink-2">{t({ en: 'Today’s demo has one lab holding both results, as in Abu Dhabi now. Across labs (phase 2) the design changes in three places, and we say what is lost:', ar: 'في العرض الحالي يحتفظ مختبر واحد بالنتيجتين، كما في أبوظبي اليوم. أما بين مختبرين (المرحلة الثانية) فيتغير التصميم في ثلاثة مواضع، ونذكر ما يُفقد:' })}</p>
+          <ol className="mt-4 max-w-3xl list-decimal space-y-2 ps-6 text-[15px] leading-relaxed">
+            <li>{t({ en: 'Token key: each lab issues tokens for its own patient only, under a key the two labs compute jointly (a two-party oblivious PRF or a threshold key), so neither lab can make the other’s tokens alone.', ar: 'مفتاح الرموز: يصدر كل مختبر رموز مريضه فقط، بمفتاح يحسبه المختبران معاً (دالة عشوائية زائفة عمياء لطرفين أو مفتاح عتبي)، فلا يستطيع أي مختبر وحده صنع رموز الآخر.' })}</li>
+            <li>{t({ en: 'Naming: each lab names only its own patient’s matched tokens (the labels already carry the grade and the alpha genotype), and the phones combine the two halves.', ar: 'التسمية: يسمّي كل مختبر الرموز المتطابقة لمريضه فقط (وتحمل التسميات الدرجة والنمط الجيني لألفا)، ويجمع الهاتفان النصفين.' })}</li>
+            <li>{t({ en: 'What is lost: no single lab can recompute the whole intersection to check both phones’ claims. Each lab checks its own patient’s claim against its own records; a phone that lies about its partner’s half can only mislead itself, and the counsellor confirms any named gene before a clinical step.', ar: 'ما يُفقد: لا يستطيع مختبر واحد إعادة حساب التقاطع كاملاً للتحقق من ادعاءي الهاتفين. يتحقق كل مختبر من ادعاء مريضه مقابل سجلاته؛ والهاتف الذي يكذب في نصف شريكه لا يضلّل إلا نفسه، ويؤكد المرشد أي جين مسمّى قبل أي خطوة سريرية.' })}</li>
+          </ol>
+          <p className="mt-3 max-w-3xl text-[13px] text-ink-2">{t({ en: 'This is a design for phase 2, not built yet; an independent cryptographic review is a phase-0 gate.', ar: 'هذا تصميم للمرحلة الثانية، ولم يُبنَ بعد؛ والمراجعة التشفيرية المستقلة شرط في المرحلة صفر.' })}</p>
+        </section>
+
         <section className="mt-20 rounded-[3px] border border-ink bg-paper p-6">
           <h2 className="text-[20px] font-semibold">{t({ en: 'Under the hood', ar: 'من الداخل' })}</h2>
           <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2.5 text-[14px]">

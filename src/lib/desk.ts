@@ -217,8 +217,10 @@ export const twoWorkingDaysFrom = (t: number) => workingDaysFrom(t, 2);
 /**
  * From week 9 a pregnancy gets the same 4-hour clock as distress: chorionic villus sampling is done at
  * about weeks 10 to 13, and later options have legal time limits, so a day can matter. `serious` is a
- * possible Hb Bart's, severe HbH or SMA match (1 working day even without a pregnancy); 'hydrops' is a
- * possible Hb Bart's or severe HbH, which in any pregnancy gets the 4-hour clock (a risk to the mother too).
+ * possible Hb Bart's, severe HbH or SMA match, or an alpha-globin result that waits on how one partner's two
+ * alpha-plus changes sit (1 working day even without a pregnancy); 'hydrops' is a possible Hb Bart's or
+ * severe HbH, as read or under the other arrangement, which in any pregnancy gets the 4-hour clock (a risk to
+ * the mother too).
  */
 export function dueFor(priority: DeskCase['priority'], t: number, weeks?: number | null, serious: boolean | 'hydrops' = false) {
   // Unknown weeks are treated as late: the legal window for some choices closes at 120 days.

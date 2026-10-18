@@ -11,7 +11,11 @@ const TTL = 60 * 60 * 24 * 30;
 const NO_STORE = { 'cache-control': 'no-store' };
 const owns = (l: Letter, manage: string) => manage.length === 32 && hex(sha256(new TextEncoder().encode(manage))) === l.manageHash;
 
-/** The relative fetches the ciphertext. The sender (x-manage header) sees only what relatives chose to share. */
+/**
+ * The relative fetches the ciphertext, with the lab's signature on the note's checked facts and the day
+ * it was signed (both needed to check it, see LetterView). The sender (x-manage header) sees only what
+ * relatives chose to share; never how often a note was reported.
+ */
 export async function GET(req: Request, ctx: RouteContext<'/api/family/[id]'>) {
   const { id } = await ctx.params;
   if (!/^[0-9a-f]{18}$/.test(id)) return fail('not_found', 'No such letter.', 404, {}, NO_STORE);
@@ -22,11 +26,12 @@ export async function GET(req: Request, ctx: RouteContext<'/api/family/[id]'>) {
     if (!owns(l, manage)) return fail('not_found', 'Not yours.', 403, {}, NO_STORE);
     return Response.json({ read: l.read, booked: l.booked }, { headers: NO_STORE });
   }
-  return Response.json({ c: l.c }, { headers: NO_STORE });
+  return Response.json({ c: l.c, ...(l.sig ? { sig: l.sig, day: l.createdAt } : {}) }, { headers: NO_STORE });
 }
 
 /**
- * The relative chooses to let the sender know: "read" or "booked". Nothing identifies the relative. It
+ * The relative chooses to let the sender know: "read" or "booked"; or flags the note ("report": a counter
+ * only, which the sender never sees). Nothing identifies the relative. It
  * takes the ack token, HMAC(letter key, 'ack'), which only someone holding the link's #fragment can make;
  * the server keeps only its hash. Every letter made from ACK_REQUIRED_FROM on has one; only older letters
  * sent before senders registered a hash accept untokened acks. Counts change by compare-and-swap, so two
@@ -37,15 +42,15 @@ export async function POST(req: Request, ctx: RouteContext<'/api/family/[id]'>) 
   if (await limited(req, 'letter-ack', 20, id)) return fail('rate_limited', 'Already noted.', 429, {}, NO_STORE);
   const b = await readJson<{ kind?: string; token?: string }>(req);
   if (b instanceof Response) return b;
-  if (b.kind !== 'read' && b.kind !== 'booked') return fail('bad_request', 'Unknown acknowledgement.', 400, {}, NO_STORE);
-  const kind = b.kind;
+  if (b.kind !== 'read' && b.kind !== 'booked' && b.kind !== 'report') return fail('bad_request', 'Unknown acknowledgement.', 400, {}, NO_STORE);
+  const field = b.kind === 'report' ? 'reported' : b.kind;
   for (let attempt = 0; attempt < 6; attempt++) {
     const l = await store().get<Letter>(`letter:${id}`);
     if (!l) return fail('not_found', 'No such letter.', 404, {}, NO_STORE);
     const tokenOk = !!l.ackHash && typeof b.token === 'string' && /^[0-9a-f]{64}$/.test(b.token) && hex(sha256(new TextEncoder().encode(b.token))) === l.ackHash;
     if (!tokenOk && (l.ackHash || l.createdAt >= ACK_REQUIRED_FROM)) return fail('link_incomplete', 'This link is incomplete.', 403, {}, NO_STORE);
     const left = Math.max(60, Math.ceil(l.createdAt / 1000 + TTL - Date.now() / 1000)); // keep the letter's own expiry
-    if (await store().replace(`letter:${id}`, l, { ...l, [kind]: Math.min(l[kind] + 1, 99) }, left)) return Response.json({ ok: true }, { headers: NO_STORE });
+    if (await store().replace(`letter:${id}`, l, { ...l, [field]: Math.min((l[field] ?? 0) + 1, 99) }, left)) return Response.json({ ok: true }, { headers: NO_STORE });
   }
   return fail('busy', 'Busy. Try again.', 409, {}, NO_STORE);
 }

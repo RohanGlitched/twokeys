@@ -6,6 +6,7 @@
 import { useMemo, useState } from 'react';
 import type { Locale } from '@/i18n/locales';
 import type { Level } from '@/lib/conditions';
+import type { SharedGene } from '@/lib/lab';
 import type { Chance, L, T } from './PhoneApp';
 
 interface Q { q: L; options: L[]; right: number; why: L }
@@ -67,6 +68,44 @@ const LOW = (chance: Chance): Q[] => [
   BOTH(chance),
   CARRIER,
 ];
+/**
+ * Alpha globin: the right answers come from the lab's four combinations (lab.ts outcomes), so a couple with
+ * more than one disease outcome is never told "3 in 4 children won't have it".
+ */
+type Outcomes = NonNullable<SharedGene['outcomes']>;
+const ILL: Record<string, L> = { bart: { en: 'Hb Bart’s hydrops', ar: 'استسقاء بخضاب بارت' }, 'hbh-severe': { en: 'HbH disease that can be severe', ar: 'مرض الهيموغلوبين H الذي قد يكون شديداً' }, hbh: { en: 'HbH disease', ar: 'مرض الهيموغلوبين H' } };
+const N_CHANCE: Record<number, Chance> = { 1: 'quarter', 2: 'half', 3: 'three-quarters', 4: 'all' };
+const odds = (n: number): L => (n === 4 ? { en: 'every pregnancy', ar: 'كل حمل' } : ODDS[N_CHANCE[n] as Exclude<Chance, 'all'>]);
+function ALPHA(outcomes: Outcomes): Q[] {
+  const ill = outcomes.filter((o) => o.n > 0 && ILL[o.kind]);
+  const n = ill.reduce((x, o) => x + o.n, 0);
+  if (n === 0) {
+    const trait = outcomes.find((o) => o.kind === 'trait')?.n ?? 1;
+    return [
+      { q: { en: 'From your results, what is the most a child could have?', ar: 'بحسب نتيجتكما، ما أقصى ما قد يصيب الطفل؟' },
+        options: [{ en: 'Alpha-thalassaemia trait, which is not an illness', ar: 'سمة ألفا ثلاسيميا، وهي ليست مرضاً' }, { en: 'HbH disease, a lifelong anaemia', ar: 'مرض الهيموغلوبين H، فقر دم مدى الحياة' }, { en: 'Hb Bart’s hydrops before birth', ar: 'استسقاء بخضاب بارت قبل الولادة' }], right: 0,
+        why: { en: 'With your pair of changes, as read, the most a child can have is alpha-thalassaemia trait: small red cells, not an illness.', ar: 'مع زوج تغيّراتكما كما قُرئ، أقصى ما قد يصيب الطفل سمة ألفا ثلاسيميا: خلايا دم حمراء صغيرة، وليست مرضاً.' } },
+      THAL,
+      nextTime(N_CHANCE[trait]),
+    ];
+  }
+  const chance = N_CHANCE[n];
+  const list: L = { en: ill.map((o) => `${ILL[o.kind].en} ${odds(o.n).en}`).join(' and '), ar: ill.map((o) => `${ILL[o.kind].ar} ${odds(o.n).ar}`).join('، و') };
+  const none: L = ill.length === 1
+    ? { en: `${ODDS[N_CHANCE[4 - n] as Exclude<Chance, 'all'>]?.en ?? ''} children won’t have it`, ar: `ولن يصاب ${ODDS[N_CHANCE[4 - n] as Exclude<Chance, 'all'>]?.ar ?? ''} من الأطفال بها` }
+    : { en: `${ODDS[N_CHANCE[4 - n] as Exclude<Chance, 'all'>]?.en ?? ''} children won’t have ${ill.length === 2 ? 'either' : 'any of them'}`, ar: `ولن يصاب ${ODDS[N_CHANCE[4 - n] as Exclude<Chance, 'all'>]?.ar ?? ''} من الأطفال بأي منها` };
+  const why: L = n === 4
+    ? { en: `With your pair of changes, every pregnancy has one of them: ${list.en}.`, ar: `مع زوج تغيّراتكما يصاب الجنين في كل حمل بإحداها: ${list.ar}.` }
+    : ill.length === 1
+      ? { en: `Each pregnancy has a ${odds(n).en} chance of ${ILL[ill[0].kind].en}; ${none.en}.`, ar: `لكل حمل احتمال ${odds(n).ar} للإصابة ب${ILL[ill[0].kind].ar}، ${none.ar}.` }
+      : { en: `In each pregnancy: ${list.en}, so ${odds(n).en} in all; ${none.en}.`, ar: `في كل حمل: ${list.ar}، أي ${odds(n).ar} معاً، ${none.ar}.` };
+  return [
+    chanceQ({ en: 'If you have a child, what is the chance the child has a disease from alpha globin?', ar: 'إذا رُزقتما بطفل، ما احتمال أن يصاب بمرض من ألفا غلوبين؟' }, chance, { quarter: why, half: why, 'three-quarters': why, all: why }),
+    THAL,
+    nextTime(chance),
+  ];
+}
+
 const XL: Q[] = [
   { q: { en: 'For each son, what is the chance of having the condition?', ar: 'لكل ابن، ما احتمال أن يصاب بالحالة؟' },
     options: [{ en: '1 in 4', ar: '1 من 4' }, { en: '1 in 2', ar: '1 من 2' }, { en: 'None', ar: 'لا احتمال' }], right: 1,
@@ -100,15 +139,17 @@ function order(seed: string, n: number): number[] {
   return a;
 }
 
-export function TeachBack({ lang, t, level, kind, identity, onCounsellor, thal, seed, chance = 'quarter' }: {
+export function TeachBack({ lang, t, level, kind, identity, onCounsellor, thal, seed, chance = 'quarter', outcomes }: {
   lang: Locale; t: T; level: Level; kind: 'shared' | 'milder' | 'low' | 'xl' | 'none'; identity: string | null; onCounsellor: () => void;
   /** This couple's chance per pregnancy for the gene the questions are about (1 in 4 unless the lab says otherwise). */
   chance?: Chance;
+  /** Alpha globin: the lab's four combinations; when given, the questions and right answers come from them. */
+  outcomes?: Outcomes;
   /** A thalassaemia gene is shared (HBB or HBA): ask about carriers' mild anaemia instead. */
   thal?: boolean;
   seed: string;
 }) {
-  const qs = useMemo(() => ({ shared: SHARED(chance), milder: MILDER(chance), low: LOW(chance), xl: XL, none: NONE }[kind].map((q) => (thal && q === CARRIER ? THAL : q))), [kind, chance, thal]);
+  const qs = useMemo(() => (outcomes?.length && kind !== 'xl' && kind !== 'none' ? ALPHA(outcomes) : { shared: SHARED(chance), milder: MILDER(chance), low: LOW(chance), xl: XL, none: NONE }[kind]).map((q) => (thal && q === CARRIER ? THAL : q)), [kind, chance, thal, outcomes]);
   // Shown order per question, as indexes into its options; answers are stored as the original index.
   const shown = useMemo(() => qs.map((q, i) => order(`${seed}:${kind}:${i}`, q.options.length)), [seed, kind, qs]);
   const [first, setFirst] = useState<(number | null)[]>([null, null, null]);

@@ -3,8 +3,9 @@
 // report differs from the truth (a broken or tampered comparison), the lab names nothing at all, so
 // the result depends on the private comparison, not on the lab alone.
 // When both agree, the lab records the names it released for this session, with what each match means
-// (strength, globin kind, and for alpha globin the chance per pregnancy), for one day: a counsellor
-// booking copies shared genes from that record only. A mismatch is counted and logged once, without genes.
+// (strength, globin kind, and for alpha globin the chance per pregnancy, the spread of outcomes and whether
+// the arrangement of two alpha-plus findings is unknown), for one day: a counsellor booking copies shared
+// genes from that record only. A mismatch is counted and logged once, without genes.
 import { dayAligned, dayStart } from '@/lib/dp';
 import { intersection, type Role, type SharedGene } from '@/lib/lab';
 import { fail, needIdentity, personFrom, pseudonym } from '@/lib/identity';
@@ -14,8 +15,16 @@ import { limited } from '@/lib/ratelimit';
 import { badRole, badSession, expired, hex64, notConfirmed, notInPairing, otherRole, PAIR_TTL, seats, sessionKey, stoppedRes, tooMany } from '@/lib/seats';
 import { store } from '@/lib/store';
 
-/** What a booking may copy: one row per released gene. `chance` is 'quarter' | 'half' | 'all' for alpha globin, else null. */
-export interface Released { gene: string; strength: number; kind: string | null; chance: string | null }
+/**
+ * What a booking may copy: one row per released gene. For alpha globin: `chance` ('quarter' | 'half' |
+ * 'three-quarters' | 'all') of the most serious outcome, `outcomes` (every outcome with n of 4), and, when
+ * one partner's two alpha-plus findings could sit on one chromosome, `arrangementUnknown` with the most
+ * serious outcome that other reading gives (`ifRearranged`, for the desk's clock). Else null or absent.
+ */
+export interface Released {
+  gene: string; strength: number; kind: string | null; chance: string | null;
+  outcomes?: SharedGene['outcomes']; arrangementUnknown?: true; ifRearranged?: SharedGene['ifRearranged'];
+}
 
 export async function POST(req: Request) {
   const p = personFrom(req);
@@ -54,8 +63,12 @@ export async function POST(req: Request) {
     }
     return Response.json({ waiting: false, genes: [], agrees: false, failed: who === b.role ? 'yours' : 'theirs' }, { headers: { 'cache-control': 'no-store' } });
   }
-  // `chance` is read loosely: older lab code had no such field.
-  const released: Released[] = truth.genes.map((g: SharedGene & { chance?: string }) => ({ gene: g.gene, strength: g.strength, kind: g.kind ?? null, chance: g.chance ?? null }));
+  const released: Released[] = truth.genes.map((g: SharedGene) => ({
+    gene: g.gene, strength: g.strength, kind: g.kind ?? null, chance: g.chance ?? null,
+    ...(g.outcomes && { outcomes: g.outcomes }), ...(g.arrangementUnknown && { arrangementUnknown: true as const, ifRearranged: g.ifRearranged }),
+  }));
   await db.putNew(`revealed:${b.session}`, released, PAIR_TTL);
-  return Response.json({ waiting: false, genes: truth.genes, agrees: true }, { headers: { 'cache-control': 'no-store' } });
+  // The phones get the result as read and the flag; the other reading's worst outcome is for the counsellor.
+  const genes = truth.genes.map((g) => ({ ...g, ifRearranged: undefined }));
+  return Response.json({ waiting: false, genes, agrees: true }, { headers: { 'cache-control': 'no-store' } });
 }

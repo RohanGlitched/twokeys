@@ -1,12 +1,17 @@
 'use client';
 // A family note, opened on the relative's phone with the key in the link's #fragment. The relative
 // alone decides whether the sender may know that it was read, or that a test was booked.
+// A note is shown only when the screening lab's signature on its facts checks out: the lab signed the
+// gene, relation and inheritance after checking the gene is in the sender's own results (api/family), and
+// this page rebuilds those facts from the sealed body. A note without it, or one that says something
+// else, is not shown.
 import { useEffect, useState } from 'react';
+import { ed25519 } from '@noble/curves/ed25519.js';
 import { hmac } from '@noble/hashes/hmac.js';
 import { sha256 } from '@noble/hashes/sha2.js';
 import type { Locale } from '@/i18n/locales';
 import { conditionFor } from '@/lib/conditions';
-import { checkLetter, naturalFrequency, openLetter, type LetterBody, type Relation } from '@/lib/letters';
+import { checkLetter, labTagged, naturalFrequency, noteDigest, openLetter, type LetterBody, type Relation } from '@/lib/letters';
 import { Mark } from '@/components/glyphs';
 import { Sadu } from '@/components/Sadu';
 
@@ -33,11 +38,23 @@ export const ackToken = (key: string) => hex(hmac(sha256, unb64u(key), new TextE
 /** What the sender registers with the letter (POST /api/family { c, ack }), so the server can check tokens without the key. */
 export const ackHash = (key: string) => hex(sha256(new TextEncoder().encode(ackToken(key))));
 
+const unhex = (s: string) => Uint8Array.from(s.match(/../g) ?? [], (x) => parseInt(x, 16));
+/** True if the lab's signature (from the note's record) covers exactly the facts in this sealed body. */
+function labChecked(b: LetterBody, sig: unknown, day: unknown, pub: unknown): boolean {
+  if (!b.nonce || typeof sig !== 'string' || !/^[0-9a-f]{128}$/.test(sig) || typeof day !== 'number' || typeof pub !== 'string' || !/^[0-9a-f]{64}$/.test(pub)) return false;
+  try {
+    const digest = noteDigest({ gene: b.gene, relation: b.relation, inheritance: b.inheritance ?? 'AR', nonce: b.nonce, day });
+    return ed25519.verify(unhex(sig), labTagged('family-note', digest), unhex(pub));
+  } catch { return false; }
+}
+
 export function LetterView({ lang, id }: { lang: Locale; id: string }) {
   const t = (l: L) => l[lang];
   const [body, setBody] = useState<LetterBody | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [told, setTold] = useState<{ read?: boolean; booked?: boolean }>({});
+  // The note exists (the link reached a record), so it can be reported even if it can't be shown.
+  const [found, setFound] = useState(false);
+  const [told, setTold] = useState<{ read?: boolean; booked?: boolean; report?: boolean }>({});
 
   useEffect(() => {
     const key = window.location.hash.slice(1);
@@ -45,14 +62,17 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
     if (!key) { setErr(t({ en: 'This link is incomplete. Ask for the full link.', ar: 'هذا الرابط ناقص. يلزم الرابط كاملاً.' })); return; }
     (async () => {
       try {
-        const r = await fetch(`/api/family/${id}`);
+        const [r, k] = await Promise.all([fetch(`/api/family/${id}`), fetch('/api/lab/key').catch(() => null)]);
         const j = await r.json();
         if (!r.ok) throw new Error(j.error);
-        // Never show a sealed body as it came: only a letter rebuilt from checked facts (lib/letters.checkLetter).
-        const checked = checkLetter(await openLetter(j.c, key));
-        if (!checked) { setErr(t({ en: 'This note could not be checked, so it isn’t shown. Ask the person who sent it for a new link, or talk to a genetic counsellor.', ar: 'تعذّر التحقق من هذه الرسالة، لذا لا تُعرض. اطلب رابطاً جديداً ممن أرسلها، أو تحدّث إلى مرشد وراثي.' })); return; }
-        setBody(checked);
+        setFound(true);
         try { setTold(JSON.parse(localStorage.getItem(`told:${id}`) ?? '{}')); } catch {}
+        // Never show a sealed body as it came: only a letter rebuilt from checked facts (lib/letters.checkLetter),
+        // and only when the lab's signature covers those facts.
+        const checked = checkLetter(await openLetter(j.c, key));
+        const pub = k?.ok ? ((await k.json().catch(() => ({}))) as { publicKey?: string }).publicKey : undefined;
+        if (!checked || !labChecked(checked, j.sig, j.day, pub)) { setErr(t({ en: 'This note could not be checked, so it isn’t shown. Ask the person who sent it for a new link, or talk to a genetic counsellor.', ar: 'تعذّر التحقق من هذه الرسالة، لذا لا تُعرض. اطلب رابطاً جديداً ممن أرسلها، أو تحدّث إلى مرشد وراثي.' })); return; }
+        setBody(checked);
       } catch (e) {
         setErr(e instanceof Error && e.message ? e.message : t({ en: 'This letter could not be opened.', ar: 'تعذّر فتح هذه الرسالة.' }));
       }
@@ -60,8 +80,8 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // Each acknowledgement is sent once per device, and only when the relative taps it.
-  const tell = async (kind: 'read' | 'booked') => {
+  // Each acknowledgement (or report) is sent once per device, and only when the relative taps it.
+  const tell = async (kind: 'read' | 'booked' | 'report') => {
     if (told[kind]) return;
     const r = await fetch(`/api/family/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind, token: ackToken(window.location.hash.slice(1)) }) });
     if (!r.ok && r.status !== 429) return;
@@ -71,6 +91,14 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
   };
 
   const c = body ? conditionFor(body.gene) : null;
+  // A report only adds one to a counter on the note; nothing about the relative is sent.
+  const report = (
+    <p className="mt-4 text-[13px]">
+      {told.report
+        ? <span role="status" className="text-ink-2">{t({ en: 'Reported. Thank you. The service counts reports; it still can’t read the note.', ar: 'تم الإبلاغ، شكراً لك. تَعُدّ الخدمة البلاغات، ولا تستطيع قراءة الرسالة.' })}</span>
+        : <button onClick={() => tell('report')} className="min-h-11 text-ink-2 underline underline-offset-4">{t({ en: 'Report this note', ar: 'الإبلاغ عن هذه الرسالة' })}</button>}
+    </p>
+  );
   return (
     <main id="main" className="mx-auto max-w-xl px-6 py-10">
       <div className="flex items-center justify-between gap-3 text-ink-2">
@@ -79,11 +107,17 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
         <button onClick={() => window.location.assign(`/${lang === 'ar' ? 'en' : 'ar'}/r/${id}${window.location.hash}`)} lang={lang === 'ar' ? 'en' : 'ar'} className="min-h-11 rounded-[2px] border border-rule px-3 text-[14px] text-ink">{lang === 'ar' ? 'English' : 'العربية'}</button>
       </div>
       {err && <p role="alert" className="mt-8 border-s-4 border-alert bg-alert-2 px-4 py-3">{err}</p>}
+      {err && found && report}
       {!body && !err && <div role="status" className="mt-8 h-40 animate-pulse bg-wool-2"><span className="sr-only">{t({ en: 'Loading…', ar: 'جارٍ التحميل…' })}</span></div>}
       {body && (
         <article className="mt-6">
           <div className="overflow-hidden rounded-[3px] border border-ink"><Sadu height={44} motifs={11} seed={4} /></div>
-          <h1 className="mt-6 text-[30px] font-semibold leading-tight tracking-tight">
+          <p className="mt-5 inline-flex min-h-8 items-center gap-2 rounded-[2px] border border-sage bg-sage-2 px-3 py-1 text-[13px] font-medium">
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden><path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="1.8" fill="none" /></svg>
+            {t({ en: 'Checked by the screening lab', ar: 'تحقّق منها مختبر الفحص' })}
+          </p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-ink-2">{t({ en: 'Before this note was made, the lab confirmed that the gene is in the sender’s own results, and signed what the note says.', ar: 'قبل إنشاء هذه الرسالة، أكّد المختبر أن الجين في نتائج المرسل نفسه، ووقّع على ما تقوله الرسالة.' })}</p>
+          <h1 className="mt-5 text-[30px] font-semibold leading-tight tracking-tight">
             {t({ en: 'Someone in your family wanted you to know this.', ar: 'أراد أحد أفراد عائلتك إطلاعك على هذا.' })}
           </h1>
           <p className="mt-4 text-[17px] leading-relaxed">
@@ -135,6 +169,7 @@ export function LetterView({ lang, id }: { lang: Locale; id: string }) {
           <p className="mt-8 border-t border-rule pt-4 text-[13px] leading-relaxed text-ink-2">
             {t({ en: 'Who sent this? They chose not to be named, and this service does not keep who they are: the letter was sealed on their phone before it reached us, and nothing stored with it names the sender. The buttons above only add one to an anonymous count that the sender can see.', ar: 'من أرسل هذا؟ اختار المرسل ألا يُذكر اسمه، وهذه الخدمة لا تحتفظ بهويته: خُتمت الرسالة على هاتفه قبل أن تصلنا، ولا شيء مما يُحفظ معها يسمّي المرسل. والزران أعلاه يضيفان واحداً فقط إلى عدد مجهول يراه المرسل.' })}
           </p>
+          {report}
         </article>
       )}
     </main>

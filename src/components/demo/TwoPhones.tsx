@@ -152,8 +152,8 @@ export function TwoPhones({ lang, couples, names, female, personal }: {
   const done = pair.map((p) => seen.find((s) => s.kind === 'done' && s.person === p.id));
   const learned = (s?: Seen) => (s?.genes?.length ? s.genes.join(ar ? '، ' : ', ') : t({ en: 'no shared gene', ar: 'لا جين مشترك' }));
   const summary = done.every(Boolean) ? (ar
-    ? `${pair.map((p, i) => `${female.includes(p.id) ? 'عرفت' : 'عرف'} ${who(p.id)}: ${learned(done[i])}.`).join(' ')} عرف الوسيط: لا شيء. عرف المختبر: أنهما اقترنا.`
-    : `${pair.map((p, i) => `${who(p.id)} learned: ${learned(done[i])}.`).join(' ')} Relay learned: nothing. Lab learned: that they paired.`) : null;
+    ? `${pair.map((p, i) => `${female.includes(p.id) ? 'عرفت' : 'عرف'} ${who(p.id)}: ${learned(done[i])}.`).join(' ')} عرف الوسيط: لا شيء. عرف المختبر: أنهما قارنا، والجينات التي سمّاها (يحتفظ بها يوماً واحداً).`
+    : `${pair.map((p, i) => `${who(p.id)} learned: ${learned(done[i])}.`).join(' ')} Relay learned: nothing. Lab learned: that they paired, and the genes it named (kept for one day).`) : null;
 
   const log = (
     <>

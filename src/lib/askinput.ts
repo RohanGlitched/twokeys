@@ -5,6 +5,7 @@ import type { AskInput } from './ask';
 import { canonical, isXLinked, onPanel } from './cards';
 
 const KINDS = new Set(['hplc', 'bart', 'hbh', 'hbh-severe', 'trait']);
+const OUTCOMES = new Set(['bart', 'hbh-severe', 'hbh', 'trait', 'carrier', 'unaffected']);
 
 export type Verify = (role: 'user' | 'assistant', text: string, sig: unknown) => boolean;
 
@@ -30,6 +31,12 @@ export function parseAskBody(b: Record<string, unknown>, verify: Verify): AskInp
     chances: b.chances && typeof b.chances === 'object'
       ? Object.fromEntries(Object.entries(b.chances as Record<string, unknown>).filter(([g, v]) => onPanel(g) && (v === 'quarter' || v === 'half' || v === 'three-quarters' || v === 'all')).map(([g, v]) => [canonical(g), v as 'quarter' | 'half' | 'three-quarters' | 'all']))
       : undefined,
+    outcomes: b.outcomes && typeof b.outcomes === 'object'
+      ? Object.fromEntries(Object.entries(b.outcomes as Record<string, unknown>).filter(([g, v]) => onPanel(g) && Array.isArray(v)).map(([g, v]) => [canonical(g), (v as { kind?: unknown; n?: unknown }[])
+        .filter((o) => o && typeof o.kind === 'string' && OUTCOMES.has(o.kind) && Number.isInteger(o.n) && (o.n as number) >= 0 && (o.n as number) <= 4)
+        .map((o) => ({ kind: o.kind as string, n: o.n as number }))]))
+      : undefined,
+    arrangementUnknown: Array.isArray(b.arrangementUnknown) ? (b.arrangementUnknown as unknown[]).filter((g): g is string => typeof g === 'string' && onPanel(g)).map(canonical) : undefined,
     related: !!b.related,
     question,
     history: Array.isArray(b.history)

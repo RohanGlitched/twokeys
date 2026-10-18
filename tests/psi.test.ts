@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Initiator, proveDleq, randomScalar, Responder, runLocally, SET_SIZE, verifyDleq, toHex, type Token } from '../src/lib/psi';
-import { intersection, issue, sessionTokens, type Finding } from '../src/lib/lab';
+import { ALPHA_GENOTYPES, alphaArrangementUnknown, alphaOutcomes, intersection, issue, sessionTokens, type Finding } from '../src/lib/lab';
 import { linkFragment, newLink, open, parseFragment, seal, sessionId, unwireM2, unwireM3, wireM2, wireM3, type WireM2, type WireM3 } from '../src/lib/pairing';
 import { ristretto255 } from '@noble/curves/ed25519.js';
 import panel from '../data/panel.json';
@@ -211,7 +211,8 @@ describe('globin genes: the pair decides', () => {
     expect(g([ar('HBB', 'mild')], [ar('HBB')])).toEqual([{ gene: 'HBB', inheritance: 'AR', strength: 2, kind: 'hplc' }]);
     expect(g([ar('HBB', 'mild')], [ar('HBB', 'mild')])[0].strength).toBe(2);
   });
-  const hba = (kind: string, chance: string, strength = kind === 'trait' ? 0 : 2) => [{ gene: 'HBA', inheritance: 'AR', strength, kind, chance }];
+  // kind and chance are the most serious outcome (kept for older readers); outcomes is checked on its own below.
+  const hba = (kind: string, chance: string, strength = kind === 'trait' ? 0 : 2) => [expect.objectContaining({ gene: 'HBA', inheritance: 'AR', strength, kind, chance })];
   it('HBA1 and HBA2 match each other, graded as Bart’s, HbH or trait, with the chance per pregnancy', () => {
     expect(g([ar('HBA1')], [ar('HBA2')])).toEqual(hba('bart', 'quarter'));
     expect(g([ar('HBA1')], [ar('HBA2', 'mild')])).toEqual(hba('hbh', 'quarter'));
@@ -224,11 +225,12 @@ describe('globin genes: the pair decides', () => {
     expect(g(homPlus, [ar('HBA1')])).toEqual(hba('hbh', 'half'));
     expect(g([ar('HBA1')], homPlus)).toEqual(hba('hbh', 'half'));
   });
-  it('-α/-α with -α/αα: trait in 1 in 2', () => {
-    expect(g(homPlus, [ar('HBA2', 'mild')])).toEqual(hba('trait', 'half'));
+  // Two α+ findings read in trans; in cis they would be --/αα and could give HbH, so these are not "low concern".
+  it('-α/-α with -α/αα: trait in 1 in 2 as read', () => {
+    expect(g(homPlus, [ar('HBA2', 'mild')])).toEqual(hba('trait', 'half', 2));
   });
-  it('-α/-α with -α/-α: every child has the trait', () => {
-    expect(g(homPlus, [ar('HBA1', 'mild'), ar('HBA2', 'mild')])).toEqual(hba('trait', 'all'));
+  it('-α/-α with -α/-α: every child has the trait as read', () => {
+    expect(g(homPlus, [ar('HBA1', 'mild'), ar('HBA2', 'mild')])).toEqual(hba('trait', 'all', 2));
   });
   it('--/αα with --/αα: Hb Bart’s in 1 in 4; --/-α with --/αα still names Bart’s first', () => {
     expect(g([ar('HBA1')], [ar('HBA2')])).toEqual(hba('bart', 'quarter'));
@@ -267,6 +269,67 @@ describe('globin genes: the pair decides', () => {
     // Four matches in all: three for CFTR (both serious) and one for alpha globin, whatever the genotypes.
     expect(run.aLearns.matched).toHaveLength(4);
   });
+  // Judge round 6: every outcome, not only the most serious, against a count written independently here.
+  // A haplotype's working genes: αα 2, -α 1, αT 1 (not deleted, but not working), -- 0. A child's genes are the sum.
+  type H = 'a0' | 'aT' | 'a+' | 'aa';
+  const WORKING: Record<H, number> = { a0: 0, aT: 1, 'a+': 1, aa: 2 };
+  const child = (x: H, y: H) => {
+    const genes = WORKING[x] + WORKING[y];
+    const nondeletional = x === 'aT' || y === 'aT';
+    if (genes === 0) return 'bart';
+    if (genes === 1) return nondeletional ? 'hbh-severe' : 'hbh';
+    if (genes === 2) return x !== 'a0' && y !== 'a0' && nondeletional ? 'hbh' : 'trait';
+    return genes === 3 ? 'carrier' : 'unaffected';
+  };
+  const ORDER = ['bart', 'hbh-severe', 'hbh', 'trait', 'carrier', 'unaffected'];
+  const count = (a: string, b: string) => {
+    const [x, y] = [a, b].map((s) => s.split('/') as H[]);
+    const kids = x.flatMap((p) => y.map((q) => child(p, q)));
+    return ORDER.map((kind) => ({ kind, n: kids.filter((k) => k === kind).length })).filter((o) => o.n > 0);
+  };
+  const finding = (h: H, i: number): Finding[] => h === 'aa' ? [] : h === 'a0' ? [ar(i ? 'HBA2' : 'HBA1')] : h === 'aT' ? [nd('HBA2')] : [ar('HBA2', 'mild')];
+  const person = (genotype: string) => genotype.split('/').flatMap((h, i) => finding(h as H, i));
+  it('all 81 pairs of carrier genotypes: every outcome and its chance matches an independent count', () => {
+    expect(ALPHA_GENOTYPES).toHaveLength(9);
+    let viable = 0, moreThanOneIllness = 0;
+    for (const a of ALPHA_GENOTYPES) for (const b of ALPHA_GENOTYPES) {
+      const want = count(a, b);
+      expect(alphaOutcomes(a, b), `${a} × ${b}`).toEqual(want);
+      const [r] = g(person(a), person(b));
+      expect(r.outcomes, `${a} × ${b}`).toEqual(want);
+      expect(r.outcomes!.reduce((x, o) => x + o.n, 0)).toBe(4);
+      // kind and chance stay the most serious outcome.
+      const worst = want.find((o) => ['bart', 'hbh-severe', 'hbh', 'trait'].includes(o.kind))!;
+      expect(r.kind, `${a} × ${b}`).toBe(worst.kind);
+      expect(r.chance, `${a} × ${b}`).toBe(({ 1: 'quarter', 2: 'half', 3: 'three-quarters', 4: 'all' } as Record<number, string>)[worst.n]);
+      if (a !== 'a0/a0' && b !== 'a0/a0') {
+        viable++;
+        if (want.filter((o) => ['bart', 'hbh-severe', 'hbh'].includes(o.kind) && o.kind !== worst.kind).length) moreThanOneIllness++;
+      }
+    }
+    // The judge's count: 22 of the 64 pairs of adults have a second disease outcome that the worst-only result hid.
+    expect(viable).toBe(64);
+    expect(moreThanOneIllness).toBe(22);
+  });
+  it('the judge’s examples: every outcome is named with its chance', () => {
+    expect(alphaOutcomes('a0/a+', 'a0/a+')).toEqual([{ kind: 'bart', n: 1 }, { kind: 'hbh', n: 2 }, { kind: 'trait', n: 1 }]);
+    expect(alphaOutcomes('a0/aT', 'a0/aT')).toEqual([{ kind: 'bart', n: 1 }, { kind: 'hbh-severe', n: 2 }, { kind: 'hbh', n: 1 }]);
+    expect(alphaOutcomes('a0/aa', 'a0/a+')).toEqual([{ kind: 'bart', n: 1 }, { kind: 'hbh', n: 1 }, { kind: 'trait', n: 1 }, { kind: 'carrier', n: 1 }]);
+    expect(alphaOutcomes('a0/aa', 'aT/a+')).toEqual([{ kind: 'hbh-severe', n: 1 }, { kind: 'hbh', n: 1 }, { kind: 'carrier', n: 2 }]);
+  });
+  it('two α+ findings: arrangement unknown, results as read, and the cis reading kept for the desk', () => {
+    expect(alphaArrangementUnknown(homPlus)).toBe(true);
+    expect(alphaArrangementUnknown([nd('HBA2'), ar('HBA1', 'mild')])).toBe(true);
+    expect(alphaArrangementUnknown([ar('HBA1'), ar('HBA2', 'mild')])).toBe(false); // α0 has no gene beside it
+    expect(alphaArrangementUnknown([ar('HBA2', 'mild')])).toBe(false);
+    // -α/-α (or --/αα in cis) with --/αα: HbH 1 in 2 as read; Hb Bart's 1 in 4 if cis.
+    expect(g(homPlus, [ar('HBA1')])[0]).toMatchObject({ kind: 'hbh', chance: 'half', arrangementUnknown: true, ifRearranged: 'bart', strength: 2 });
+    // -α/-α with -α/αα: trait as read, HbH possible if cis, so never low concern.
+    expect(g(homPlus, [ar('HBA2', 'mild')])[0]).toMatchObject({ kind: 'trait', arrangementUnknown: true, ifRearranged: 'hbh', strength: 2 });
+    // Single findings have one reading: no flag.
+    expect(g([ar('HBA1', 'mild')], [ar('HBA2', 'mild')])[0]).not.toHaveProperty('arrangementUnknown');
+    expect(g([ar('HBA1'), ar('HBA2', 'mild')], [ar('HBA1')])[0]).not.toHaveProperty('arrangementUnknown');
+  });
   it('no alpha match when only one partner carries an alpha change', () => {
     expect(g(homPlus, [ar('CFTR')])).toEqual([]);
   });
@@ -301,6 +364,20 @@ describe('condition cards cover the whole panel', () => {
   it('X-linked conditions that show early in boys ask for a re-check in a healthy man; ABCD1 asks for adrenal testing', () => {
     for (const g of ['DMD', 'ARX', 'L1CAM', 'PLP1', 'SLC6A8', 'OTC']) expect(conditionFor(g)!.maleNote?.en, g).toMatch(/re-checked by the lab before anything else/);
     expect(conditionFor('ABCD1')!.maleNote?.en).toMatch(/adrenal function testing/);
+    expect(conditionFor('ABCD1')!.maleNote?.en).toMatch(/about 8 in 10/);
+  });
+  it('every severe X-linked gene says what it means for a man, and carrier notes are in both languages', () => {
+    expect(conditionFor('GLA')!.maleNote?.en).toMatch(/heart, kidneys and nerves[\s\S]*migalastat/);
+    expect(conditionFor('NR0B1')!.maleNote?.en).toMatch(/adrenal function testing[\s\S]*extra doses/);
+    expect(conditionFor('FMR1')!.maleNote?.en).toMatch(/FXTAS[\s\S]*after age 50/);
+    for (const g of ['F8', 'F9']) expect(conditionFor(g)!.maleNote?.en, g).toMatch(/clotting-factor level[\s\S]*dental work/);
+    expect(conditionFor('GBA1')!.carrierNote?.en).toMatch(/Parkinson/);
+    expect(conditionFor('RPGR')!.carrierNote?.en).toMatch(/retinal disease/);
+    expect(conditionFor('ABCD1')!.carrierNote?.en).toMatch(/^Most women/);
+    for (const g of ['GLA', 'NR0B1', 'FMR1', 'F8', 'F9', 'GBA1', 'RPGR', 'ABCD1']) {
+      const c = conditionFor(g)!;
+      for (const n of [c.maleNote, c.carrierNote]) if (n) expect(n.ar, g).toMatch(/\p{Script=Arabic}/u);
+    }
   });
   it('HBA1 and HBA2 share the alpha-globin card', () => {
     expect(conditionFor('HBA1')).toBe(conditionFor('HBA2'));

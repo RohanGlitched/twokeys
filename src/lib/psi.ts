@@ -31,7 +31,11 @@ type Pt = InstanceType<typeof Point>;
 const ORDER = Point.Fn.ORDER;
 const enc = new TextEncoder();
 
-/** Every list is padded to this many elements (two tags per finding, so up to 32 findings). */
+/**
+ * Every list is padded to this many elements: up to three tags per recessive finding (severe, any, mild)
+ * and one per X-linked finding, so 21 recessive findings fill it; alpha globin uses its own set of
+ * genotype tokens instead of per-finding tags, which counts against the same 64 (lab.sessionTokens).
+ */
 export const SET_SIZE = 64;
 export const TOKEN_DST = 'TWOKEYS-V1-SESSION-TOKEN';
 const PROOF_DST = 'TWOKEYS-V1-DLEQ';

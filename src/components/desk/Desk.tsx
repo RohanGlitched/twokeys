@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Locale } from '@/i18n/locales';
 import type { DeskCase, DeskView, QueueItem } from '@/lib/desk';
-import { conditionFor } from '@/lib/conditions';
+import { alphaSpread, ALPHA_OUTCOME, conditionFor } from '@/lib/conditions';
 import { daysTo120, daysTo120Lmp, F, oneIn, oneCarrierResidual } from '@/lib/risk';
 import { geneQ } from '@/lib/genefreq';
 import { Mark } from '@/components/glyphs';
@@ -69,14 +69,19 @@ const KIND: Record<string, { en: string; ar: string }> = {
   low: { en: '1 in 4 mild form: low concern', ar: '1 من 4 بشكل خفيف: قلق منخفض' },
   hplc: { en: 'Check the premarital HPLC pair (S/S, S/β, β/β, E/β, S/C, S/D-Punjab, S/O-Arab serious)', ar: 'راجع زوج HPLC من فحص ما قبل الزواج (S/S وS/β وβ/β وE/β وS/C وS/D-Punjab وS/O-Arab خطيرة)' },
   bart: { en: 'α0 with α0: Hb Bart’s hydrops possible; maternal risk (pre-eclampsia): fetal medicine', ar: 'α0 مع α0: احتمال استسقاء Hb Bart’s، وخطر على الأم (تسمم الحمل): طب الأجنة' },
-  'hbh-severe': { en: 'Severe HbH possible (αT with α0); hydrops possible: fetal medicine', ar: 'احتمال مرض HbH شديد (αT مع α0)؛ والاستسقاء ممكن: طب الأجنة' },
+  'hbh-severe': { en: 'Severe HbH possible (αT with α0); rarely hydrops before birth: fetal medicine', ar: 'احتمال مرض HbH شديد (αT مع α0)؛ ونادراً استسقاء قبل الولادة: طب الأجنة' },
   hbh: { en: 'HbH disease possible (α0 or non-deletional α+); no Bart’s risk unless both carry α0', ar: 'احتمال مرض HbH (α0 أو α+ غير الحذفي)؛ لا خطر Bart’s ما لم يحمل كلاهما α0' },
   trait: { en: 'Alpha-thalassaemia trait only: not an illness', ar: 'سمة ثلاسيميا ألفا فقط: ليست مرضاً' },
 };
 /** For alpha globin, the chance per pregnancy of the named outcome (from each partner's zygosity, per the lab). */
-const CHANCE: Record<string, L> = { quarter: { en: '1 in 4', ar: '1 من 4' }, half: { en: '1 in 2', ar: '1 من 2' }, all: { en: 'every pregnancy', ar: 'كل حمل' } };
+const CHANCE: Record<string, L> = { quarter: { en: '1 in 4', ar: '1 من 4' }, half: { en: '1 in 2', ar: '1 من 2' }, 'three-quarters': { en: '3 in 4', ar: '3 من 4' }, all: { en: 'every pregnancy', ar: 'كل حمل' } };
+/** Alpha globin's spread of outcomes ('bart:1,hbh:2,trait:1', n of 4), as the booking route stored it in sharedChances. */
+const spreadOf = (c: DeskCase, g: string) => (c.sharedChances?.[`${g}:outcomes`] ?? '').split(',').filter(Boolean).map((x) => { const [kind, n] = x.split(':'); return { kind, n: Number(n) }; });
+/** 'unknown' or 'unknown:<worst outcome under the other arrangement>', when one partner's two α+ findings could be cis. */
+const arrangementOf = (c: DeskCase, g: string) => c.sharedChances?.[`${g}:arrangement`];
 const has = (c: DeskCase, genes: string[]) => c.sharedGenes.some((g) => genes.includes(g));
-const hydrops = (c: DeskCase) => Object.values(c.sharedKinds ?? {}).some((k) => k === 'bart' || k === 'hbh-severe');
+const hydrops = (c: DeskCase) => Object.values(c.sharedKinds ?? {}).some((k) => k === 'bart' || k === 'hbh-severe')
+  || c.sharedGenes.some((g) => /^unknown:(bart|hbh-severe)$/.test(arrangementOf(c, g) ?? ''));
 /** Referral routes, shown when they apply; cover depends on the person's plan, so no plan is named here. */
 const REFERRALS: { service: string; label: { en: string; ar: string }; when: (c: DeskCase) => boolean }[] = [
   { service: 'Reproductive genetics clinic (PGT-M)', label: { en: 'Refer to reproductive genetics (PGT-M)', ar: 'إحالة إلى الوراثة الإنجابية (PGT-M)' }, when: () => true },
@@ -260,8 +265,18 @@ export function Desk({ lang }: { lang: Locale }) {
                             <tr key={g} className="border-b border-rule align-top">
                               <td className="py-2 pe-3"><span className="font-mono text-[13px]">{g}</span><br /><span className="text-[12px] text-ink-2">{cond ? t(cond.name) : ''}</span></td>
                               <td className="py-2 pe-3 font-medium">{XL.has(g) ? t({ en: 'X-linked: sons 1 in 2', ar: 'مرتبط بـ X: الأبناء 1 من 2' }) : t(KIND[c.sharedKinds?.[g] ?? 'full'] ?? KIND.full)}
-                                {/* Alpha globin: when one partner carries on both copies the chance is 1 in 2, or every pregnancy. */}
-                                {c.sharedChances?.[g] && c.sharedChances[g] !== 'quarter' && CHANCE[c.sharedChances[g]] && <><br /><span className="text-alert">{t({ en: `Chance per pregnancy: ${CHANCE[c.sharedChances[g]].en}`, ar: `الاحتمال لكل حمل: ${CHANCE[c.sharedChances[g]].ar}` })}</span></>}
+                                {/* Alpha globin: every outcome of the four combinations, from both partners' two copies; older cases have the worst outcome's chance only. */}
+                                {spreadOf(c, g).length > 0
+                                  ? <><br /><span className="text-alert">{t({ en: `Per pregnancy: ${alphaSpread(spreadOf(c, g), 'en', true)}`, ar: `لكل حمل: ${alphaSpread(spreadOf(c, g), 'ar', true)}` })}</span></>
+                                  : c.sharedChances?.[g] && c.sharedChances[g] !== 'quarter' && CHANCE[c.sharedChances[g]] && <><br /><span className="text-alert">{t({ en: `Chance per pregnancy: ${CHANCE[c.sharedChances[g]].en}`, ar: `الاحتمال لكل حمل: ${CHANCE[c.sharedChances[g]].ar}` })}</span></>}
+                                {arrangementOf(c, g) && (() => {
+                                  const alt = arrangementOf(c, g)!.split(':')[1];
+                                  const altL = alt ? ALPHA_OUTCOME[alt] : null;
+                                  return <><br /><span className="text-[13px] font-normal text-camel">{t({
+                                    en: `As read (one change per chromosome). One partner has two α+ findings: if cis they act as α0${altL ? `, and the worst outcome becomes ${altL.en}` : ''}. Confirm the arrangement with a dedicated alpha-globin test before counselling on these chances.`,
+                                    ar: `كما قُرئت (تغيّر واحد على كل كروموسوم). لدى أحد الشريكين نتيجتان من نوع α+: إن كانتا على الكروموسوم نفسه (cis) فتعملان مثل α0${altL ? `، ويصبح أسوأ احتمال ${altL.ar}` : ''}. أكّد الترتيب بفحص مخصص لألفا غلوبين قبل الإرشاد بهذه الاحتمالات.`,
+                                  })}</span></>;
+                                })()}
                               </td>
                               <td className="py-2 text-[13px] text-ink-2">{CNV.has(g) ? t({ en: 'Confirm with a dedicated test (copy number / pseudogene region).', ar: 'أكّد بفحص مخصص (عدد النسخ / منطقة الجين الكاذب).' }) : t({ en: 'Confirm variant classification; offer partner-specific counselling.', ar: 'أكّد تصنيف المتغير، وقدّم استشارة للزوجين.' })}</td>
                             </tr>

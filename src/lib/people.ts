@@ -45,7 +45,21 @@ export const COUPLES: Couple[] = [
     story: { en: 'Second cousins. Their grandmothers are sisters.', ar: 'تجمعهما قرابة من الدرجة الثانية: جدّتاهما أختان.' } },
 ];
 
-export const personById = (id: string) => PEOPLE.find((p) => p.id === id) ?? null;
-export const coupleOf = (personId: string) => COUPLES.find((c) => c.a === personId || c.b === personId) ?? null;
-/** Public profile: what any screen may show about a person (never findings). */
-export const publicPerson = (p: Person) => ({ id: p.id, name: p.name, sex: p.sex, age: p.age });
+/**
+ * A signed-in visitor acts as `<person>~<tag>`: the synthetic person's id and a random tag minted per
+ * sign-in (identity.mintIdentity), kept for the tab. Every judge shares the same eight people, so markers
+ * keyed by the visitor id (open case, note cap, programme markers, rate limits, same-day flag) belong to
+ * one visitor, while the name, sex and findings are the synthetic person's.
+ */
+export const VISITOR_ID = /^[a-z0-9-]{2,40}(?:~[0-9a-f]{10})?$/;
+/** The synthetic person behind a visitor id ('latifa~0a1b2c3d4e' → 'latifa'). */
+export const baseId = (id: string) => id.split('~')[0];
+/** The synthetic person for a person or visitor id; a visitor gets the person's profile under its own id. */
+export function personById(id: string): Person | null {
+  if (!VISITOR_ID.test(id)) return null;
+  const p = PEOPLE.find((x) => x.id === baseId(id));
+  return !p ? null : p.id === id ? p : { ...p, id };
+}
+export const coupleOf = (personId: string) => COUPLES.find((c) => c.a === baseId(personId) || c.b === baseId(personId)) ?? null;
+/** Public profile: what any screen may show about a person (never findings, never a visitor's tag). */
+export const publicPerson = (p: Person) => ({ id: baseId(p.id), name: p.name, sex: p.sex, age: p.age });

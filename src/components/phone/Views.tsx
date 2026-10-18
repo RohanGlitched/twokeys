@@ -101,17 +101,31 @@ export function Counsellor({ lang, t, identity, urgent, urgentSig, onBack, pairi
   const [question, setQuestion] = useState(initialQuestion ?? '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<{ code?: string; en?: string } | null>(null);
+  // A request this person already has open (the desk's 409 names it), which they can withdraw from here.
+  const [openId, setOpenId] = useState<string | null>(null);
   const priority = urgent ? 'urgent' : pregnant ? 'pregnant' : 'routine';
   const booked = booking && !booking.withdrawn ? booking : null;
 
   const book = async () => {
-    setBusy(true); setError(null);
+    setBusy(true); setError(null); setOpenId(null);
     // The shared genes are worked out by the lab from the pairing, not taken from this phone.
     const r = await fetch('/api/desk/cases', { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity },
       body: JSON.stringify({ pairing, role, consent: { ownResults: own, relationship: rel }, language: lang, readingLevel: level, priority, question, pregnant, weeks: pregnant && weeks ? Number(weeks) : undefined, urgentSig: urgent ? urgentSig : undefined }) }).catch(() => null);
     const j = r ? await r.json().catch(() => ({})) : {};
     setBusy(false);
-    if (r?.ok) onBooking({ ...j, chose: { own, rel, question: !!question.trim() } }); else setError({ code: r ? codeOf(j) : 'offline', en: (j as { error?: string }).error });
+    if (r?.ok) { onBooking({ ...j, chose: { own, rel, question: !!question.trim() } }); return; }
+    setError({ code: r ? codeOf(j) : 'offline', en: (j as { error?: string }).error });
+    const open = (j as { id?: unknown }).id;
+    if (codeOf(j) === 'open_case' && typeof open === 'string') setOpenId(open);
+  };
+  const withdrawOpen = async () => {
+    if (!openId) return;
+    setBusy(true);
+    const r = await fetch(`/api/desk/cases/${openId}`, { method: 'DELETE', headers: { 'x-person': identity } }).catch(() => null);
+    setBusy(false);
+    if (!r?.ok) { setError({ code: r ? 'busy' : 'offline' }); return; }
+    setError(null); setOpenId(null);
+    onBooking({ id: openId, dueBy: 0, priority: 'routine', consentVersion: '', withdrawn: true });
   };
   const withdraw = async () => {
     if (!booked) return;
@@ -209,11 +223,16 @@ export function Counsellor({ lang, t, identity, urgent, urgentSig, onBack, pairi
               <li>{t({ en: 'Purpose: so a genetic counsellor can explain your result and options. Nothing is used for anything else.', ar: 'الغرض: أن يشرح مرشد وراثي نتيجتك وخياراتك، ولا يُستخدم شيء لغير ذلك.' })}</li>
               <li>{t({ en: 'Who sees it: the counsellors at your screening centre. Every view is logged, and you can ask for that log.', ar: 'من يراها: المرشدون في مركز الفحص. وكل اطلاع مسجَّل، ويمكنك طلب هذا السجل.' })}</li>
               <li>{t({ en: 'Your partner: if you booked after comparing, the case is linked to the comparison so the counsellor can see you together if your partner books too. Your partner never sees what you shared.', ar: 'شريكتك: إن حجزت بعد المقارنة فإن الحالة مرتبطة بها ليتمكن المرشد من لقائكما معاً إن حجزت شريكتك أيضاً. ولا ترى شريكتك أبداً ما شاركته.', arF: 'شريكك: إن حجزتِ بعد المقارنة فإن الحالة مرتبطة بها ليتمكن المرشد من لقائكما معاً إن حجز شريكك أيضاً. ولا يرى شريكك أبداً ما شاركتِه.' })}</li>
-              <li>{t({ en: 'How long: this demo keeps cases for 60 days. In service, records follow health-data retention rules. You can withdraw at any time: what you shared is erased, notes are sealed, and the audit keeps only dates and who viewed the case.', ar: 'المدة: يحتفظ هذا العرض بالحالات 60 يوماً، وفي الخدمة الفعلية تتبع السجلات قواعد الاحتفاظ بالبيانات الصحية. ويمكنك السحب في أي وقت: يُمسح ما شاركته، وتُختم الملاحظات، ولا يحتفظ السجل إلا بالتواريخ ومن اطّلع على الحالة.' })}</li>
+              <li>{t({ en: 'How long: in this demo, a case is deleted 2 hours after you book it. In service, records follow health-data retention rules. You can withdraw at any time: what you shared is erased, notes are sealed, and the audit keeps only dates and who viewed the case.', ar: 'المدة: في هذا العرض تُحذف الحالة بعد ساعتين من حجزها، وفي الخدمة الفعلية تتبع السجلات قواعد الاحتفاظ بالبيانات الصحية. ويمكنك السحب في أي وقت: يُمسح ما شاركته، وتُختم الملاحظات، ولا يحتفظ السجل إلا بالتواريخ ومن اطّلع على الحالة.' })}</li>
               <li>{t({ en: 'Law: UAE Federal Decree-Law 49/2023 on the use of the human genome, which sets consent and privacy rules for genetic data.', ar: 'القانون: المرسوم بقانون اتحادي رقم 49 لسنة 2023 بشأن استخدام الجينوم البشري، الذي يضع قواعد الموافقة والخصوصية للبيانات الجينية.' })}</li>
             </ul>
           </details>
           {error && <p role="alert" dir="auto" className="mt-3 text-[14px] text-alert">{errorText(t, lang, error.code, error.en, { en: 'Booking failed. Try again.', ar: 'تعذّر الحجز. حاول مرة أخرى.', arF: 'تعذّر الحجز. حاولي مرة أخرى.' })}</p>}
+          {openId && (
+            <button onClick={withdrawOpen} disabled={busy} className="mt-3 min-h-11 self-start rounded-[2px] border border-alert px-4 text-[14px] font-medium text-alert disabled:opacity-50">
+              {t({ en: 'Withdraw my open request and erase what I shared', ar: 'اسحب طلبي المفتوح وامسح ما شاركته', arF: 'اسحبي طلبي المفتوح وامسحي ما شاركتِه' })}
+            </button>
+          )}
           <button onClick={book} disabled={busy} className="mt-5 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool disabled:opacity-50">
             {busy ? t({ en: 'Booking…', ar: 'جارٍ الحجز…' }) : urgent ? t({ en: 'Ask a counsellor to call me today', ar: 'اطلب من مرشد الاتصال بي اليوم', arF: 'اطلبي من مرشد الاتصال بي اليوم' }) : t({ en: 'Agree and book a call', ar: 'وافق واحجز مكالمة', arF: 'وافقي واحجزي مكالمة' })}
           </button>
@@ -260,7 +279,7 @@ const STARTERS: L[] = [
 ];
 
 export function Ask({ lang, t, sex, identity, onBack, genes, xl, level, related, onCounsellor, onUrgent, headingId }: {
-  lang: Locale; t: T; sex: 'F' | 'M'; identity?: string; onBack: () => void; genes: { gene: string; strength: number; kind?: string; chance?: string }[]; xl: string[]; level: Level; related: boolean; onCounsellor: () => void; onUrgent: (urgentSig?: string) => void; headingId: string;
+  lang: Locale; t: T; sex: 'F' | 'M'; identity?: string; onBack: () => void; genes: { gene: string; strength: number; kind?: string; chance?: string; outcomes?: { kind: string; n: number }[]; arrangementUnknown?: boolean }[]; xl: string[]; level: Level; related: boolean; onCounsellor: () => void; onUrgent: (urgentSig?: string) => void; headingId: string;
 }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [q, setQ] = useState('');
@@ -275,7 +294,8 @@ export function Ask({ lang, t, sex, identity, onBack, genes, xl, level, related,
     setBusy(true);
     try {
       const r = await fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json', ...(identity ? { 'x-person': identity } : {}) }, body: JSON.stringify({ lang, sex, level, genes: genes.map((g) => g.gene), strengths: Object.fromEntries(genes.map((g) => [g.gene, g.strength])),
-        kinds: Object.fromEntries(genes.filter((g) => g.kind).map((g) => [g.gene, g.kind])), chances: Object.fromEntries(genes.filter((g) => g.chance).map((g) => [g.gene, g.chance])), xl, related, question, history }) });
+        kinds: Object.fromEntries(genes.filter((g) => g.kind).map((g) => [g.gene, g.kind])), chances: Object.fromEntries(genes.filter((g) => g.chance).map((g) => [g.gene, g.chance])),
+        outcomes: Object.fromEntries(genes.filter((g) => g.outcomes?.length).map((g) => [g.gene, g.outcomes])), arrangementUnknown: genes.filter((g) => g.arrangementUnknown).map((g) => g.gene), xl, related, question, history }) });
       const j = await r.json().catch(() => ({}));
       if (r.ok) setTurns((x) => x.map((m, i) => (i === x.length - 1 && m.role === 'user' ? { ...m, sig: j.qsig } : m)));
       // An error reply is the phone's own words for its code: the server's English never reaches an Arabic screen.
@@ -360,22 +380,42 @@ function oneIn(p: number, lang: Locale): string {
   return lang === 'ar' ? `نحو 1 من كل ${fmt.format(r)}` : `about 1 in ${fmt.format(r)}`;
 }
 
-export function Family({ lang, t, identity, onBack, genes, headingId, onCounsellor }: {
+/** Why a note wasn't made, by the route's code (or reason). */
+const NOTE_FAILED: Record<string, L> = {
+  letter_cap: { en: 'You have sent the most notes one person can today. A genetic counsellor can help you tell more relatives.', ar: 'أرسلت أكبر عدد من الرسائل يمكن لشخص واحد إرساله اليوم. ويمكن للمرشد الوراثي مساعدتك في إخبار مزيد من الأقارب.', arF: 'أرسلتِ أكبر عدد من الرسائل يمكن لشخص واحد إرساله اليوم. ويمكن للمرشد الوراثي مساعدتك في إخبار مزيد من الأقارب.' },
+  not_your_gene: { en: 'The lab can only sign a note about a gene it found in you.', ar: 'لا يوقّع المختبر إلا على رسالة عن جين وجده لديك.' },
+  rate_limited: { en: 'Too many notes this hour. Try again later.', ar: 'رسائل كثيرة في هذه الساعة. حاول لاحقاً.', arF: 'رسائل كثيرة في هذه الساعة. حاولي لاحقاً.' },
+  any: { en: 'The note couldn’t be made. Try again.', ar: 'تعذّر إنشاء الرسالة. حاول مرة أخرى.', arF: 'تعذّر إنشاء الرسالة. حاولي مرة أخرى.' },
+};
+const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+
+export function Family({ lang, t, identity, onBack, genes, headingId, onCounsellor, pairing, role }: {
   lang: Locale; t: T; identity: string; onBack: () => void; genes: { gene: string; inheritance: 'AR' | 'XL' }[]; headingId: string; onCounsellor: (message: string) => void;
+  /** The confirmed comparison, if any: lets the lab also accept a gene it released for it (api/family). */
+  pairing?: string | null; role?: 'A' | 'B' | null;
 }) {
   const [gene, setGene] = useState(genes[0]?.gene ?? '');
   const [relation, setRelation] = useState<Relation>('sibling');
   const [via, setVia] = useState<'me' | 'counsellor'>('me');
   const [made, setMade] = useState<Made[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState<L | null>(null);
   const inheritance = genes.find((g) => g.gene === gene)?.inheritance ?? 'AR';
   const preview = gene ? letterFor(gene, relation, lang, inheritance) : null;
+  // The body is sealed here with a fresh nonce. The gene and relation also go to the server in the clear, so
+  // the lab can check the gene is in this person's results and sign the note's facts (with the nonce and the
+  // day); the relative's page checks that signature against the sealed body. The server keeps neither.
   const create = async () => {
-    if (!gene) return;
-    const { c, key } = await sealLetter(letterFor(gene, relation, lang, inheritance));
-    const r = await fetch('/api/family', { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity }, body: JSON.stringify({ c, ack: ackHash(key) }) });
-    const j = await r.json();
-    if (!r.ok) return;
+    if (!gene || busy) return;
+    setBusy(true); setFailed(null);
+    const nonce = hex(crypto.getRandomValues(new Uint8Array(16)));
+    const { c, key } = await sealLetter({ ...letterFor(gene, relation, lang, inheritance), nonce });
+    const r = await fetch('/api/family', { method: 'POST', headers: { 'content-type': 'application/json', 'x-person': identity },
+      body: JSON.stringify({ c, ack: ackHash(key), gene, relation, nonce, ...(pairing && role ? { session: pairing, role } : {}) }) }).catch(() => null);
+    const j = r ? await r.json().catch(() => ({})) : {};
+    setBusy(false);
+    if (!r?.ok) { const why = (j as { reason?: string }).reason ?? codeOf(j) ?? ''; setFailed(NOTE_FAILED[why] ?? NOTE_FAILED.any); return; }
     setMade((m) => [...m, { relation, via, id: j.id, manage: j.manage, url: `${window.location.origin}/${lang}/r/${j.id}#${key}` }]);
   };
   const refresh = async () => {
@@ -407,7 +447,7 @@ export function Family({ lang, t, identity, onBack, genes, headingId, onCounsell
     <section className="flex flex-col">
       <Back lang={lang} onBack={onBack} />
       <Heading id={headingId}>{t({ en: 'Tell relatives', ar: 'أخبر أقاربك', arF: 'أخبري أقاربك' })}</Heading>
-      <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'Relatives can carry the same change. Each note is sealed on this phone: the service can’t read it and doesn’t record who sent it. But a relative will see who passed the link on, so first choose who sends it.', ar: 'قد يحمل الأقارب التغيّر نفسه. تُختم كل رسالة على هذا الهاتف: لا تستطيع الخدمة قراءتها ولا تسجّل من أرسلها. لكن القريب سيرى من أوصل إليه الرابط، فاختر أولاً من يرسلها.', arF: 'قد يحمل الأقارب التغيّر نفسه. تُختم كل رسالة على هذا الهاتف: لا تستطيع الخدمة قراءتها ولا تسجّل من أرسلها. لكن القريب سيرى من أوصل إليه الرابط، فاختاري أولاً من يرسلها.' })}</p>
+      <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'Relatives can carry the same change. Each note is sealed on this phone, and the service stores only the sealed note, never who sent it. So that your relative can trust it, the lab first checks that the gene is in your results and signs the note: for that check it sees the gene and the relation, and keeps neither. A relative will see who passed the link on, so first choose who sends it.', ar: 'قد يحمل الأقارب التغيّر نفسه. تُختم كل رسالة على هذا الهاتف، ولا تحفظ الخدمة إلا الرسالة المختومة، ولا تحفظ أبداً من أرسلها. ولكي يثق بها قريبك، يتحقق المختبر أولاً من أن الجين في نتائجك ويوقّع على الرسالة: ويرى لهذا التحقق الجين وصلة القرابة، ولا يحتفظ بأيٍّ منهما. وسيرى القريب من أوصل إليه الرابط، فاختر أولاً من يرسلها.', arF: 'قد يحمل الأقارب التغيّر نفسه. تُختم كل رسالة على هذا الهاتف، ولا تحفظ الخدمة إلا الرسالة المختومة، ولا تحفظ أبداً من أرسلها. ولكي يثق بها قريبك، يتحقق المختبر أولاً من أن الجين في نتائجك ويوقّع على الرسالة: ويرى لهذا التحقق الجين وصلة القرابة، ولا يحتفظ بأيٍّ منهما. وسيرى القريب من أوصل إليه الرابط، فاختاري أولاً من يرسلها.' })}</p>
       <fieldset className="mt-4">
         <legend className="text-[13px] text-ink-2">{t({ en: 'Who sends it', ar: 'من يرسلها' })}</legend>
         <div className="mt-1 grid grid-cols-2 gap-2" role="radiogroup">
@@ -440,7 +480,8 @@ export function Family({ lang, t, identity, onBack, genes, headingId, onCounsell
               {preview.population !== null && <span className="text-ink-2"> {t({ en: `For anyone in the general population: ${oneIn(preview.population, 'en')}.`, ar: `ولأي شخص من عامة الناس: ${oneIn(preview.population, 'ar')}.` })}</span>}</>}
         </p>
       )}
-      <button onClick={create} className="mt-4 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool">{t({ en: 'Make a sealed note', ar: 'أنشئ رسالة مختومة', arF: 'أنشئي رسالة مختومة' })}</button>
+      <button onClick={create} disabled={busy} className="mt-4 w-full rounded-[2px] bg-ink px-5 py-4 text-[16px] font-medium text-wool disabled:opacity-50">{t({ en: 'Make a sealed note', ar: 'أنشئ رسالة مختومة', arF: 'أنشئي رسالة مختومة' })}</button>
+      {failed && <p role="alert" className="mt-3 text-[14px] text-alert">{t(failed)}</p>}
       {made.length > 0 && (
         <ul className="mt-5 divide-y divide-rule border-y border-rule text-[13px]">
           {made.map((m) => (

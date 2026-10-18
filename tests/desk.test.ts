@@ -22,6 +22,12 @@ describe('desk clocks', () => {
     expect(dueFor('routine', MON_9AM, null, 'hydrops')).toBe(dueFor('routine', MON_9AM, null, true));
     expect(dueFor('pregnant', MON_9AM, 6, 'hydrops')).toBe(MON_9AM + 4 * H);
   });
+  it('an alpha result that waits on how two α+ changes sit: at least 1 working day; the hydrops clock if cis could mean Bart’s', () => {
+    // The booking route passes `serious` for an unknown arrangement, and 'hydrops' when the cis reading gives Bart's or severe HbH.
+    expect(dueFor('routine', MON_9AM, null, true)).toBeLessThanOrEqual(dueFor('pregnant', MON_9AM, 6));
+    expect(dueFor('routine', MON_9AM, null, true)).toBeLessThan(dueFor('routine', MON_9AM, null));
+    expect(dueFor('pregnant', MON_9AM, 6, 'hydrops')).toBe(MON_9AM + 4 * H);
+  });
   it('counts days to day 120 from conception, and from the last period two weeks sooner', () => {
     expect(daysTo120(10, MON_9AM, MON_9AM)).toBe(64);
     expect(daysTo120Lmp(10, MON_9AM, MON_9AM)).toBe(50);

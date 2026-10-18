@@ -17,7 +17,7 @@ import { personFrom } from '@/lib/identity';
  * path, so a refused question (an injection, a probe) can never re-enter as history.
  */
 const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
-const contextOf = (b: Record<string, unknown>) => JSON.stringify([b.lang === 'ar' ? 'ar' : 'en', [...((b.genes as string[]) ?? [])].sort(), [...((b.xl as string[]) ?? [])].sort(), b.strengths ?? {}, !!b.related]);
+const contextOf = (b: Record<string, unknown>) => JSON.stringify([b.lang === 'ar' ? 'ar' : 'en', [...((b.genes as string[]) ?? [])].sort(), [...((b.xl as string[]) ?? [])].sort(), b.strengths ?? {}, b.kinds ?? {}, b.chances ?? {}, b.outcomes ?? {}, b.arrangementUnknown ?? [], !!b.related]);
 const mac = (ctx: string, exp: number, role: string, text: string) => hex(hmac(sha256, subkey('ask-history'), new TextEncoder().encode(`twokeys/ask-history/v3|${EXPLAINER_VERSION}|${ctx}|${exp}|${role}|${text}`)));
 const sign = (ctx: string, role: 'user' | 'assistant', text: string) => { const exp = Math.floor(Date.now() / 1000) + 86_400; return `${exp}.${mac(ctx, exp, role, text)}`; };
 const verify = (ctx: string, role: string, text: string, sig: unknown) => {
