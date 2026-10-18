@@ -12,6 +12,9 @@ const enc = new TextEncoder();
  * uses the health authority's identity provider with per-clinician sign-in.
  */
 export const COUNSELLORS = ['Dr. Fatima Al Hammadi (synthetic)', 'Dr. Yousef Al Marzouqi (synthetic)', 'Judge (demo)'] as const;
+/** The challenge judges' account opens without a passcode: the desk holds only synthetic people, and every
+ * view it makes is written to the audit trail under this name. The counsellor accounts keep the passcode. */
+export const JUDGE = 'Judge (demo)';
 
 /** The signed-in counsellor's name, from the x-desk-user header, if it is a known account. */
 export function deskUser(req: Request): string | null {
@@ -37,7 +40,9 @@ export async function deskGate(req: Request): Promise<Response | null> {
 
 /** Compares HMACs of the two passcodes: fixed length, no early exit, nothing learned from timing or length. */
 export function deskAuthorised(req: Request): boolean {
-  if (!deskUser(req)) return false;
+  const user = deskUser(req);
+  if (!user) return false;
+  if (user === JUDGE) return true;
   const want = process.env.DESK_PASSCODE ?? (process.env.VERCEL_ENV || process.env.NODE_ENV === 'production' ? '' : 'counsellor');
   if (!want) return false;
   const k = subkey('desk-passcode');

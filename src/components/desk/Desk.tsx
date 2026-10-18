@@ -16,6 +16,8 @@ const CNV = new Set(['CYP21A2', 'HBA', 'HBA1', 'HBA2', 'SMN1', 'GBA1', 'F8']);
 const XL = new Set(['ABCD1', 'AFF2', 'ARX', 'DMD', 'F8', 'F9', 'FMR1', 'GLA', 'L1CAM', 'MID1', 'NR0B1', 'OTC', 'PLP1', 'RPGR', 'RS1', 'SLC6A8', 'G6PD']);
 /** Must match COUNSELLORS in lib/deskauth.ts (server-only). */
 const COUNSELLORS = ['Dr. Fatima Al Hammadi (synthetic)', 'Dr. Yousef Al Marzouqi (synthetic)', 'Judge (demo)'];
+/** Opens without a passcode (lib/deskauth); /desk?judge=1 opens it straight away. */
+const JUDGE = 'Judge (demo)';
 /** How each sign-in name is shown in Arabic (the value sent to the server stays the same). */
 const COUNSELLOR_AR: Record<string, string> = { 'Dr. Fatima Al Hammadi (synthetic)': 'د. فاطمة الحمادي (افتراضية)', 'Dr. Yousef Al Marzouqi (synthetic)': 'د. يوسف المرزوقي (افتراضي)', 'Judge (demo)': 'محكّم (عرض)' };
 const PRIORITY: Record<NonNullable<DeskCase['priority']>, L> = { urgent: { en: 'Urgent: call today', ar: 'عاجل: اتصال اليوم' }, pregnant: { en: 'Pregnant', ar: 'حمل' }, routine: { en: 'Routine', ar: 'روتيني' } };
@@ -111,18 +113,22 @@ export function Desk({ lang }: { lang: Locale }) {
   const [opened, setOpened] = useState(0);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only value, read once after hydration
-  useEffect(() => { try { const u = sessionStorage.getItem('desk-user'); if (u && COUNSELLORS.includes(u)) setUser(u); } catch {} }, []);
+  useEffect(() => { try { const u = sessionStorage.getItem('desk-user'); if (u && COUNSELLORS.includes(u) && u !== JUDGE) setUser(u); } catch {} }, []);
   const headers = useCallback((extra: Record<string, string> = {}) => ({ 'x-desk': code, 'x-desk-user': encodeURIComponent(user), ...extra }), [code, user]);
   // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only value, read once after hydration
   useEffect(() => { setNow(Date.now()); const i = setInterval(() => setNow(Date.now()), 30_000); return () => clearInterval(i); }, []);
 
-  const load = useCallback(async () => {
-    const r = await fetch('/api/desk/cases', { headers: headers() });
+  // `as` signs in with an account other than the one in state (the judge entrance), before the state catches up
+  const load = useCallback(async (as?: { user: string; code: string }) => {
+    const r = await fetch('/api/desk/cases', { headers: as ? { 'x-desk': as.code, 'x-desk-user': encodeURIComponent(as.user) } : headers() });
     if (r.status === 401) { setAuthed(false); setErr(t({ en: 'That passcode is not right.', ar: 'رمز المرور غير صحيح.' })); return; }
     const j = await r.json();
     setCases([...j.cases].sort(order)); setAuthed(true); setErr(null);
-    try { sessionStorage.setItem('desk-user', user); } catch {}
+    try { sessionStorage.setItem('desk-user', as?.user ?? user); } catch {}
   }, [headers, t, user]);
+  const enterAsJudge = useCallback(() => { setCode(''); setUser(JUDGE); load({ user: JUDGE, code: '' }); }, [load]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- reads the address once after hydration: /desk?judge=1 opens the judge desk
+  useEffect(() => { if (new URLSearchParams(window.location.search).get('judge') === '1') enterAsJudge(); }, [enterAsJudge]);
 
   const open = useCallback(async (id: string) => {
     setSel(id);
@@ -149,11 +155,17 @@ export function Desk({ lang }: { lang: Locale }) {
       <main id="main" className="mx-auto max-w-md px-6 py-16">
         <div className="flex items-center gap-2"><Mark size={24} /><span className="text-[15px] font-medium">{t({ en: 'Counsellor desk', ar: 'مكتب المرشد الوراثي' })}</span></div>
         <h1 className="mt-6 text-[28px] font-semibold tracking-tight">{t({ en: 'Sign in to the desk', ar: 'سجّل الدخول إلى المكتب' })}</h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t({ en: 'In production, counsellors sign in with their health-authority account. Judges: the demo passcode is in the submission notes.', ar: 'في الإنتاج يسجّل المرشد الوراثيون الدخول بحساب الجهة الصحية. للمحكّمين: رمز مرور العرض موجود في ملاحظات التقديم.' })}</p>
+        <section className="mt-6 rounded-[3px] border-[1.5px] border-indigo bg-paper p-5" aria-labelledby="judge-entry">
+          <h2 id="judge-entry" className="text-[18px] font-semibold">{t({ en: 'Judging the challenge?', ar: 'هل أنت من لجنة التحكيم؟' })}</h2>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-ink-2">{t({ en: 'Open the desk with one tap, no passcode. Everyone on it is synthetic, and what you open is logged under “Judge (demo)”.', ar: 'افتح المكتب بنقرة واحدة دون رمز مرور. كل من فيه افتراضيون، وما تفتحه يُسجَّل باسم «محكّم (عرض)».' })}</p>
+          <button type="button" onClick={enterAsJudge} className="mt-4 w-full rounded-[2px] bg-indigo px-5 py-3.5 text-[16px] font-medium text-wool">{t({ en: 'Open the desk as a judge', ar: 'افتح المكتب كمحكّم' })}</button>
+        </section>
+        <h2 className="mt-10 text-[15px] font-semibold">{t({ en: 'Counsellor accounts', ar: 'حسابات المرشدين' })}</h2>
+        <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{t({ en: 'In production, counsellors sign in with their health-authority account. In the demo they use a passcode.', ar: 'في الإنتاج يسجّل المرشدون الدخول بحساب الجهة الصحية، وفي العرض يستخدمون رمز مرور.' })}</p>
         <form className="mt-6 grid gap-3" onSubmit={(e) => { e.preventDefault(); load(); }}>
           <label className="text-[13px] text-ink-2" htmlFor="who">{t({ en: 'Counsellor account', ar: 'حساب المرشد الوراثي' })}
             <select id="who" value={user} onChange={(e) => setUser(e.target.value)} className="mt-1 block w-full rounded-[2px] border border-ink bg-paper px-3 py-3 text-[15px] text-ink">
-              {COUNSELLORS.map((c) => <option key={c} value={c}>{lang === 'ar' ? COUNSELLOR_AR[c] ?? c : c}</option>)}
+              {COUNSELLORS.filter((c) => c !== JUDGE).map((c) => <option key={c} value={c}>{lang === 'ar' ? COUNSELLOR_AR[c] ?? c : c}</option>)}
             </select></label>
           <label className="text-[13px] text-ink-2" htmlFor="pc">{t({ en: 'Passcode', ar: 'رمز المرور' })}
             <input id="pc" type="password" value={code} onChange={(e) => setCode(e.target.value)} className="mt-1 block w-full rounded-[2px] border border-ink bg-paper px-3 py-3 text-ink" autoComplete="off" /></label>
@@ -175,7 +187,7 @@ export function Desk({ lang }: { lang: Locale }) {
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-ink pb-4">
         <div>
           <div className="flex items-center gap-2 text-ink-2"><Mark size={22} /><span className="text-[14px]">{t({ en: 'Two Keys counsellor desk', ar: 'مكتب المرشد الوراثي في مفتاحان' })}</span>
-            <span className="ms-3 text-[13px]">{t({ en: `Signed in as ${user}`, ar: `مسجّل باسم ${user}` })}</span>
+            <span className="ms-3 text-[13px]">{t({ en: `Signed in as ${user}`, ar: `مسجّل باسم ${COUNSELLOR_AR[user] ?? user}` })}</span>
             <button onClick={() => { setAuthed(false); setCode(''); setCases([]); setDetail(null); setSel(null); }} className="ms-2 inline-flex min-h-8 items-center px-1 text-[13px] underline">{t({ en: 'Sign out', ar: 'خروج' })}</button></div>
           <h1 className="mt-1 text-[30px] font-semibold tracking-tight">{t({ en: 'Couples waiting for a call', ar: 'أزواج بانتظار مكالمة' })}</h1>
         </div>
